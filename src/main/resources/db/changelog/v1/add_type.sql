@@ -1,0 +1,1 @@
+ALTER TABLE gateway_cache ADD type int;

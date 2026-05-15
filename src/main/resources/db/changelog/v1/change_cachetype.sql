@@ -1,0 +1,2 @@
+ALTER TABLE message_cache
+RENAME cached_type TO message_type

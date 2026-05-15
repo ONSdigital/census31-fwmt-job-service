@@ -1,0 +1,1 @@
+ALTER TABLE gateway_cache ADD individual_case_id varchar (20);

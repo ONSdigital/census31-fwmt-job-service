@@ -1,0 +1,1 @@
+ALTER TABLE gateway_cache ALTER COLUMN individual_case_id TYPE VARCHAR (40);

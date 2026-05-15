@@ -1,0 +1,97 @@
+{
+  "queues": [
+    {
+      "name": "Outcome.Preprocessing",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments":
+        { "x-dead-letter-exchange": "", "x-dead-letter-routing-key": "Outcome.PreprocesingDLQ" }
+    }, {
+      "name": "Outcome.PreprocesingDLQ",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": { }
+    }, {
+      "name": "GW.Permanent.ErrorQ",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": { }
+    },
+    {
+      "name": "GW.Transient.ErrorQ",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": { }
+    },
+    {
+      "name": "GW.Field",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": { }
+    }
+  ],
+  "exchanges": [
+    {
+      "name": "Outcome.Preprocessing.Exchange",
+      "vhost": "/",
+      "type": "direct",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": { }
+    },  {
+      "name": "GW.Error.Exchange",
+      "vhost": "/",
+      "type": "direct",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": { }
+    }
+  ],
+  "bindings": [
+    {
+      "source": "Outcome.Preprocessing.Exchange",
+      "vhost": "/",
+      "destination": "Outcome.Preprocessing",
+      "destination_type": "queue",
+      "routing_key": "Outcome.Preprocessing.Request",
+      "arguments": { }
+    },
+    {
+      "source": "GW.Error.Exchange",
+      "vhost": "/",
+      "destination": "GW.Permanent.ErrorQ",
+      "destination_type": "queue",
+      "routing_key": "gw.permanent.error",
+      "arguments": { }
+    },
+    {
+      "source": "GW.Error.Exchange",
+      "vhost": "/",
+      "destination": "GW.Transient.ErrorQ",
+      "destination_type": "queue",
+      "routing_key": "gw.transient.error",
+      "arguments": { }
+    }
+  ],
+  "policies": [
+    {
+      "name": "mirror",
+      "pattern": ".*",
+      "vhost": "/",
+      "definition": {
+        "ha-mode": "exactly",
+        "ha-params": 2,
+        "ha-promote-on-failure": "when-synced",
+        "ha-sync-mode": "automatic",
+        "ha-sync-batch-size": 250
+      }
+    }
+  ]
+}

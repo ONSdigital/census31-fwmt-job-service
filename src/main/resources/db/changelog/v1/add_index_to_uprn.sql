@@ -1,0 +1,1 @@
+CREATE INDEX idx_uprn ON gateway_cache (uprn);

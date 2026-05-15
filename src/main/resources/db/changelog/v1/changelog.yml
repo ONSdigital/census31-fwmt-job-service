@@ -1,0 +1,155 @@
+databaseChangeLog:
+  - changeSet:
+      id: v1
+      author: Simon Diaz
+      comment: Create initial FWMT-G Tables
+      changes:
+        - sqlFile:
+            path: initial_table.sql
+            relativeToChangelogFile: true
+            splitStatements: false2
+  - changeSet:
+      id: v2
+      author: Steve Scorfield
+      comment: Add CE UPRN and Establishment UPRN to gateway_cache
+      changes:
+        - sqlFile:
+            path: add_uprns.sql
+            relativeToChangelogFile: true
+            splitStatements: false2
+  - changeSet:
+      id: v3
+      author: Steve Scorfield
+      comment: Add type to gateway_cache
+      changes:
+        - sqlFile:
+            path: add_type.sql
+            relativeToChangelogFile: true
+            splitStatements: false2
+  - changeSet:
+      id: v4
+      author: Steve Scorfield
+      comment: Add type to gateway_cache
+      changes:
+        - sqlFile:
+            path: add_index_to_uprn.sql
+            relativeToChangelogFile: true
+            splitStatements: false2
+  - changeSet:
+      id: v5
+      author: Steve Scorfield
+      comment: Add message caching table
+      changes:
+        - sqlFile:
+            path: add_message_caching.sql
+            relativeToChangelogFile: true
+            splitStatements: false2
+  - changeSet:
+      id: v6
+      author: Steve Scorfield
+      comment: Rename cached type column to message type
+      changes:
+        - sqlFile:
+            path: change_cachetype.sql
+            relativeToChangelogFile: true
+            splitStatements: false2
+  - changeSet:
+      id: v7
+      author: Steve Scorfield
+      comment: Add lastActionInstruction and lastActionTime
+      changes:
+        - sqlFile:
+            path: add_lastactioninstruction_and_time.sql
+            relativeToChangelogFile: true
+            splitStatements: false2
+  - changeSet:
+      id: v8
+      author: Steve Scorfield
+      comment: Add individualCaseId
+      changes:
+        - sqlFile:
+            path: add_individual_case_id.sql
+            relativeToChangelogFile: true
+            splitStatements: false2
+  - changeSet:
+      id: v9
+      author: Jacob Harrison
+      comment: Add oa to gateway_cache
+      changes:
+        - sqlFile:
+            path: add_oa.sql
+            relativeToChangelogFile: true
+            splitStatements: false2
+  - changeSet:
+      id: v10
+      author: Jacob Harrison
+      comment: Add manager info to gateway_cache
+      changes:
+        - sqlFile:
+            path: manager_details.sql
+            relativeToChangelogFile: true
+            splitStatements: false2
+  - changeSet:
+      id: v11
+      author: Jacob Harrison
+      comment: Add manager phone to gateway_cache
+      changes:
+        - sqlFile:
+            path: manager_phone.sql
+            relativeToChangelogFile: true
+            splitStatements: false2
+  - changeSet:
+      id: v12
+      author: Jacob Harrison
+      comment: Add usual residents and bedspaces
+      changes:
+        - sqlFile:
+            path: residents_and_bedspaces.sql
+            relativeToChangelogFile: true
+            splitStatements: false2
+  - changeSet:
+      id: v13
+      author: Steve Scorfield
+      comment: Increase varchar value of indivdual_case_id column
+      changes:
+        - sqlFile:
+            path: update_individual_case_id_varchar_value.sql
+            relativeToChangelogFile: true
+            splitStatements: false2
+  - changeSet:
+      id: v14
+      author: Jacob Harrison
+      comment: Add column original case ID for Non Compliance
+      changes:
+        - sqlFile:
+            path: add_column_original_case_id.sql
+            relativeToChangelogFile: true
+            splitStatements: false2
+  - changeSet:
+      id: v15
+      author: Bobby and Ramesh
+      comment: Add index
+      changes:
+        - sqlFile:
+            path: add_column_index.sql
+            relativeToChangelogFile: true
+            splitStatements: false2
+
+  - changeSet:
+      id: v16
+      author: Conor O Callaghan
+      comment: Created QuarantinedMessage Table
+      changes:
+        - sqlFile:
+            path: quarantined_table.sql
+            relativeToChangelogFile: true
+            splitStatements: false2
+  - changeSet:
+      id: v17
+      author: Simon Diaz
+      comment: Add Index for Ops 
+      changes:
+        - sqlFile:
+            path: add_last_action_instruction_index.sql
+            relativeToChangelogFile: true
+            splitStatements: false2
