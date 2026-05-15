@@ -2,12 +2,6 @@ package uk.gov.ons.census.fwmt.jobservice.service.routing.nc;
 
 import static org.mockito.Mockito.when;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
 import java.util.List;
 
 import org.junit.jupiter.api.Assertions;
@@ -18,10 +12,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import uk.gov.ons.census.fwmt.common.data.nc.CaseDetailsDTO;
@@ -42,31 +34,22 @@ public class NcNamedHouseholderRetrievalTest {
   private ObjectMapper objectMapper;
 
   @Mock
-  private URI uri;
-
-  @Mock
   private GatewayEventManager eventManager;
 
   @Test
   @SuppressWarnings("unchecked")
   @DisplayName("When a empty name is received, we should send an empty name")
-  public void shouldHandleIncorrectSurveyTypeCE() throws GatewayException, IOException {
+  public void shouldHandleIncorrectSurveyTypeCE() throws GatewayException {
     final CaseDetailsDTO caseDetailsDTO = new NcCaseDetailsDtoBuilder().createNcCaseDetailsDto();
     final CaseDetailsEventHardRefusal caseDetailsEventHardRefusal = new NcCaseDetailsDtoBuilder().createCaseDetailsEventHardRefusal();
     List<CaseDetailsEventDTO> caseDetailsEventDTO = caseDetailsDTO.getEvents();
 
-    File pkFile = new ClassPathResource("/testPrivateKey.private").getFile();
-
-    try (FileInputStream fis = new FileInputStream(pkFile)) {
-      byte[] readAllBytes = fis.readAllBytes();
-      ReflectionTestUtils.setField(namedHouseholderRetrieval, "privateKeyByteArray", readAllBytes);
-      when(objectMapper.readValue(caseDetailsEventDTO.get(0).getEventPayload(), CaseDetailsEventHardRefusal.class)).thenReturn(caseDetailsEventHardRefusal);
-      String returnedHouseholder = namedHouseholderRetrieval.getAndSortRmRefusalCases(caseDetailsDTO.getCaseId().toString(), caseDetailsDTO);
-      Assertions.assertEquals("Named householder = No", returnedHouseholder);
-    } catch (FileNotFoundException e) {
-      e.printStackTrace();
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+    // Empty contact fields — decryption is not exercised; no private key file required.
+    ReflectionTestUtils.setField(namedHouseholderRetrieval, "privateKeyByteArray", new byte[0]);
+    when(objectMapper.readValue(caseDetailsEventDTO.get(0).getEventPayload(), CaseDetailsEventHardRefusal.class))
+        .thenReturn(caseDetailsEventHardRefusal);
+    String returnedHouseholder =
+        namedHouseholderRetrieval.getAndSortRmRefusalCases(caseDetailsDTO.getCaseId().toString(), caseDetailsDTO);
+    Assertions.assertEquals("Named householder = No", returnedHouseholder);
   }
 }

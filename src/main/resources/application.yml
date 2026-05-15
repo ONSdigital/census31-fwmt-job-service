@@ -68,8 +68,10 @@ rmapi:
   baseUrl: "http://localhost:8000/"
 
 decryption:
-  pgp: "classpath:/testPrivateKey.private"
-  password: testJobService
+  # Private key is not bundled in the repo (see docs/gitguardian-pgp-private-key.md).
+  # Override via DECRYPTION_PGP / DECRYPTION_PASSWORD or Spring config in each environment.
+  pgp: "${DECRYPTION_PGP:file://${user.home}/.fwmt/keys/decryption.private}"
+  password: "${DECRYPTION_PASSWORD:}"
  
 
 
