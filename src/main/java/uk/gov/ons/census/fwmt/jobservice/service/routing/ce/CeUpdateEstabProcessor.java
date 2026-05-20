@@ -92,6 +92,6 @@ public class CeUpdateEstabProcessor implements InboundProcessor<FwmtActionInstru
         .triggerEvent(String.valueOf(rmRequest.getCaseId()), COMET_UPDATE_ACK,
             "Case Ref", rmRequest.getCaseRef(),
             "CE Update Establishment", tmRequest.toString(),
-            "Response Code", response.getStatusCode().name());
+            "Response Code", response.getStatusCode().toString());
   }
 }

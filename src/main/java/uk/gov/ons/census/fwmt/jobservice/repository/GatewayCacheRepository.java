@@ -7,7 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import uk.gov.ons.census.fwmt.jobservice.data.GatewayCache;
 
-import javax.persistence.LockModeType;
+import jakarta.persistence.LockModeType;
 
 @Repository
 public interface GatewayCacheRepository extends JpaRepository<GatewayCache, Long> {

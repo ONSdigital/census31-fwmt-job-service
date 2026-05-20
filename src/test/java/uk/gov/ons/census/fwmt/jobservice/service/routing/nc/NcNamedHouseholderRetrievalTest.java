@@ -2,6 +2,8 @@ package uk.gov.ons.census.fwmt.jobservice.service.routing.nc;
 
 import static org.mockito.Mockito.when;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import java.util.List;
 
 import org.junit.jupiter.api.Assertions;
@@ -39,7 +41,7 @@ public class NcNamedHouseholderRetrievalTest {
   @Test
   @SuppressWarnings("unchecked")
   @DisplayName("When a empty name is received, we should send an empty name")
-  public void shouldHandleIncorrectSurveyTypeCE() throws GatewayException {
+  public void shouldHandleIncorrectSurveyTypeCE() throws GatewayException, JsonProcessingException {
     final CaseDetailsDTO caseDetailsDTO = new NcCaseDetailsDtoBuilder().createNcCaseDetailsDto();
     final CaseDetailsEventHardRefusal caseDetailsEventHardRefusal = new NcCaseDetailsDtoBuilder().createCaseDetailsEventHardRefusal();
     List<CaseDetailsEventDTO> caseDetailsEventDTO = caseDetailsDTO.getEvents();

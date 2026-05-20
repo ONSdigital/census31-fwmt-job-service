@@ -81,7 +81,7 @@ public class NcCancelProcessorTest {
     String lastAction = spiedCache.getValue().lastActionInstruction;
     Assertions.assertEquals("c66c995e-571d-11eb-ae93-0242ac130002", caseId);
     Assertions.assertEquals("CANCEL", lastAction);
-    verify(eventManager, atLeast(2)).triggerEvent(any(), spiedEvent.capture(), any());
+    verify(eventManager, atLeast(2)).triggerEvent(any(), spiedEvent.capture(), any(String[].class));
     String checkEvent = spiedEvent.getValue();
     Assertions.assertEquals(COMET_CANCEL_ACK, checkEvent);
   }
@@ -101,7 +101,7 @@ public class NcCancelProcessorTest {
     String lastAction = spiedCache.getValue().lastActionInstruction;
     Assertions.assertEquals("c66c995e-571d-11eb-ae93-0242ac130002", caseId);
     Assertions.assertEquals("CANCEL", lastAction);
-    verify(eventManager, atLeast(2)).triggerEvent(any(), spiedEvent.capture(), any());
+    verify(eventManager, atLeast(2)).triggerEvent(any(), spiedEvent.capture(), any(String[].class));
     String checkEvent = spiedEvent.getValue();
     Assertions.assertEquals(COMET_CANCEL_ACK, checkEvent);
   }
@@ -117,7 +117,7 @@ public class NcCancelProcessorTest {
     verify(cacheService).save(spiedCache.capture());
     String lastActionInstruction = spiedCache.getValue().lastActionInstruction;
     Assertions.assertEquals(instruction.getActionInstruction().toString(), lastActionInstruction);
-    verify(eventManager, atLeast(2)).triggerEvent(any(), spiedEvent.capture(), any());
+    verify(eventManager, atLeast(2)).triggerEvent(any(), spiedEvent.capture(), any(String[].class));
     String checkEvent = spiedEvent.getValue();
     Assertions.assertEquals(CANCEL_ON_A_CANCEL, checkEvent);
   }
@@ -133,7 +133,7 @@ public class NcCancelProcessorTest {
     verify(cacheService).save(spiedCache.capture());
     String lastActionInstruction = spiedCache.getValue().lastActionInstruction;
     Assertions.assertEquals(instruction.getActionInstruction().toString(), lastActionInstruction);
-    verify(eventManager, atLeast(2)).triggerEvent(any(), spiedEvent.capture(), any());
+    verify(eventManager, atLeast(2)).triggerEvent(any(), spiedEvent.capture(), any(String[].class));
     String checkEvent = spiedEvent.getValue();
     Assertions.assertEquals(CANCEL_ON_A_CANCEL, checkEvent);
   }

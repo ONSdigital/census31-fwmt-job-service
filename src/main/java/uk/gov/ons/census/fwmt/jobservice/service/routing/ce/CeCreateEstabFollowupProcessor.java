@@ -18,7 +18,6 @@ import uk.gov.ons.census.fwmt.jobservice.service.processor.InboundProcessor;
 import uk.gov.ons.census.fwmt.jobservice.service.processor.ProcessorKey;
 import uk.gov.ons.census.fwmt.jobservice.service.routing.RoutingValidator;
 
-import java.io.FileWriter;
 import java.time.Instant;
 
 import static uk.gov.ons.census.fwmt.jobservice.config.GatewayEventsConfig.COMET_CREATE_ACK;
@@ -56,38 +55,11 @@ public class CeCreateEstabFollowupProcessor implements InboundProcessor<FwmtActi
     return key;
   }
 
-  //region agent log
-  private static String agentJson(Object value) {
-    if (value == null) {
-      return "null";
-    }
-    if (value instanceof Number || value instanceof Boolean) {
-      return String.valueOf(value);
-    }
-    return "\"" + String.valueOf(value).replace("\\", "\\\\").replace("\"", "\\\"").replace("\n", "\\n") + "\"";
-  }
-
-  private static void agentLog(String hypothesisId, String message, String data) {
-    try (FileWriter writer = new FileWriter("/home/simon/dev/workspaces/cursor/census21-workspace/.cursor/debug-28a10e.log", true)) {
-      writer.write("{\"sessionId\":\"28a10e\",\"runId\":\"pre-fix\",\"hypothesisId\":");
-      writer.write(agentJson(hypothesisId));
-      writer.write(",\"location\":\"CeCreateEstabFollowupProcessor.java:isValid\",\"message\":");
-      writer.write(agentJson(message));
-      writer.write(",\"data\":");
-      writer.write(data);
-      writer.write(",\"timestamp\":");
-      writer.write(String.valueOf(System.currentTimeMillis()));
-      writer.write("}\n");
-    } catch (Exception ignored) {
-    }
-  }
-  //endregion
-
   @Override
   public boolean isValid(FwmtActionInstruction rmRequest, GatewayCache cache) {
     try {
       boolean estabUprnAndTypeExists = cacheService.doesEstabUprnAndTypeExist(rmRequest.getUprn(), 3);
-      boolean result = rmRequest.getActionInstruction() == ActionInstructionType.CREATE
+      return rmRequest.getActionInstruction() == ActionInstructionType.CREATE
           && rmRequest.getSurveyName().equals("CENSUS")
           && rmRequest.getAddressType().equals("CE")
           && rmRequest.getAddressLevel().equals("E")
@@ -96,25 +68,7 @@ public class CeCreateEstabFollowupProcessor implements InboundProcessor<FwmtActi
           || cache.existsInFwmt)
           && !estabUprnAndTypeExists
           && !rmRequest.isNc();
-      //region agent log
-      agentLog("H2,H3", "CE Estab Follow-up processor validity",
-          "{\"caseId\":" + agentJson(rmRequest.getCaseId())
-              + ",\"addressType\":" + agentJson(rmRequest.getAddressType())
-              + ",\"addressLevel\":" + agentJson(rmRequest.getAddressLevel())
-              + ",\"uprn\":" + agentJson(rmRequest.getUprn())
-              + ",\"estabUprn\":" + agentJson(rmRequest.getEstabUprn())
-              + ",\"handDeliver\":" + agentJson(rmRequest.isHandDeliver())
-              + ",\"cache\":" + agentJson(cache)
-              + ",\"estabUprnAndTypeExists\":" + estabUprnAndTypeExists
-              + ",\"result\":" + result
-              + "}");
-      //endregion
-      return result;
     } catch (NullPointerException e) {
-      //region agent log
-      agentLog("H2,H3", "CE Estab Follow-up processor validity threw NullPointerException",
-          "{\"caseId\":" + agentJson(rmRequest.getCaseId()) + ",\"result\":false}");
-      //endregion
       return false;
     }
   }
@@ -150,7 +104,7 @@ public class CeCreateEstabFollowupProcessor implements InboundProcessor<FwmtActi
         .triggerEvent(String.valueOf(rmRequest.getCaseId()), COMET_CREATE_ACK,
             "Case Ref", rmRequest.getCaseRef(),
             "CE Create Establishment Follow Up", tmRequest.toString(),
-            "Response Code", response.getStatusCode().name(),
+            "Response Code", response.getStatusCode().toString(),
             "Survey Type", tmRequest.getSurveyType().toString());
 
   }

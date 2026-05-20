@@ -114,7 +114,7 @@ public class HhCancel implements InboundProcessor<FwmtCancelActionInstruction> {
         eventManager.triggerEvent(String.valueOf(rmRequest.getCaseId()), COMET_CANCEL_ACK,
             "Case Ref", "NA",
             "HH Cancel/Pause", tmRequest.toString(),
-            "Response Code", response.getStatusCode().name());
+            "Response Code", response.getStatusCode().toString());
       }
     }
   }

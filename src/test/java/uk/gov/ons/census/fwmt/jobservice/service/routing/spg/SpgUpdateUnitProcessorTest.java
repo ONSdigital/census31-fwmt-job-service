@@ -52,7 +52,7 @@ public class SpgUpdateUnitProcessorTest {
         .caseId("ac623e62-4f4b-11eb-ae93-0242ac130002").lastActionInstruction("CREATE").build();
     when(cometRestClient.sendClose(any())).thenThrow(new RestClientException("(400 BAD_REQUEST) {“id”:[“Case State must be Open”]}"));
     spgUpdateUnitProcessor.process(instruction, gatewayCache,  Instant.now());
-    verify(eventManager, atLeast(2)).triggerEvent(any(), spiedEvent.capture(), any());
+    verify(eventManager, atLeast(2)).triggerEvent(any(), spiedEvent.capture(), any(String[].class));
     String checkEvent = spiedEvent.getValue();
     Assertions.assertEquals(UPDATE_ON_A_CANCEL, checkEvent);
   }

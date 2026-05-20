@@ -55,7 +55,7 @@ class HHCancelProcessorTest {
     when(cometRestClient.sendPause(any(CasePauseRequest.class), eq(instruction.getCaseId())))
         .thenThrow(new RestClientException("(404 BAD_REQUEST) {“id”:[“Unable to find Case”]}"));
     hhCancel.process(instruction, gatewayCache,  Instant.now());
-    verify(eventManager, atLeast(2)).triggerEvent(any(), spiedEvent.capture(), any());
+    verify(eventManager, atLeast(2)).triggerEvent(any(), spiedEvent.capture(), any(String[].class));
     String checkEvent = spiedEvent.getValue();
     Assertions.assertEquals(CASE_DOES_NOT_EXIST, checkEvent);
   }

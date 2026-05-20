@@ -117,7 +117,7 @@ public class CeCreateUnitDeliverProcessor implements InboundProcessor<FwmtAction
         .triggerEvent(String.valueOf(rmRequest.getCaseId()), COMET_CREATE_ACK,
             "Case Ref", rmRequest.getCaseRef(),
             "CE Create Unit Delivered", tmRequest.toString(),
-            "Response Code", response.getStatusCode().name(),
+            "Response Code", response.getStatusCode().toString(),
             "Survey Type", tmRequest.getSurveyType().toString());
 
   }

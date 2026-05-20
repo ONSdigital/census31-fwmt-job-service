@@ -108,7 +108,7 @@ public class NcCeCancel implements InboundProcessor<FwmtCancelActionInstruction>
           .triggerEvent(String.valueOf(rmRequest.getCaseId()), COMET_CANCEL_ACK,
               "Case Ref", "N/A",
               "Type", "NC Cancel",
-              "Response Code", response.getStatusCode().name());
+              "Response Code", response.getStatusCode().toString());
     }
   }
 }

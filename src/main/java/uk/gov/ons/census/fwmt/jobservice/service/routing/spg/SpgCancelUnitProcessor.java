@@ -98,7 +98,7 @@ public class SpgCancelUnitProcessor implements InboundProcessor<FwmtCancelAction
     if (response != null && !alreadyCancelled) {
       eventManager.triggerEvent(String.valueOf(rmRequest.getCaseId()), COMET_CANCEL_ACK,
           "Case Ref", "N/A",
-          "Response Code", response.getStatusCode().name(),
+          "Response Code", response.getStatusCode().toString(),
           "Source", "RM");
     }
   }

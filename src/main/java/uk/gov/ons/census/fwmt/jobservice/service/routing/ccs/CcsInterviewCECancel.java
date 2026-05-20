@@ -75,7 +75,7 @@ public class CcsInterviewCECancel implements InboundProcessor<FwmtCancelActionIn
       eventManager
           .triggerEvent(String.valueOf(rmRequest.getCaseId()), COMET_CANCEL_ACK,
               "Case Ref", "N/A",
-              "Response Code", response.getStatusCode().name());
+              "Response Code", response.getStatusCode().toString());
     } catch (RestClientException e) {
       String tmResponse = e.getMessage();
       if (tmResponse != null && tmResponse.contains("400") && tmResponse.contains("Case State must be Open")) {

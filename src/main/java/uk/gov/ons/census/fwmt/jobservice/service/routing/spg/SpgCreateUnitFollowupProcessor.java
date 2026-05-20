@@ -103,7 +103,7 @@ public class SpgCreateUnitFollowupProcessor implements InboundProcessor<FwmtActi
 
     eventManager.triggerEvent(String.valueOf(rmRequest.getCaseId()), COMET_CREATE_ACK,
         "Case Ref", rmRequest.getCaseRef(),
-        "Response Code", response.getStatusCode().name(),
+        "Response Code", response.getStatusCode().toString(),
         "Survey Type", tmRequest.getSurveyType().toString(),
         "SPG Create Unit Follow Up", tmRequest.toString());
   }

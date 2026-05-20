@@ -86,7 +86,7 @@ public class SpgUpdateSiteProcessor implements InboundProcessor<FwmtActionInstru
 
     eventManager.triggerEvent(String.valueOf(rmRequest.getCaseId()), COMET_UPDATE_ACK,
         "Case Ref", rmRequest.getCaseRef(),
-        "Response Code", response.getStatusCode().name(),
+        "Response Code", response.getStatusCode().toString(),
         "UAA", tmRequest.getUaa().toString(),
         "Blank Q", tmRequest.getBlank().toString(),
         "SPG Update Site", tmRequest.toString());

@@ -101,7 +101,7 @@ public class CeCreateEstabDeliverProcessor implements InboundProcessor<FwmtActio
         .triggerEvent(String.valueOf(rmRequest.getCaseId()), COMET_CREATE_ACK,
             "Case Ref", rmRequest.getCaseRef(),
             "CE Create Establishment Delivered", tmRequest.toString(),
-            "Response Code", response.getStatusCode().name(),
+            "Response Code", response.getStatusCode().toString(),
             "Survey Type", tmRequest.getSurveyType().toString());
 
   }

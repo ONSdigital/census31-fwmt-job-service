@@ -50,7 +50,7 @@ class HHCancelHeldProcessorTest {
     GatewayCache gatewayCache = GatewayCache.builder()
         .caseId("ac623e62-4f4b-11eb-ae93-0242ac130002").existsInFwmt(false).build();
     hhCancelHeld.process(instruction, gatewayCache,  Instant.now());
-    verify(eventManager, atLeast(1)).triggerEvent(any(), spiedEvent.capture(), any());
+    verify(eventManager, atLeast(1)).triggerEvent(any(), spiedEvent.capture(), any(String[].class));
     String checkEvent = spiedEvent.getValue();
     Assertions.assertEquals(HH_CANCEL_HELD, checkEvent);
   }
@@ -60,7 +60,7 @@ class HHCancelHeldProcessorTest {
   public void shouldHoldAHhCancelThatDoesNotExistInCache() throws GatewayException {
     final FwmtCancelActionInstruction instruction = HhRequestBuilder.cancelActionInstruction();
     hhCancelHeld.process(instruction, null,  Instant.now());
-    verify(eventManager, atLeast(1)).triggerEvent(any(), spiedEvent.capture(), any());
+    verify(eventManager, atLeast(1)).triggerEvent(any(), spiedEvent.capture(), any(String[].class));
     String checkEvent = spiedEvent.getValue();
     Assertions.assertEquals(HH_CANCEL_HELD, checkEvent);
   }

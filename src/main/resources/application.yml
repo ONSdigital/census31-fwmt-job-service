@@ -4,9 +4,8 @@ server:
 spring:
   application:
     name: census31-fwmt-job-service
-  jackson:
-    serialization:
-      WRITE_DATES_AS_TIMESTAMPS: false
+  main:
+    allow-circular-references: true
   security:
     user:
       name: "user"
@@ -119,7 +118,7 @@ app:
       port: 5673
       virtualHost: "/"
       initialInterval: 5000
-      multiplier: 3.0If yo
+      multiplier: 3.0
       maxInterval: 45000
       maxRetries: 1
       prefetchCount: 500

@@ -77,7 +77,10 @@ public class DecryptNames {
           new JcaKeyFingerprintCalculator());
       final Object first = factory.nextObject();
       final Object list = (first instanceof PGPEncryptedDataList) ? first : factory.nextObject();
-      return ((PGPEncryptedDataList) list).getEncryptedDataObjects();
+      @SuppressWarnings("unchecked")
+      Iterator<PGPPublicKeyEncryptedData> encryptedDataObjects =
+          (Iterator<PGPPublicKeyEncryptedData>) (Iterator<?>) ((PGPEncryptedDataList) list).getEncryptedDataObjects();
+      return encryptedDataObjects;
     } catch (IOException e) {
       throw new IOException(e);
     }

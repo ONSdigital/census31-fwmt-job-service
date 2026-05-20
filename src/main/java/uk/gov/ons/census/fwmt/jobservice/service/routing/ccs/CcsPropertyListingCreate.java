@@ -86,7 +86,7 @@ public class CcsPropertyListingCreate implements InboundProcessor<FwmtActionInst
         .triggerEvent(String.valueOf(rmRequest.getCaseId()), COMET_CREATE_ACK,
             "Case Ref", rmRequest.getCaseRef(),
             "CCS Property Listing Create", tmRequest.toString(),
-            "Response Code", response.getStatusCode().name(),
+            "Response Code", response.getStatusCode().toString(),
             "Survey Type", tmRequest.getSurveyType().toString());
 
   }

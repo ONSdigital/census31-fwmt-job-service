@@ -16,8 +16,7 @@ import uk.gov.ons.census.fwmt.jobservice.service.processor.ProcessorKey;
 import uk.gov.ons.census.fwmt.jobservice.service.routing.ignore.CeUpdateIgnoreProcessor;
 import uk.gov.ons.census.fwmt.jobservice.transition.Transitioner;
 
-import javax.transaction.Transactional;
-import java.io.FileWriter;
+import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -63,64 +62,17 @@ public class JobService {
   @Qualifier("PauseProcessorMap")
   private Map<ProcessorKey, List<InboundProcessor<FwmtActionInstruction>>> pauseProcessorMap;
 
-  //region agent log
-  private static String agentJson(Object value) {
-    if (value == null) {
-      return "null";
-    }
-    if (value instanceof Number || value instanceof Boolean) {
-      return String.valueOf(value);
-    }
-    return "\"" + String.valueOf(value).replace("\\", "\\\\").replace("\"", "\\\"").replace("\n", "\\n") + "\"";
-  }
-
-  private static void agentLog(String hypothesisId, String message, String data) {
-    try (FileWriter writer = new FileWriter("/home/simon/dev/workspaces/cursor/census21-workspace/.cursor/debug-28a10e.log", true)) {
-      writer.write("{\"sessionId\":\"28a10e\",\"runId\":\"pre-fix\",\"hypothesisId\":");
-      writer.write(agentJson(hypothesisId));
-      writer.write(",\"location\":\"JobService.java:processCreate\",\"message\":");
-      writer.write(agentJson(message));
-      writer.write(",\"data\":");
-      writer.write(data);
-      writer.write(",\"timestamp\":");
-      writer.write(String.valueOf(System.currentTimeMillis()));
-      writer.write("}\n");
-    } catch (Exception ignored) {
-    }
-  }
-  //endregion
-
   @Transactional
   public void processCreate(FwmtActionInstruction rmRequest, Instant messageReceivedTime) throws GatewayException {
     final GatewayCache cache = cacheService.getById(rmRequest.getCaseId());
 
     ProcessorKey key = ProcessorKey.buildKey(rmRequest);
     List<InboundProcessor<FwmtActionInstruction>> processors = createProcessorMap.get(key);
-    List<InboundProcessor<FwmtActionInstruction>> rawProcessors = processors == null ? Collections.emptyList() : processors;
 
     if (processors == null)
       processors = Collections.emptyList();
     else
       processors = createProcessorMap.get(key).stream().filter(p -> p.isValid(rmRequest, cache)).collect(Collectors.toList());
-
-    //region agent log
-    agentLog("H2,H3", "Create processor routing decision",
-        "{\"caseId\":" + agentJson(rmRequest.getCaseId())
-            + ",\"actionInstruction\":" + agentJson(rmRequest.getActionInstruction())
-            + ",\"surveyName\":" + agentJson(rmRequest.getSurveyName())
-            + ",\"addressType\":" + agentJson(rmRequest.getAddressType())
-            + ",\"addressLevel\":" + agentJson(rmRequest.getAddressLevel())
-            + ",\"caseRef\":" + agentJson(rmRequest.getCaseRef())
-            + ",\"uprn\":" + agentJson(rmRequest.getUprn())
-            + ",\"estabUprn\":" + agentJson(rmRequest.getEstabUprn())
-            + ",\"handDeliver\":" + agentJson(rmRequest.isHandDeliver())
-            + ",\"key\":" + agentJson(key)
-            + ",\"cache\":" + agentJson(cache)
-            + ",\"rawProcessors\":" + agentJson(rawProcessors.stream().map(p -> p.getClass().getSimpleName()).collect(Collectors.joining(",")))
-            + ",\"validProcessors\":" + agentJson(processors.stream().map(p -> p.getClass().getSimpleName()).collect(Collectors.joining(",")))
-            + ",\"validProcessorCount\":" + processors.size()
-            + "}");
-    //endregion
 
     if (processors.size() == 0) {
       // TODO throw routing error & exit;

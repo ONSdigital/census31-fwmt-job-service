@@ -93,7 +93,7 @@ public class HhUpdateEnglandAndWales implements InboundProcessor<FwmtActionInstr
     eventManager
         .triggerEvent(String.valueOf(rmRequest.getCaseId()), COMET_UPDATE_ACK,
             "Case Ref", rmRequest.getCaseRef(),
-            "Response Code", response.getStatusCode().name(),
+            "Response Code", response.getStatusCode().toString(),
             "Survey Type", tmRequest.getSurveyType().toString());
 
     if (rmRequest.isBlankFormReturned() || rmRequest.isUndeliveredAsAddress()) {
@@ -113,7 +113,7 @@ public class HhUpdateEnglandAndWales implements InboundProcessor<FwmtActionInstr
       eventManager
           .triggerEvent(String.valueOf(rmRequest.getCaseId()), COMET_DELETE_ACK,
               "Case Ref", rmRequest.getCaseRef(),
-              "Response Code", response.getStatusCode().name(),
+              "Response Code", response.getStatusCode().toString(),
               "Survey Type", tmRequest.getSurveyType().toString(),
               "HH Update England And Wales", rmRequest.toString());
     }

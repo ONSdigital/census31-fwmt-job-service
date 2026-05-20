@@ -1,44 +1,15 @@
-import com.github.spotbugs.SpotBugsTask
-
-buildscript {
-    ext {
-        springVersion = '5.2.3.RELEASE'
-        springBootVersion = '2.2.4.RELEASE'
-    }
-
-    repositories {
-        mavenCentral()
-        jcenter()
-    }
-
-    dependencies {
-        classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
-        classpath 'org.jfrog.buildinfo:build-info-extractor-gradle:latest.release'
-        classpath 'org.ajoberstar:gradle-git:1.4.2'
-    }
-}
+import com.github.spotbugs.snom.SpotBugsTask
 
 plugins {
-    // Language
     id 'java'
     id 'application'
-
-    // IDEs
     id 'idea'
     id 'eclipse'
-
-    // Frameworks
-    id 'org.springframework.boot' version "${springBootVersion}"
-    id 'io.spring.dependency-management' version '1.0.9.RELEASE'
-
-    // Build Tools
+    id 'org.springframework.boot' version '4.0.6'
+    id 'io.spring.dependency-management' version '1.1.7'
     id 'jacoco'
-    id 'com.github.spotbugs' version '3.0.0'
+    id 'com.github.spotbugs' version '6.0.26'
     id 'com.github.psxpaul.execfork' version '0.1.8'
-    id 'com.jfrog.artifactory' version '4.13.0'
-    // id 'org.ajoberstar.grgit' — removed for census31 seed (no .git)
-    // Package Management
-    id 'maven'
     id 'maven-publish'
 }
 
@@ -46,132 +17,70 @@ description = 'census31-fwmt-job-service'
 group = 'uk.gov.ons.census.fwmt'
 version = rootProject.file('version.txt').text.trim()
 
-mainClassName = 'uk.gov.ons.census.fwmt.jobservice.Application'
+application {
+    mainClass = 'uk.gov.ons.census.fwmt.jobservice.Application'
+}
 
-sourceCompatibility = 11
-targetCompatibility = 11
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
 
 repositories {
     mavenLocal()
-
-    maven {
-        url 'https://ons.jfrog.io/ons/libs-releases-virtual'
-        credentials {
-            username "${artifactory_user}"
-            password "${artifactory_password}"
-        }
-    }
-    maven {
-        url 'https://ons.jfrog.io/ons/libs-snapshots-virtual'
-        credentials {
-            username "${artifactory_user}"
-            password "${artifactory_password}"
-        }
-    }
-
     mavenCentral()
 }
 
 configurations {
-    integrationTestCompile.extendsFrom testCompile
-    integrationTestRuntime.extendsFrom testRuntime
+    integrationTestImplementation.extendsFrom testImplementation
+    integrationTestRuntimeOnly.extendsFrom testRuntimeOnly
     integrationTestAnnotationProcessor.extendsFrom testAnnotationProcessor
 }
 
-dependencyManagement {
-    dependencies {
-        dependency "org.springframework:spring-core:${springVersion}"
-        dependency "org.springframework.boot:spring-boot:${springBootVersion}"
-    }
-}
-
 dependencies {
-    implementation 'com.github.spotbugs:spotbugs-annotations:4.0.1'
-
-    // Custom Libraries
-	// This events library is specifically for this release. Branch of this release for code changes
-    compile('uk.gov.ons.census.fwmt:census31-fwmt-events:27.0.0')
-    compile 'uk.gov.ons.census.fwmt:census31-fwmt-common:27.0.0'
-    compile 'uk.gov.ons.census.ffa:census31-fwmt-storage-utils:27.0.0'
-
-    // Decryption
-    compile 'org.bouncycastle:bcprov-jdk15on:1.61'
-    compile 'org.bouncycastle:bcpg-jdk15on:1.61'
-
-    // General Libraries
-    compile 'com.google.guava:guava:27.0.1-jre'
-    //    compile 'org.apache.commons:commons-lang3'
-
-    // Aspects
-    compile 'org.aspectj:aspectjweaver'
-
-    // Spring Boot
-    compile 'org.springframework.boot:spring-boot-starter'
-    compile 'org.springframework.boot:spring-boot-starter-security'
-    compile 'org.springframework.boot:spring-boot-starter-actuator'
-    compile 'org.springframework.boot:spring-boot-starter-amqp'
-    compile 'org.springframework.boot:spring-boot-starter-web'
-    compile 'org.springframework.boot:spring-boot-starter-web-services'
+    implementation 'com.github.spotbugs:spotbugs-annotations:4.8.6'
+    implementation 'uk.gov.ons.census.fwmt:census31-fwmt-events:27.0.0'
+    implementation 'uk.gov.ons.census.fwmt:census31-fwmt-common:27.0.0'
+    implementation 'uk.gov.ons.census.ffa:census31-fwmt-storage-utils:27.0.0'
+    implementation 'org.bouncycastle:bcprov-jdk18on:1.78.1'
+    implementation 'org.bouncycastle:bcpg-jdk18on:1.78.1'
+    implementation 'com.google.guava:guava:33.3.1-jre'
+    implementation 'org.aspectj:aspectjweaver'
+    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.boot:spring-boot-starter-restclient'
+    implementation 'net.logstash.logback:logstash-logback-encoder:7.4'
+    implementation 'org.springframework.boot:spring-boot-starter-amqp'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-web-services'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-
-    // Spring
-    compile 'org.springframework:spring-jdbc'
-    compile 'org.springframework.retry:spring-retry'
-    compile 'org.springframework:spring-aop'
-    compile 'org.apache.httpcomponents:httpclient'
-
-    // Data Formats
-    compile 'org.apache.commons:commons-csv:1.6'
-    compile 'org.yaml:snakeyaml'
-    compile 'org.json:json:20180813'
-    compile 'com.fasterxml.jackson.core:jackson-databind'
-
-    // Data mapping
-    compile 'ma.glasnost.orika:orika-core:1.5.4'
-
-    // Networking
-    compile('org.apache.httpcomponents:httpclient') {
-        exclude module: 'commons-logging'
-    }
-    compile 'org.jsoup:jsoup:1.11.3'
-    compile 'com.microsoft.azure:adal4j:1.6.0'
+    implementation 'org.springframework.retry:spring-retry:2.0.12'
+    implementation 'org.apache.httpcomponents.client5:httpclient5'
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
+    implementation 'com.microsoft.azure:adal4j:1.6.7'
     runtimeOnly 'org.postgresql:postgresql'
-
-    // Data Store Setup
     implementation 'org.liquibase:liquibase-core'
-
-    // Documentation
-    compile 'io.springfox:springfox-swagger2:2.9.2'
-    compile 'io.springfox:springfox-swagger-ui:2.9.2'
-
-    // Meta
-    compile 'org.projectlombok:lombok'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.3'
+    implementation 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
-
-    // Testing Framework
     testImplementation 'org.junit.jupiter:junit-jupiter-api'
-    testCompile 'org.junit.jupiter:junit-jupiter-params'
-    testCompile 'org.junit.jupiter:junit-jupiter-engine'
-
-    // Spring Boot
-    testCompile('org.springframework.boot:spring-boot-starter-test') {
-        exclude module: 'android-json'
-        exclude module: 'junit'
-        exclude module: 'junit-vintage-engine'
+    testImplementation 'org.junit.jupiter:junit-jupiter-params'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+        exclude group: 'com.vaadin.external.google', module: 'android-json'
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
-
-    // Mocking Objects
-    testCompile 'org.mockito:mockito-core'
-    testCompile 'org.mockito:mockito-junit-jupiter'
-    testImplementation 'org.mockito:mockito-inline:2.13.0'
-
+    testImplementation 'org.mockito:mockito-core'
+    testImplementation 'org.mockito:mockito-junit-jupiter'
 }
 
 test {
     useJUnitPlatform()
-
     testLogging {
-        exceptionFormat = 'Full'
+        exceptionFormat = 'full'
         showStandardStreams = true
     }
 }
@@ -182,20 +91,6 @@ sourceSets {
         resources.srcDir file('src/integration-test/resources')
         compileClasspath += sourceSets.main.output
         runtimeClasspath += sourceSets.main.output
-    }
-}
-
-artifactory {
-    contextUrl = 'https://ons.jfrog.io/ons/'
-    publish {
-        repository {
-            repoKey = 'libs-releases-local'
-            username = "${artifactory_user}"
-            password = "${artifactory_password}"
-        }
-        defaults {
-            publishBuildInfo = false
-        }
     }
 }
 
@@ -215,63 +110,44 @@ publishing {
             groupId = group
             artifactId = 'census31-fwmt-job-service'
             version = version
-
             from components.java
         }
     }
 }
 
-artifactoryPublish {
-    publications('maven')
-}
-
-task integrationTest(type: Test) {
-    jacoco {
-        destinationFile = file("$buildDir/jacoco/jacocoTest.exec")
-        classDumpDir = file("$buildDir/jacoco/classpathdumps")
-    }
+tasks.register('integrationTest', Test) {
+    description = 'Runs integration tests.'
+    group = 'verification'
     testClassesDirs = sourceSets.integrationTest.output.classesDirs
     classpath = sourceSets.integrationTest.runtimeClasspath
-    outputs.upToDateWhen { false }
+    shouldRunAfter test
+    useJUnitPlatform()
 }
+
 check.dependsOn integrationTest
 integrationTest.mustRunAfter test
 
 jacoco {
-    toolVersion = "0.8.5"
-    reportsDir = file("$buildDir/customJacocoReportDir")
+    toolVersion = '0.8.11'
 }
 
 jacocoTestReport {
     reports {
-        xml.enabled = true
-        html.enabled = false
+        xml.required = true
+        html.required = false
     }
-    //    afterEvaluate {
-    //        classDirectories.from = files(classDirectories.files.collect {
-    //            fileTree(dir: it, exclude: [
-    //                    '**/legacy_ingest/*',
-    //                    '**/dto/*',
-    //                    '**/data/tm/*',
-    //                    '**/config/*',
-    //                    '**/CSVParseFinalResult.java',
-    //                    '**/ApplicationConfig.java',
-    //                    '**/WebConfig.java'
-    //            ])
-    //        })
-    //    }
 }
-test.finalizedBy(project.tasks.jacocoTestReport)
-
+test.finalizedBy jacocoTestReport
 check.dependsOn jacocoTestReport
 
 spotbugs {
-    toolVersion = '3.1.12'
+    toolVersion = '4.8.6'
+    ignoreFailures = true
 }
 
-tasks.withType(SpotBugsTask) {
+tasks.withType(SpotBugsTask).configureEach {
     reports {
-        xml.enabled = false
-        html.enabled = true
+        xml.required = false
+        html.required = true
     }
 }

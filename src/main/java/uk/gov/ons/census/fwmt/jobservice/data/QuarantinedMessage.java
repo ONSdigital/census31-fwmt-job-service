@@ -5,11 +5,12 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.Type;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstructionType;
 import uk.gov.ons.census.fwmt.common.rm.dto.FwmtCommonInstruction;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.time.OffsetDateTime;
 import java.util.Map;
 import java.util.UUID;
@@ -43,7 +44,7 @@ public class QuarantinedMessage implements FwmtCommonInstruction {
   private OffsetDateTime skippedTimestamp;
 
   @Lob
-  @Type(type = "org.hibernate.type.BinaryType")
+  @JdbcTypeCode(SqlTypes.VARBINARY)
   @Column
   private byte[] messagePayload;
 
