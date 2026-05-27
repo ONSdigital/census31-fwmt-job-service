@@ -10,7 +10,7 @@ import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
 import uk.gov.ons.census.fwmt.common.rm.dto.FwmtCancelActionInstruction;
 import uk.gov.ons.census.fwmt.events.component.GatewayEventManager;
 import uk.gov.ons.census.fwmt.jobservice.data.GatewayCache;
-import uk.gov.ons.census.fwmt.jobservice.rabbit.RmFieldPublisher;
+import uk.gov.ons.census.fwmt.jobservice.messaging.RmFieldMessagePublisher;
 import uk.gov.ons.census.fwmt.jobservice.service.processor.InboundProcessor;
 import uk.gov.ons.census.fwmt.jobservice.service.processor.ProcessorKey;
 import uk.gov.ons.census.fwmt.jobservice.service.routing.ignore.CeUpdateIgnoreProcessor;
@@ -41,7 +41,7 @@ public class JobService {
   private Transitioner transitioner;
 
   @Autowired
-  private RmFieldPublisher rmFieldPublisher;
+  private RmFieldMessagePublisher rmFieldPublisher;
 
   @Autowired
   private CeUpdateIgnoreProcessor ceUpdateIgnoreProcessor;

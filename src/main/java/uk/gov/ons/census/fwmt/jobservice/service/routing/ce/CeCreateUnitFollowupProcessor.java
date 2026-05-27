@@ -12,7 +12,7 @@ import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
 import uk.gov.ons.census.fwmt.events.component.GatewayEventManager;
 import uk.gov.ons.census.fwmt.jobservice.data.GatewayCache;
 import uk.gov.ons.census.fwmt.jobservice.http.comet.CometRestClient;
-import uk.gov.ons.census.fwmt.jobservice.rabbit.RmFieldPublisher;
+import uk.gov.ons.census.fwmt.jobservice.messaging.RmFieldMessagePublisher;
 import uk.gov.ons.census.fwmt.jobservice.service.GatewayCacheService;
 import uk.gov.ons.census.fwmt.jobservice.service.converter.ce.CeCreateConverter;
 import uk.gov.ons.census.fwmt.jobservice.service.processor.InboundProcessor;
@@ -41,7 +41,7 @@ public class CeCreateUnitFollowupProcessor implements InboundProcessor<FwmtActio
   private GatewayCacheService cacheService;
 
   @Autowired
-  private RmFieldPublisher rmFieldPublisher;
+  private RmFieldMessagePublisher rmFieldPublisher;
 
   private static ProcessorKey key = ProcessorKey.builder()
       .actionInstruction(ActionInstructionType.CREATE.toString())
