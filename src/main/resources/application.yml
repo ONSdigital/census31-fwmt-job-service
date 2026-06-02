@@ -113,6 +113,10 @@ app:
     provider: rabbit
     destinations:
       rmField: "RM.Field"
+      gwField: "GW.Field"
+    pubsub:
+      rm-field-subscription: job-service-RM-Field
+      gw-field-subscription: job-service-GW-Field
   rabbitmq:
     gw:
       username: "guest"
@@ -155,3 +159,19 @@ app:
           input: "RM.Field"
 #          dlq: "RM.FieldDLQ"
 #          exchange: "adapter-outbound-exchange"
+
+---
+spring:
+  config:
+    activate:
+      on-property:
+        name: app.messaging.provider
+        having-value: pubsub
+  cloud:
+    gcp:
+      project-id: ${FWMT_PUBSUB_PROJECT:fwmt-local}
+      credentials:
+        enabled: false
+      pubsub:
+        enabled: true
+        emulator-host: ${PUBSUB_EMULATOR_HOST:localhost:8085}

@@ -6,7 +6,9 @@ import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.messaging.handler.annotation.Header;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
+import uk.gov.ons.census.fwmt.common.messaging.MessagingProperties;
 import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
 import uk.gov.ons.census.fwmt.common.rm.dto.FwmtCancelActionInstruction;
 
@@ -15,6 +17,7 @@ import java.time.Instant;
 @RequiredArgsConstructor
 @Slf4j
 @Component
+@ConditionalOnProperty(name = MessagingProperties.PROVIDER, havingValue = MessagingProperties.PROVIDER_RABBIT, matchIfMissing = true)
 @RabbitListener(queues = "${app.rabbitmq.gw.queues.input}", containerFactory = "gwContainerFactory", concurrency = "${app.rabbitmq.gw.concurrentConsumers}")
 public class GWReceiver {
 

@@ -1,30 +1,43 @@
 package uk.gov.ons.census.fwmt.jobservice.messaging.pubsub;
 
+import com.google.cloud.spring.pubsub.core.PubSubTemplate;
+import com.google.pubsub.v1.PubsubMessage;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
+import uk.gov.ons.census.fwmt.common.messaging.FieldWorkerInstructionJsonCodec;
 import uk.gov.ons.census.fwmt.common.messaging.MessagingProperties;
 import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
 import uk.gov.ons.census.fwmt.common.rm.dto.FwmtCancelActionInstruction;
 import uk.gov.ons.census.fwmt.jobservice.messaging.RmFieldMessagePublisher;
 
-/**
- * Pub/Sub adapter placeholder — wired in Stage 2 when RM.Field lane migrates.
- */
 @Service
 @Slf4j
+@RequiredArgsConstructor
 @ConditionalOnProperty(name = MessagingProperties.PROVIDER, havingValue = MessagingProperties.PROVIDER_PUBSUB)
 public class PubSubRmFieldMessagePublisher implements RmFieldMessagePublisher {
 
+  private final PubSubTemplate pubSubTemplate;
+  private final FieldWorkerInstructionJsonCodec codec;
+
+  @Value("${app.messaging.destinations.rmField:RM.Field}")
+  private String rmFieldTopic;
+
   @Override
   public void publish(FwmtActionInstruction actionInstruction) {
-    throw new UnsupportedOperationException(
-        "Pub/Sub RM.Field publish is not implemented (Stage 2). Set app.messaging.provider=rabbit.");
+    publishPayload(actionInstruction);
   }
 
   @Override
   public void publish(FwmtCancelActionInstruction cancelActionInstruction) {
-    throw new UnsupportedOperationException(
-        "Pub/Sub RM.Field publish is not implemented (Stage 2). Set app.messaging.provider=rabbit.");
+    publishPayload(cancelActionInstruction);
+  }
+
+  private void publishPayload(Object payload) {
+    PubsubMessage message = codec.toPubsubMessage(payload, true);
+    log.debug("Publishing field worker instruction to topic {}", rmFieldTopic);
+    pubSubTemplate.publish(rmFieldTopic, message);
   }
 }
