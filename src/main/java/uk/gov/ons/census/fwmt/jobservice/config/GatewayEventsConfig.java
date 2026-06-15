@@ -9,7 +9,6 @@ import uk.gov.ons.census.fwmt.events.component.GatewayEventManager;
 import uk.gov.ons.census.fwmt.events.producer.GatewayEventProducer;
 import uk.gov.ons.census.fwmt.events.producer.GatewayLoggingEventProducer;
 import uk.gov.ons.census.fwmt.events.producer.PubSubGatewayEventProducer;
-import uk.gov.ons.census.fwmt.events.producer.RabbitMQGatewayEventProducer;
 import uk.gov.ons.census.fwmt.jobservice.Application;
 
 import java.util.Arrays;
@@ -60,18 +59,14 @@ public class GatewayEventsConfig {
   @Bean
   public GatewayEventManager gatewayEventManager(
       GatewayLoggingEventProducer gatewayLoggingEventProducer,
-      ObjectProvider<PubSubGatewayEventProducer> pubSubGatewayEventProducer,
-      ObjectProvider<RabbitMQGatewayEventProducer> rabbitGatewayEventProducer) {
+      ObjectProvider<PubSubGatewayEventProducer> pubSubGatewayEventProducer) {
 
     final GatewayEventManager gatewayEventManager;
     if (testing) {
       log.warn("\n\n \t IMPORTANT - Test Mode: ON        \n \t\t Service is initiated in test mode which, this should not occur in production \n\n");
       GatewayEventProducer messagingProducer = pubSubGatewayEventProducer.getIfAvailable();
       if (messagingProducer == null) {
-        messagingProducer = rabbitGatewayEventProducer.getIfAvailable();
-      }
-      if (messagingProducer == null) {
-        throw new IllegalStateException("No GatewayEventProducer bean available for acceptance testing");
+        throw new IllegalStateException("No PubSubGatewayEventProducer available for acceptance testing");
       }
       gatewayEventManager = new GatewayEventManager(Arrays.asList(gatewayLoggingEventProducer, messagingProducer));
     } else {

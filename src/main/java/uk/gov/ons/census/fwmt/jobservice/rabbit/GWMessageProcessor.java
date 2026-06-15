@@ -3,7 +3,6 @@ package uk.gov.ons.census.fwmt.jobservice.rabbit;
 import com.google.pubsub.v1.PubsubMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.amqp.core.Message;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstructionType;
@@ -30,16 +29,7 @@ public class GWMessageProcessor {
   private final GatewayEventManager gatewayEventManager;
   private final MessageExceptionHandler messageExceptionHandler;
 
-  public void processCreateInstruction(FwmtActionInstruction instruction, Instant messageTime, Message message) {
-    processCreateInstruction(instruction, messageTime, message, null);
-  }
-
   public void processCreateInstruction(FwmtActionInstruction instruction, Instant messageTime, PubsubMessage message) {
-    processCreateInstruction(instruction, messageTime, null, message);
-  }
-
-  private void processCreateInstruction(
-      FwmtActionInstruction instruction, Instant messageTime, Message amqpMessage, PubsubMessage pubsubMessage) {
     try {
       switch (instruction.getActionInstruction()) {
       case CREATE: {
@@ -73,25 +63,15 @@ public class GWMessageProcessor {
         log.error("ActionInstruction not supported {} ", instruction.getActionInstruction());
       }
     } catch (RestClientException e) {
-      handleTransientException(instruction, amqpMessage, pubsubMessage, e);
+      handleTransientException(instruction, message, e);
     } catch (Exception e) {
-      handlePermException(instruction, amqpMessage, pubsubMessage, e);
+      handlePermException(instruction, message, e);
     }
   }
 
-  public void processCancelInstruction(FwmtCancelActionInstruction instruction, Instant messageTime, Message message) {
-    processCancelInstruction(instruction, messageTime, message, null);
-  }
-
-  public void processCancelInstruction(FwmtCancelActionInstruction instruction, Instant messageTime, PubsubMessage message) {
-    processCancelInstruction(instruction, messageTime, null, message);
-  }
-
-  private void processCancelInstruction(
-      FwmtCancelActionInstruction instruction, Instant messageTime, Message amqpMessage, PubsubMessage pubsubMessage) {
-
+  public void processCancelInstruction(
+      FwmtCancelActionInstruction instruction, Instant messageTime, PubsubMessage message) {
     try {
-
       if (instruction.getActionInstruction() == ActionInstructionType.CANCEL) {
         gatewayEventManager
             .triggerEvent(instruction.getCaseId(), RM_CANCEL_REQUEST_RECEIVED,
@@ -104,30 +84,20 @@ public class GWMessageProcessor {
         throw new RuntimeException("Could not route Request");
       }
     } catch (RestClientException e) {
-      handleTransientException(instruction, amqpMessage, pubsubMessage, e);
+      handleTransientException(instruction, message, e);
     } catch (Exception e) {
-      handlePermException(instruction, amqpMessage, pubsubMessage, e);
+      handlePermException(instruction, message, e);
     }
   }
 
-  private void handlePermException(
-      FwmtCommonInstruction instruction, Message amqpMessage, PubsubMessage pubsubMessage, Exception e) {
+  private void handlePermException(FwmtCommonInstruction instruction, PubsubMessage message, Exception e) {
     log.error("- Error sending message - HARD Failure- {}  error - {} ", instruction, e.getMessage(), e);
-    if (pubsubMessage != null) {
-      messageExceptionHandler.handlePermMessage(pubsubMessage, instruction);
-    } else {
-      messageExceptionHandler.handlePermMessage(amqpMessage, instruction);
-    }
+    messageExceptionHandler.handlePermMessage(message, instruction);
   }
 
   private void handleTransientException(
-      FwmtCommonInstruction instruction, Message amqpMessage, PubsubMessage pubsubMessage, RestClientException e) {
+      FwmtCommonInstruction instruction, PubsubMessage message, RestClientException e) {
     log.error(" Error sending message - SOFT Failure {}  error - {} ", instruction, e.getMessage(), e);
-    if (pubsubMessage != null) {
-      messageExceptionHandler.handleTransientMessage(pubsubMessage, instruction);
-    } else {
-      messageExceptionHandler.handleTransientMessage(amqpMessage, instruction);
-    }
+    messageExceptionHandler.handleTransientMessage(message, instruction);
   }
-
 }

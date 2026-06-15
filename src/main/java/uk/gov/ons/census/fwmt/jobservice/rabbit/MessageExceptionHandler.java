@@ -6,15 +6,10 @@ import com.google.cloud.spring.pubsub.core.PubSubTemplate;
 import com.google.pubsub.v1.PubsubMessage;
 import com.google.protobuf.ByteString;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.amqp.core.Message;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.ons.census.fwmt.common.rm.dto.FwmtCommonInstruction;
-import uk.gov.ons.census.fwmt.common.messaging.MessagingProperties;
 import uk.gov.ons.census.fwmt.jobservice.data.QuarantinedMessage;
 import uk.gov.ons.census.fwmt.jobservice.repository.QuarantinedMessageRepository;
 
@@ -24,31 +19,19 @@ import java.util.Map;
 @Slf4j
 @Component
 public class MessageExceptionHandler {
-  @Autowired
-  @Qualifier("GW_EVENT_RT")
-  private RabbitTemplate gatewayRabbitTemplate;
 
-  @Autowired(required = false)
-  private ObjectProvider<PubSubTemplate> pubSubTemplate;
+  @Autowired
+  private PubSubTemplate pubSubTemplate;
 
   @Autowired
   private QuarantinedMessageRepository quarantinedMessageRepository;
 
   private final ObjectMapper objectMapper = new ObjectMapper();
 
-  @Value("${app.messaging.provider:rabbit}")
-  private String messagingProvider;
-
-  @Value("${app.rabbitmq.gw.maxRetryCount}")
+  @Value("${app.messaging.maxRetryCount:5}")
   private int maxRetryCount;
-  @Value("${app.rabbitmq.gw.exchanges.error}")
-  private String errorExchange;
-  @Value("${app.rabbitmq.gw.routingkey.perm}")
-  private String permanentRoutingKey;
-  @Value("${app.rabbitmq.gw.routingkey.trans}")
-  private String transientRoutingKey;
-  @Value("${app.rabbitmq.gw.queues.input}")
 
+  @Value("${app.messaging.destinations.gwField:GW.Field}")
   private String gwFieldQueue;
 
   @Value("${app.messaging.destinations.gwTransientError:GW.Transient.ErrorQ}")
@@ -60,70 +43,11 @@ public class MessageExceptionHandler {
   @PostConstruct
   public void transientExceptionHandler() {
     log.info("TransientExceptionHandler maxRetryCount :{}", maxRetryCount);
-    log.info("TransientExceptionHandler errorExchange :{}", errorExchange);
-    log.info("TransientExceptionHandler permanent routing key :{}", permanentRoutingKey);
-    log.info("TransientExceptionHandler transient routing key :{}", transientRoutingKey);
-  }
-
-  public void handleTransientMessage(Message message, FwmtCommonInstruction instruction) {
-    if (message == null) {
-      log.warn("Pub/Sub path: cannot republish transient error to GW error exchange (no AMQP message)");
-      return;
-    }
-    Integer retryCount = message.getMessageProperties().getHeader("retryCount");
-    if (retryCount == null) {
-      retryCount = 0;
-    }
-    if (retryCount < maxRetryCount) {
-      message.getMessageProperties().setHeader("retryCount", ++retryCount);
-      log.warn("Retry number {}", retryCount);
-      gatewayRabbitTemplate.convertAndSend(errorExchange, transientRoutingKey, message);
-    } else {
-      log.error("We've reached our retry limit {}", maxRetryCount);
-      handlePermMessage(message, instruction);
-    }
-  }
-
-  public void handlePermMessage(Message message, FwmtCommonInstruction instruction) {
-    if (message != null) {
-      gatewayRabbitTemplate.convertAndSend(errorExchange, permanentRoutingKey, message);
-    } else {
-      log.warn("Pub/Sub path: cannot republish permanent error to GW error exchange (no AMQP message)");
-    }
-    final QuarantinedMessage quarantinedMessage = QuarantinedMessage.builder()
-        .messagePayload(messagePayload(message, instruction))
-        .caseId(instruction.getCaseId())
-        .routingKey("")
-        .actionInstruction(instruction.getActionInstruction())
-        .addressLevel(instruction.getAddressLevel())
-        .addressType(instruction.getAddressType())
-        .nc(instruction.isNc())
-        .surveyName(instruction.getSurveyName())
-        .queue(gwFieldQueue)
-        .headers(message != null ? message.getMessageProperties().getHeaders() : Map.of())
-        .build();
-
-    quarantinedMessageRepository.save(quarantinedMessage);
-    log.info("Stored perm issue in DB for later processing {}", maxRetryCount);
-
-  }
-
-  private byte[] messagePayload(Message message, FwmtCommonInstruction instruction) {
-    if (message != null) {
-      return message.getBody();
-    }
-    try {
-      return objectMapper.writeValueAsBytes(instruction);
-    } catch (JsonProcessingException e) {
-      throw new IllegalStateException("Failed to serialise instruction for quarantine", e);
-    }
+    log.info("TransientExceptionHandler gwTransientErrorTopic :{}", gwTransientErrorTopic);
+    log.info("TransientExceptionHandler gwPermanentErrorTopic :{}", gwPermanentErrorTopic);
   }
 
   public void handleTransientMessage(PubsubMessage message, FwmtCommonInstruction instruction) {
-    if (!MessagingProperties.PROVIDER_PUBSUB.equalsIgnoreCase(messagingProvider)) {
-      log.warn("Ignoring Pub/Sub transient handler call because provider={}", messagingProvider);
-      return;
-    }
     Integer retryCount = parseRetryCount(message);
     if (retryCount < maxRetryCount) {
       int nextRetryCount = retryCount + 1;
@@ -136,10 +60,6 @@ public class MessageExceptionHandler {
   }
 
   public void handlePermMessage(PubsubMessage message, FwmtCommonInstruction instruction) {
-    if (!MessagingProperties.PROVIDER_PUBSUB.equalsIgnoreCase(messagingProvider)) {
-      log.warn("Ignoring Pub/Sub permanent handler call because provider={}", messagingProvider);
-      return;
-    }
     publishPubSub(gwPermanentErrorTopic, message, Map.of());
     log.warn("Republished permanent error to Pub/Sub topic={}", gwPermanentErrorTopic);
 
@@ -164,11 +84,6 @@ public class MessageExceptionHandler {
   }
 
   private void publishPubSub(String topic, PubsubMessage original, Map<String, String> extraAttributes) {
-    PubSubTemplate template = pubSubTemplate == null ? null : pubSubTemplate.getIfAvailable();
-    if (template == null) {
-      throw new IllegalStateException("Pub/Sub is configured but PubSubTemplate is not available");
-    }
-
     PubsubMessage.Builder builder = PubsubMessage.newBuilder()
         .setData(original.getData() == null ? ByteString.EMPTY : original.getData())
         .putAllAttributes(original.getAttributesMap());
@@ -177,7 +92,7 @@ public class MessageExceptionHandler {
       builder.putAllAttributes(extraAttributes);
     }
 
-    template.publish(topic, builder.build());
+    pubSubTemplate.publish(topic, builder.build());
   }
 
   private Integer parseRetryCount(PubsubMessage message) {

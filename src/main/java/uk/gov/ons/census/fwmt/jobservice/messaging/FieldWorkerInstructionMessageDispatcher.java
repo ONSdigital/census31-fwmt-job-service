@@ -2,7 +2,6 @@ package uk.gov.ons.census.fwmt.jobservice.messaging;
 
 import com.google.pubsub.v1.PubsubMessage;
 import lombok.RequiredArgsConstructor;
-import org.springframework.amqp.core.Message;
 import org.springframework.stereotype.Component;
 import uk.gov.ons.census.fwmt.common.messaging.FieldWorkerInstructionJsonCodec;
 import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
@@ -24,7 +23,6 @@ public class FieldWorkerInstructionMessageDispatcher {
         FieldWorkerInstructionJsonCodec.TIMESTAMP_HEADER,
         String.valueOf(System.currentTimeMillis()));
     Instant receivedMessageTime = Instant.ofEpochMilli(Long.parseLong(timestamp));
-    Message amqpMessage = null;
 
     if (payload instanceof FwmtActionInstruction instruction) {
       gwMessageProcessor.processCreateInstruction(instruction, receivedMessageTime, pubsubMessage);

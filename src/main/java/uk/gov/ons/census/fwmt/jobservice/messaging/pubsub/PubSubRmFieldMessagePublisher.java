@@ -5,10 +5,8 @@ import com.google.pubsub.v1.PubsubMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.ons.census.fwmt.common.messaging.FieldWorkerInstructionJsonCodec;
-import uk.gov.ons.census.fwmt.common.messaging.MessagingProperties;
 import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
 import uk.gov.ons.census.fwmt.common.rm.dto.FwmtCancelActionInstruction;
 import uk.gov.ons.census.fwmt.jobservice.messaging.RmFieldMessagePublisher;
@@ -16,7 +14,6 @@ import uk.gov.ons.census.fwmt.jobservice.messaging.RmFieldMessagePublisher;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-@ConditionalOnProperty(name = MessagingProperties.PROVIDER, havingValue = MessagingProperties.PROVIDER_PUBSUB)
 public class PubSubRmFieldMessagePublisher implements RmFieldMessagePublisher {
 
   private final PubSubTemplate pubSubTemplate;
