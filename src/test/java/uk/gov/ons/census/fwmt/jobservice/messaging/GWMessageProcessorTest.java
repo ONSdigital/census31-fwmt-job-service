@@ -1,4 +1,4 @@
-package uk.gov.ons.census.fwmt.jobservice.rabbit;
+package uk.gov.ons.census.fwmt.jobservice.messaging;
 
 import com.google.protobuf.ByteString;
 import com.google.pubsub.v1.PubsubMessage;

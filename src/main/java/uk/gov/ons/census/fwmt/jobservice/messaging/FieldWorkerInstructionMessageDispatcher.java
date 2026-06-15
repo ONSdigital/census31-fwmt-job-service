@@ -6,8 +6,6 @@ import org.springframework.stereotype.Component;
 import uk.gov.ons.census.fwmt.common.messaging.FieldWorkerInstructionJsonCodec;
 import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
 import uk.gov.ons.census.fwmt.common.rm.dto.FwmtCancelActionInstruction;
-import uk.gov.ons.census.fwmt.jobservice.rabbit.GWMessageProcessor;
-
 import java.time.Instant;
 
 @Component

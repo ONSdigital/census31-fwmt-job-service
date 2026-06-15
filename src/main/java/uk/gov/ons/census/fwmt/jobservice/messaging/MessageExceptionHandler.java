@@ -1,4 +1,4 @@
-package uk.gov.ons.census.fwmt.jobservice.rabbit;
+package uk.gov.ons.census.fwmt.jobservice.messaging;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
