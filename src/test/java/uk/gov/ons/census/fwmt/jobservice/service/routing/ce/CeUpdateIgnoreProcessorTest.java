@@ -35,7 +35,7 @@ public class CeUpdateIgnoreProcessorTest {
   public void shouldLogCCeUpdateAndIgnoreIt() {
     final FwmtActionInstruction instruction = CeRequestBuilder.ceUpdateInstruction();
     ceUpdateIgnoreProcessor.process(instruction);
-    verify(eventManager).triggerEvent(any(), spiedEvent.capture(), any());
+    verify(eventManager).triggerEvent(any(), spiedEvent.capture(), any(String[].class));
     String checkEvent = spiedEvent.getValue();
     Assertions.assertEquals(IGNORED_UPDATE, checkEvent);
   }

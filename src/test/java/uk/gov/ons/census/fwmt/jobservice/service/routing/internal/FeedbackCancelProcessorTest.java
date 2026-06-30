@@ -67,7 +67,7 @@ public class FeedbackCancelProcessorTest {
     verify(cacheService).save(spiedCache.capture());
     String lastActionInstruction = spiedCache.getValue().lastActionInstruction;
     Assertions.assertEquals(instruction.getActionInstruction().toString(), lastActionInstruction);
-    verify(eventManager, atLeast(2)).triggerEvent(any(), spiedEvent.capture(), any());
+    verify(eventManager, atLeast(2)).triggerEvent(any(), spiedEvent.capture(), any(String[].class));
     String checkEvent = spiedEvent.getValue();
     Assertions.assertEquals(COMET_CANCEL_ACK, checkEvent);
   }
@@ -84,7 +84,7 @@ public class FeedbackCancelProcessorTest {
     verify(cacheService).save(spiedCache.capture());
     String lastActionInstruction = spiedCache.getValue().lastActionInstruction;
     Assertions.assertEquals(instruction.getActionInstruction().toString(), lastActionInstruction);
-    verify(eventManager, atLeast(2)).triggerEvent(any(), spiedEvent.capture(), any());
+    verify(eventManager, atLeast(2)).triggerEvent(any(), spiedEvent.capture(), any(String[].class));
     String checkEvent = spiedEvent.getValue();
     Assertions.assertEquals(CANCEL_ON_A_CANCEL, checkEvent);
   }

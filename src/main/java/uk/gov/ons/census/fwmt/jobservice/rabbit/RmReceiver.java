@@ -15,7 +15,7 @@ import java.time.Instant;
 @RequiredArgsConstructor
 @Slf4j
 @Component
-@RabbitListener(queues = "${app.rabbitmq.rm.queues.rm.input}", containerFactory = "rmContainerFactory", concurrency = "${app.rabbitmq.rm.concurrentConsumers}")
+@RabbitListener(id = "rmListener", queues = "${app.rabbitmq.rm.queues.rm.input}", containerFactory = "rmContainerFactory", concurrency = "${app.rabbitmq.rm.concurrentConsumers}")
 public class RmReceiver {
 
   private final GWMessageProcessor gwMessageProcessor;

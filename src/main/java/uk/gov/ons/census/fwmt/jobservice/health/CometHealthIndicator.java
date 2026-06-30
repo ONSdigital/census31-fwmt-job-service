@@ -1,11 +1,11 @@
 package uk.gov.ons.census.fwmt.jobservice.health;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.actuate.health.AbstractHealthIndicator;
-import org.springframework.boot.actuate.health.Health;
-import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.boot.health.contributor.AbstractHealthIndicator;
+import org.springframework.boot.health.contributor.Health;
+import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.ons.census.fwmt.events.component.GatewayEventManager;
@@ -32,7 +32,7 @@ public class CometHealthIndicator extends AbstractHealthIndicator {
 
   @Override protected void doHealthCheck(Health.Builder builder) {
     try {
-      HttpStatus responseCode = this.restTemplate.exchange(swaggerUrl, HttpMethod.GET, null, Void.class).getStatusCode();
+      HttpStatusCode responseCode = this.restTemplate.exchange(swaggerUrl, HttpMethod.GET, null, Void.class).getStatusCode();
 
       if (responseCode.is2xxSuccessful()) {
         builder.up().withDetail(responseCode.toString(), String.class).build();

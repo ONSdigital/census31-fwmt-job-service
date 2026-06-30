@@ -91,7 +91,7 @@ public class HhCreateEnglandAndWales implements InboundProcessor<FwmtActionInstr
     eventManager
         .triggerEvent(String.valueOf(rmRequest.getCaseId()), COMET_CREATE_ACK,
             "Case Ref", rmRequest.getCaseRef(),
-            "Response Code", response.getStatusCode().name(),
+            "Response Code", response.getStatusCode().toString(),
             "Survey Type", tmRequest.getSurveyType().toString(),
             "HH Create England And Wales", tmRequest.toString());
   }

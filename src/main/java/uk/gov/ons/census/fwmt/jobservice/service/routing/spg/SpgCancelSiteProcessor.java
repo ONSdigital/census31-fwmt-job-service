@@ -110,7 +110,7 @@ public class SpgCancelSiteProcessor implements InboundProcessor<FwmtCancelAction
       eventManager
           .triggerEvent(String.valueOf(rmRequest.getCaseId()), COMET_CANCEL_ACK,
               "Case Ref", "N/A",
-              "Response Code", response.getStatusCode().name());
+              "Response Code", response.getStatusCode().toString());
 
     }
   }

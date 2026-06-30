@@ -11,7 +11,7 @@ import uk.gov.ons.census.fwmt.common.rm.dto.FwmtCommonInstruction;
 import uk.gov.ons.census.fwmt.jobservice.data.QuarantinedMessage;
 import uk.gov.ons.census.fwmt.jobservice.repository.QuarantinedMessageRepository;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 @Slf4j
 @Component

@@ -117,7 +117,7 @@ public class SpgUpdateUnitProcessor implements InboundProcessor<FwmtActionInstru
     if (response != null && !alreadyCancelled) {
       eventManager.triggerEvent(String.valueOf(rmRequest.getCaseId()), COMET_CLOSE_ACK,
           "Case Ref", rmRequest.getCaseRef(),
-          "Response Code", response.getStatusCode().name());
+          "Response Code", response.getStatusCode().toString());
 
       eventManager.triggerEvent(String.valueOf(rmRequest.getCaseId()), COMET_UPDATE_PRE_SENDING,
           "Case Ref", rmRequest.getCaseRef());
@@ -138,7 +138,7 @@ public class SpgUpdateUnitProcessor implements InboundProcessor<FwmtActionInstru
 
       eventManager.triggerEvent(String.valueOf(rmRequest.getCaseId()), COMET_UPDATE_ACK,
           "Case Ref", rmRequest.getCaseRef(),
-          "Response Code", response.getStatusCode().name(),
+          "Response Code", response.getStatusCode().toString(),
           "UAA", tmRequest.getUaa().toString(),
           "Blank Q", tmRequest.getBlank().toString(),
           "SPG Update Unit", tmRequest.toString());

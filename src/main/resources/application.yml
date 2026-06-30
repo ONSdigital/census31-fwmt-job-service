@@ -4,28 +4,26 @@ server:
 spring:
   application:
     name: census31-fwmt-job-service
-  jackson:
-    serialization:
-      WRITE_DATES_AS_TIMESTAMPS: false
+  main:
+    allow-circular-references: true
   security:
     user:
       name: "user"
       password: "password"
   datasource:
-    url: jdbc:postgresql://localhost/postgres?currentSchema=fwmtg
+    url: jdbc:postgresql://localhost:5432/postgres?currentSchema=fwmtg
     driver-class-name: org.postgresql.Driver
-    schema: classpath:/schema.sql
-    continue-on-error: false
     username: postgres
     password: postgres
-    initialization-mode: always
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema.sql
   liquibase:
-    url: jdbc:postgresql://localhost:5432/postgres?currentSchema=fwmtg
-    default-schema: fwmtg
+    enabled: true
     change-log: classpath:db/changelog/db.changelog-master.yml
-    user: postgres
-    password: postgres
-  #     enabled: false
+    default-schema: fwmtg
+    liquibase-schema: fwmtg
 management:
   # Place /info and /health in the root
   endpoints.web.base-path: ''
@@ -119,7 +117,7 @@ app:
       port: 5673
       virtualHost: "/"
       initialInterval: 5000
-      multiplier: 3.0If yo
+      multiplier: 3.0
       maxInterval: 45000
       maxRetries: 1
       prefetchCount: 500

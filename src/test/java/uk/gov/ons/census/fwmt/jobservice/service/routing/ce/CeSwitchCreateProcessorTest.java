@@ -95,7 +95,7 @@ public class CeSwitchCreateProcessorTest {
     GatewayCache cache = createGatewayCache("1234", 1, 10);
     when(cometRestClient.sendClose(any())).thenThrow(new RestClientException("(400 BAD_REQUEST) {“id”:[“Case State must be Open”]}"));
     ceSwitchCreateProcessor.process(instruction, cache,  Instant.now());
-    verify(eventManager, atLeast(2)).triggerEvent(any(), spiedEvent.capture(), any());
+    verify(eventManager, atLeast(2)).triggerEvent(any(), spiedEvent.capture(), any(String[].class));
     String checkEvent = spiedEvent.getValue();
     Assertions.assertEquals(SWITCH_ON_A_CANCEL, checkEvent);
   }

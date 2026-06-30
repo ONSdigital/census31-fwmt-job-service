@@ -6,12 +6,10 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.retry.annotation.EnableRetry;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @SpringBootApplication
 @EnableRetry
 @EnableScheduling
-@EnableSwagger2
 @EnableJpaRepositories("uk.gov.ons.census.fwmt.jobservice.repository")
 @ComponentScan({"uk.gov.ons.census.fwmt.jobservice", "uk.gov.ons.census.fwmt.events",
     "uk.gov.census.ffa.storage.utils"})

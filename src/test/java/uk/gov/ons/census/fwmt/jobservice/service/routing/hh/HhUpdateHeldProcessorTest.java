@@ -54,7 +54,7 @@ public class HhUpdateHeldProcessorTest {
     GatewayCache gatewayCache = GatewayCache.builder()
         .caseId("ac623e62-4f4b-11eb-ae93-0242ac130002").existsInFwmt(false).build();
     hhUpdateHeld.process(instruction, gatewayCache,  Instant.now());
-    verify(eventManager, atLeast(1)).triggerEvent(any(), spiedEvent.capture(), any());
+    verify(eventManager, atLeast(1)).triggerEvent(any(), spiedEvent.capture(), any(String[].class));
     String checkEvent = spiedEvent.getValue();
     Assertions.assertEquals(HH_UPDATE_HELD, checkEvent);
   }
@@ -64,7 +64,7 @@ public class HhUpdateHeldProcessorTest {
   public void shouldHoldAHhUpdateThatDoesNotExistInCache() throws GatewayException {
     final FwmtActionInstruction instruction = HhRequestBuilder.updateActionInstruction();
     hhUpdateHeld.process(instruction, null,  Instant.now());
-    verify(eventManager, atLeast(1)).triggerEvent(any(), spiedEvent.capture(), any());
+    verify(eventManager, atLeast(1)).triggerEvent(any(), spiedEvent.capture(), any(String[].class));
     String checkEvent = spiedEvent.getValue();
     Assertions.assertEquals(HH_UPDATE_HELD, checkEvent);
   }
@@ -77,7 +77,7 @@ public class HhUpdateHeldProcessorTest {
     GatewayCache gatewayCache = GatewayCache.builder()
         .caseId("ac623e62-4f4b-11eb-ae93-0242ac130002").existsInFwmt(false).build();
     hhUpdateHeld.process(instruction, gatewayCache,  Instant.now());
-    verify(eventManager, atLeast(1)).triggerEvent(any(), spiedEvent.capture(), any());
+    verify(eventManager, atLeast(1)).triggerEvent(any(), spiedEvent.capture(), any(String[].class));
     String checkEvent = spiedEvent.getValue();
     Assertions.assertEquals(HH_UPDATE_HELD, checkEvent);
   }
@@ -88,7 +88,7 @@ public class HhUpdateHeldProcessorTest {
     final FwmtActionInstruction instruction = HhRequestBuilder.updateActionInstruction();
     instruction.setOa("N1234");
     hhUpdateHeld.process(instruction, null,  Instant.now());
-    verify(eventManager, atLeast(1)).triggerEvent(any(), spiedEvent.capture(), any());
+    verify(eventManager, atLeast(1)).triggerEvent(any(), spiedEvent.capture(), any(String[].class));
     String checkEvent = spiedEvent.getValue();
     Assertions.assertEquals(HH_UPDATE_HELD, checkEvent);
   }

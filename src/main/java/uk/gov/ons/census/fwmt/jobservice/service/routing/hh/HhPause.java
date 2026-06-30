@@ -111,7 +111,7 @@ public class HhPause implements InboundProcessor<FwmtActionInstruction> {
 
       eventManager.triggerEvent(String.valueOf(rmRequest.getCaseId()), COMET_PAUSE_ACK,
           "Case Ref", rmRequest.getCaseRef(),
-          "Response Code", response.getStatusCode().name(),
+          "Response Code", response.getStatusCode().toString(),
           "HH Pause", tmRequest.toString());
     }
   }
