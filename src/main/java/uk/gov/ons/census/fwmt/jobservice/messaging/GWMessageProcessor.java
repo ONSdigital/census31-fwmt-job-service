@@ -1,8 +1,8 @@
-package uk.gov.ons.census.fwmt.jobservice.rabbit;
+package uk.gov.ons.census.fwmt.jobservice.messaging;
 
+import com.google.pubsub.v1.PubsubMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.amqp.core.Message;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstructionType;
@@ -29,7 +29,7 @@ public class GWMessageProcessor {
   private final GatewayEventManager gatewayEventManager;
   private final MessageExceptionHandler messageExceptionHandler;
 
-  public void processCreateInstruction(FwmtActionInstruction instruction, Instant messageTime, Message message) {
+  public void processCreateInstruction(FwmtActionInstruction instruction, Instant messageTime, PubsubMessage message) {
     try {
       switch (instruction.getActionInstruction()) {
       case CREATE: {
@@ -69,10 +69,9 @@ public class GWMessageProcessor {
     }
   }
 
-  public void processCancelInstruction(FwmtCancelActionInstruction instruction, Instant messageTime, Message message) {
-
+  public void processCancelInstruction(
+      FwmtCancelActionInstruction instruction, Instant messageTime, PubsubMessage message) {
     try {
-
       if (instruction.getActionInstruction() == ActionInstructionType.CANCEL) {
         gatewayEventManager
             .triggerEvent(instruction.getCaseId(), RM_CANCEL_REQUEST_RECEIVED,
@@ -91,14 +90,14 @@ public class GWMessageProcessor {
     }
   }
 
-  private void handlePermException(FwmtCommonInstruction instruction, Message message, Exception e) {
+  private void handlePermException(FwmtCommonInstruction instruction, PubsubMessage message, Exception e) {
     log.error("- Error sending message - HARD Failure- {}  error - {} ", instruction, e.getMessage(), e);
     messageExceptionHandler.handlePermMessage(message, instruction);
   }
 
-  private void handleTransientException(FwmtCommonInstruction instruction, Message message, RestClientException e) {
+  private void handleTransientException(
+      FwmtCommonInstruction instruction, PubsubMessage message, RestClientException e) {
     log.error(" Error sending message - SOFT Failure {}  error - {} ", instruction, e.getMessage(), e);
     messageExceptionHandler.handleTransientMessage(message, instruction);
   }
-
 }

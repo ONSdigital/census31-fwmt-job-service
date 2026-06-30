@@ -1,12 +1,14 @@
 package uk.gov.ons.census.fwmt.jobservice.config;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import uk.gov.ons.census.fwmt.events.component.GatewayEventManager;
+import uk.gov.ons.census.fwmt.events.producer.GatewayEventProducer;
 import uk.gov.ons.census.fwmt.events.producer.GatewayLoggingEventProducer;
-import uk.gov.ons.census.fwmt.events.producer.RabbitMQGatewayEventProducer;
+import uk.gov.ons.census.fwmt.events.producer.PubSubGatewayEventProducer;
 import uk.gov.ons.census.fwmt.jobservice.Application;
 
 import java.util.Arrays;
@@ -55,13 +57,18 @@ public class GatewayEventsConfig {
   public static final String DECRYPTED_HH_NAMES = "DECRYPTED_HH_NAMES";
 
   @Bean
-  public GatewayEventManager gatewayEventManager(GatewayLoggingEventProducer gatewayLoggingEventProducer,
-      RabbitMQGatewayEventProducer testProducer) {
+  public GatewayEventManager gatewayEventManager(
+      GatewayLoggingEventProducer gatewayLoggingEventProducer,
+      ObjectProvider<PubSubGatewayEventProducer> pubSubGatewayEventProducer) {
 
     final GatewayEventManager gatewayEventManager;
     if (testing) {
       log.warn("\n\n \t IMPORTANT - Test Mode: ON        \n \t\t Service is initiated in test mode which, this should not occur in production \n\n");
-      gatewayEventManager = new GatewayEventManager(Arrays.asList(gatewayLoggingEventProducer, testProducer));
+      GatewayEventProducer messagingProducer = pubSubGatewayEventProducer.getIfAvailable();
+      if (messagingProducer == null) {
+        throw new IllegalStateException("No PubSubGatewayEventProducer available for acceptance testing");
+      }
+      gatewayEventManager = new GatewayEventManager(Arrays.asList(gatewayLoggingEventProducer, messagingProducer));
     } else {
       log.warn("\n\n \t IMPORTANT - Test Mode: OFF   \n\n");
       gatewayEventManager = new GatewayEventManager(Arrays.asList(gatewayLoggingEventProducer));

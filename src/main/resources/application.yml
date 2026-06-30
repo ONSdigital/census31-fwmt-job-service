@@ -24,15 +24,21 @@ spring:
     change-log: classpath:db/changelog/db.changelog-master.yml
     default-schema: fwmtg
     liquibase-schema: fwmtg
+  cloud:
+    gcp:
+      project-id: ${FWMT_PUBSUB_PROJECT:fwmt-local}
+      credentials:
+        enabled: false
+      pubsub:
+        enabled: true
+        emulator-host: ${PUBSUB_EMULATOR_HOST:localhost:8085}
+
 management:
   # Place /info and /health in the root
   endpoints.web.base-path: ''
   endpoint:
     health:
       show-details: always
-  health:
-    rabbit:
-      enabled: false
 
 logging:
   profile: DEV
@@ -109,45 +115,16 @@ resthttp:
 
 app:
   testing: false
-  rabbitmq:
-    gw:
-      username: "guest"
-      password: "guest"
-      host: "localhost"
-      port: 5673
-      virtualHost: "/"
-      initialInterval: 5000
-      multiplier: 3.0
-      maxInterval: 45000
-      maxRetries: 1
-      prefetchCount: 500
-      concurrentConsumers: 10
-      maxRetryCount: 5
-      exchanges:
-        error: "GW.Error.Exchange"
-      routingkey:
-        perm: "gw.permanent.error"
-        trans: "gw.transient.error"
-      queues:
-        errorPer: "GW.Permanent.ErrorQ"
-        errorTrans: "GW.Transient.ErrorQ"
-        input: "GW.Field"
-    #      queues:
-    #        error: "GW.ErrorQ"
-    rm:
-      username: "guest"
-      password: "guest"
-      host: "localhost"
-      port: 5672
-      virtualHost: "/"
-      initialInterval: 5000
-      multiplier: 3.0
-      maxInterval: 45000
-      maxRetries: 1
-      prefetchCount: 500
-      concurrentConsumers: 10
-      queues:
-        rm:
-          input: "RM.Field"
-#          dlq: "RM.FieldDLQ"
-#          exchange: "adapter-outbound-exchange"
+  messaging:
+    provider: pubsub
+    maxRetryCount: 5
+    destinations:
+      rmField: "RM.Field"
+      gwField: "GW.Field"
+      gwTransientError: "GW.Transient.ErrorQ"
+      gwPermanentError: "GW.Permanent.ErrorQ"
+    subscriptions:
+      gwTransientError: job-service-GW-Transient-ErrorQ
+    pubsub:
+      rm-field-subscription: job-service-RM-Field
+      gw-field-subscription: job-service-GW-Field
