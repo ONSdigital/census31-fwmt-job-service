@@ -144,7 +144,7 @@ steps:
     args:
       - -c
       - |
-        gcloud pubsub messages publish \
+        gcloud pubsub topics publish \
           projects/c31-fwmtg-ci-prod/topics/service-build-events \
           --message="{}" \
           --attribute=REPO_NAME=${REPO_NAME},SHORT_SHA=${SHORT_SHA},STATUS=SUCCESS
