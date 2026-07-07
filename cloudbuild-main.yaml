@@ -145,7 +145,7 @@ steps:
       - -c
       - |
         gcloud pubsub messages publish \
-          projects/${_CI_PROJECT_ID}/topics/service-build-events \
+          projects/c31-fwmtg-ci-prod/topics/service-build-events \
           --message="{}" \
           --attribute=REPO_NAME=${REPO_NAME},SHORT_SHA=${SHORT_SHA},STATUS=SUCCESS
 substitutions:
