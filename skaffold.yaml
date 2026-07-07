@@ -1,0 +1,29 @@
+apiVersion: skaffold/v4beta11
+kind: Config
+metadata:
+  name: census31-fwmt-job-service
+
+build:
+  local:
+    push: false
+  artifacts:
+    - image: job-service
+      hooks:
+        before:
+          - host:
+              command:
+                - sh
+                - -c
+                - mvn -DskipTests package -DfinalName=census31-fwmt-job-service
+      docker:
+        dockerfile: Dockerfile
+        buildArgs:
+          jar: target/census31-fwmt-job-service.jar
+
+manifests:
+  rawYaml:
+    - k8s/job-service-deployment.yaml
+    - k8s/job-service-service.yaml
+
+deploy:
+  kubectl: {}
