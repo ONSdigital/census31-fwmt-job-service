@@ -154,6 +154,7 @@ substitutions:
   _IMAGE: census31-fwmt-job-service
   _REPO_SUFFIX: fwmtg-maven-release
   _REGION: europe-west2
-
+  _CI_PROJECT_ID: c31-fwmtg-ci-prod
+  REPO_NAME: census31-fwmt-job-service
 options:
   logging: CLOUD_LOGGING_ONLY
