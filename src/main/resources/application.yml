@@ -98,6 +98,39 @@ eq:
 spg:
   followUpDate: 11111
 
+feature-flags:
+  hh:
+    create: ${FEATURE_HH_CREATE:false}
+    update: ${FEATURE_HH_UPDATE:false}
+    cancel: ${FEATURE_HH_CANCEL:false}
+    pause: ${FEATURE_HH_PAUSE:false}
+    reactivate: ${FEATURE_HH_REACTIVATE:false}
+  ce:
+    create: ${FEATURE_CE_CREATE:false}
+    update: ${FEATURE_CE_UPDATE:false}
+    cancel: ${FEATURE_CE_CANCEL:false}
+    pause: ${FEATURE_CE_PAUSE:false}
+    reactivate: ${FEATURE_CE_REACTIVATE:false}
+    switch_ce_type: ${FEATURE_CE_SWITCH_CE_TYPE:false}
+  spg:
+    create: ${FEATURE_SPG_CREATE:false}
+    update: ${FEATURE_SPG_UPDATE:false}
+    cancel: ${FEATURE_SPG_CANCEL:false}
+    pause: ${FEATURE_SPG_PAUSE:false}
+    reactivate: ${FEATURE_SPG_REACTIVATE:false}
+  ccs:
+    create: ${FEATURE_CCS_CREATE:false}
+    update: ${FEATURE_CCS_UPDATE:false}
+    cancel: ${FEATURE_CCS_CANCEL:false}
+    pause: ${FEATURE_CCS_PAUSE:false}
+    reactivate: ${FEATURE_CCS_REACTIVATE:false}
+  nc:
+    create: ${FEATURE_NC_CREATE:false}
+    update: ${FEATURE_NC_UPDATE:false}
+    cancel: ${FEATURE_NC_CANCEL:false}
+    pause: ${FEATURE_NC_PAUSE:false}
+    reactivate: ${FEATURE_NC_REACTIVATE:false}
+
 ce:
   followUpDate: "01/05/2020"
   startDate: "01/05/2020"
