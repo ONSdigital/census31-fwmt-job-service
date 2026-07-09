@@ -11,7 +11,6 @@ It takes an Field Worker Job Request Canonical (Create, Update, Canel) message o
 
 ## Quick Start
 
-
 Requires RabbitMQ to start:
 
     docker run --name rabbit -p 5671-5672:5671:5672 -p 15671-15672:15671-15672 -d rabbitmq:3.6-management
