@@ -55,6 +55,7 @@ public class GatewayEventsConfig {
   private boolean testing;
 
   public static final String DECRYPTED_HH_NAMES = "DECRYPTED_HH_NAMES";
+  public static final String FEATURE_FLAG_IGNORED = "FEATURE_FLAG_IGNORED";
 
   @Bean
   public GatewayEventManager gatewayEventManager(

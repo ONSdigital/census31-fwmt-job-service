@@ -9,6 +9,7 @@ import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstructionType;
 import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
 import uk.gov.ons.census.fwmt.common.rm.dto.FwmtCancelActionInstruction;
 import uk.gov.ons.census.fwmt.events.component.GatewayEventManager;
+import uk.gov.ons.census.fwmt.jobservice.config.FeatureFlagConfig;
 import uk.gov.ons.census.fwmt.jobservice.data.GatewayCache;
 import uk.gov.ons.census.fwmt.jobservice.messaging.RmFieldMessagePublisher;
 import uk.gov.ons.census.fwmt.jobservice.service.processor.InboundProcessor;
@@ -25,6 +26,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static uk.gov.ons.census.fwmt.jobservice.config.GatewayEventsConfig.CONVERT_SPG_UNIT_UPDATE_TO_CREATE;
+import static uk.gov.ons.census.fwmt.jobservice.config.GatewayEventsConfig.FEATURE_FLAG_IGNORED;
 import static uk.gov.ons.census.fwmt.jobservice.config.GatewayEventsConfig.ROUTING_FAILED;
 
 @Slf4j
@@ -47,6 +49,9 @@ public class JobService {
   private CeUpdateIgnoreProcessor ceUpdateIgnoreProcessor;
 
   @Autowired
+  private FeatureFlagConfig featureFlagConfig;
+
+  @Autowired
   @Qualifier("CreateProcessorMap")
   private Map<ProcessorKey, List<InboundProcessor<FwmtActionInstruction>>> createProcessorMap;
 
@@ -64,6 +69,10 @@ public class JobService {
 
   @Transactional
   public void processCreate(FwmtActionInstruction rmRequest, Instant messageReceivedTime) throws GatewayException {
+    if (!isInstructionEnabled(rmRequest.getCaseId(), rmRequest.getAddressType(), rmRequest.getActionInstruction().name())) {
+      return;
+    }
+
     final GatewayCache cache = cacheService.getById(rmRequest.getCaseId());
 
     ProcessorKey key = ProcessorKey.buildKey(rmRequest);
@@ -94,6 +103,10 @@ public class JobService {
 
   @Transactional
   public void processUpdate(FwmtActionInstruction rmRequest, Instant messageReceivedTime) throws GatewayException {
+    if (!isInstructionEnabled(rmRequest.getCaseId(), rmRequest.getAddressType(), rmRequest.getActionInstruction().name())) {
+      return;
+    }
+
     final GatewayCache cache = cacheService.getById(rmRequest.getCaseId());
     boolean isHeld = false;
 
@@ -147,6 +160,10 @@ public class JobService {
 
   @Transactional
   public void processCancel(FwmtCancelActionInstruction rmRequest, Instant messageReceivedTime) throws GatewayException {
+    if (!isInstructionEnabled(rmRequest.getCaseId(), rmRequest.getAddressType(), rmRequest.getActionInstruction().name())) {
+      return;
+    }
+
     GatewayCache cache = cacheService.getByOriginalCaseId(rmRequest.getCaseId());
 
     if (cache != null) {
@@ -189,6 +206,10 @@ public class JobService {
   @Transactional
   public void processPause(FwmtActionInstruction rmRequest, Instant messageReceivedTime)
       throws GatewayException {
+    if (!isInstructionEnabled(rmRequest.getCaseId(), rmRequest.getAddressType(), rmRequest.getActionInstruction().name())) {
+      return;
+    }
+
     final GatewayCache cache = cacheService.getById(rmRequest.getCaseId());
     ProcessorKey key = ProcessorKey.buildKey(rmRequest);
 
@@ -212,6 +233,17 @@ public class JobService {
       throw new GatewayException(GatewayException.Fault.VALIDATION_FAILED, "Found multiple PAUSE processors for request from RM", rmRequest, cache);
     }
     processors.get(0).process(rmRequest, cache, messageReceivedTime);
+  }
+
+  private boolean isInstructionEnabled(Object caseId, String surveyType, String actionInstruction) {
+    if (featureFlagConfig.isInstructionEnabled(surveyType, actionInstruction)) {
+      return true;
+    }
+
+    eventManager.triggerEvent(String.valueOf(caseId), FEATURE_FLAG_IGNORED,
+        "Survey type", String.valueOf(surveyType),
+        "Action instruction", String.valueOf(actionInstruction));
+    return false;
   }
 
   /*
