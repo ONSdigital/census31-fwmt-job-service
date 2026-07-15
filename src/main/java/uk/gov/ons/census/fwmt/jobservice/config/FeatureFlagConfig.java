@@ -1,6 +1,7 @@
 package uk.gov.ons.census.fwmt.jobservice.config;
 
 import lombok.Data;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
@@ -10,6 +11,7 @@ import java.util.Map;
 
 @Data
 @Configuration
+@RefreshScope
 @ConfigurationProperties(prefix = "feature-flags")
 public class FeatureFlagConfig {
   private Map<String, Boolean> hh = new HashMap<>();
