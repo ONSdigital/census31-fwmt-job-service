@@ -140,6 +140,8 @@ feature-flags:
     cancel: ${FEATURE_NC_CANCEL:false}
     pause: ${FEATURE_NC_PAUSE:false}
     reactivate: ${FEATURE_NC_REACTIVATE:false}
+  feedback:
+    cancel: ${FEATURE_FEEDBACK_CANCEL:false}
 
 ce:
   followUpDate: "01/05/2020"

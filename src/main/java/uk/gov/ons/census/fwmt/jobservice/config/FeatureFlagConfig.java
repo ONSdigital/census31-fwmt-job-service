@@ -19,6 +19,7 @@ public class FeatureFlagConfig {
   private Map<String, Boolean> spg = new HashMap<>();
   private Map<String, Boolean> ccs = new HashMap<>();
   private Map<String, Boolean> nc = new HashMap<>();
+  private Map<String, Boolean> feedback = new HashMap<>();
 
   public boolean isInstructionEnabled(String survey, String actionInstruction) {
     if (survey == null || actionInstruction == null) {
@@ -48,6 +49,8 @@ public class FeatureFlagConfig {
         return ccs;
       case "NC":
         return nc;
+      case "FEEDBACK":
+        return feedback;
       default:
         return Collections.emptyMap();
     }
