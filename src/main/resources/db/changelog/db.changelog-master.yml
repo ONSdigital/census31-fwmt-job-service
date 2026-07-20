@@ -1,4 +1,4 @@
 databaseChangeLog:
   - include:
-      file: src/main/resources/db/changelog/v1/changelog.yml
+      file: db/changelog/v1/changelog.yml
 
