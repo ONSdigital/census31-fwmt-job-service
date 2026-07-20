@@ -57,14 +57,15 @@ management:
 
 logging:
   profile: DEV
-  level:
-    root: WARN
+  level
+  root: WARN
     uk.gov.ons.census.fwmt: INFO
     org.springframework: INFO
     org.springframework.security: INFO
     org.springframework.web: INFO
     org.hibernate: INFO
     org.apache.commons.dbcp2: INFO
+    liquibase: DEBUG
 
 
 totalmobile:
