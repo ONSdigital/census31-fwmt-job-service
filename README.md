@@ -5,7 +5,7 @@
 # census31-fwmt-job-service
 This service is a gateway between Response Management and Total Mobile's COMET interface.
 
-It takes an Field Worker Job Request Canonical (Create, Update, Canel) message off the Gateway.Actions RabbitMQ Queue and transforms it into a JSON request which is sent to an instance of Tomtal Mobile' COMET endpoint.
+It takes an Field Worker Job Request Canonical (Create, Update, Cancel) message off the Gateway.Actions RabbitMQ Queue and transforms it into a JSON request which is sent to an instance of Tomtal Mobile' COMET endpoint.
 
 ![](/docs/jobservice-highlevel.png "jobservicd highlevel diagram")	
 

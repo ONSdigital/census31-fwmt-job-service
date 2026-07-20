@@ -24,6 +24,9 @@ spring:
     change-log: classpath:db/changelog/db.changelog-master.yml
     default-schema: fwmtg
     liquibase-schema: fwmtg
+    url: jdbc:postgresql://localhost:5432/postgres?currentSchema=fwmtg
+    user: postgres
+    password: postgres
   cloud:
     gcp:
       project-id: ${FWMT_PUBSUB_PROJECT:fwmt-local}
