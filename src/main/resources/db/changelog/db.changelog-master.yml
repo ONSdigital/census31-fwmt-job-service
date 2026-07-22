@@ -1,4 +1,5 @@
 databaseChangeLog:
   - include:
-      file: classpath:db/changelog/v1/changelog.yml
+      file: v1/changelog.yml
+      relativeToChangelogFile: true
 
