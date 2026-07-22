@@ -65,8 +65,7 @@ logging:
     org.springframework.web: INFO
     org.hibernate: INFO
     org.apache.commons.dbcp2: INFO
-    liquibase: DEBUG
-
+    liquibase: INFO
 
 totalmobile:
   username: "user"
