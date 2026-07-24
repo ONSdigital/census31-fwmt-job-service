@@ -9,9 +9,9 @@ import uk.gov.ons.census.fwmt.common.error.GatewayException;
 import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstructionType;
 import uk.gov.ons.census.fwmt.common.rm.dto.FwmtCancelActionInstruction;
 import uk.gov.ons.census.fwmt.events.component.GatewayEventManager;
-import uk.gov.ons.census.fwmt.jobservice.data.GatewayCache;
+import uk.gov.ons.census.fwmt.jobservice.data.GatewayCaseRecord;
 import uk.gov.ons.census.fwmt.jobservice.http.comet.CometRestClient;
-import uk.gov.ons.census.fwmt.jobservice.service.GatewayCacheService;
+import uk.gov.ons.census.fwmt.jobservice.service.GatewayCaseRecordService;
 import uk.gov.ons.census.fwmt.jobservice.service.processor.InboundProcessor;
 import uk.gov.ons.census.fwmt.jobservice.service.processor.ProcessorKey;
 import uk.gov.ons.census.fwmt.jobservice.service.routing.RoutingValidator;
@@ -37,7 +37,7 @@ public class FeedbackCancel implements InboundProcessor<FwmtCancelActionInstruct
   private RoutingValidator routingValidator;
 
   @Autowired
-  private GatewayCacheService cacheService;
+  private GatewayCaseRecordService cacheService;
 
   private static ProcessorKey key = ProcessorKey.builder()
       .actionInstruction(ActionInstructionType.CANCEL.toString())
@@ -52,7 +52,7 @@ public class FeedbackCancel implements InboundProcessor<FwmtCancelActionInstruct
   }
 
   @Override
-  public boolean isValid(FwmtCancelActionInstruction rmRequest, GatewayCache cache) {
+  public boolean isValid(FwmtCancelActionInstruction rmRequest, GatewayCaseRecord cache) {
     try {
       return rmRequest.getActionInstruction() == ActionInstructionType.CANCEL
           && rmRequest.getSurveyName().equals("FEEDBACK")
@@ -65,7 +65,7 @@ public class FeedbackCancel implements InboundProcessor<FwmtCancelActionInstruct
   }
 
   @Override
-  public void process(FwmtCancelActionInstruction rmRequest, GatewayCache cache, Instant messageReceivedTime)
+  public void process(FwmtCancelActionInstruction rmRequest, GatewayCaseRecord cache, Instant messageReceivedTime)
       throws GatewayException {
     boolean alreadyCancelled = false;
     ResponseEntity<Void> response = null;
@@ -90,7 +90,7 @@ public class FeedbackCancel implements InboundProcessor<FwmtCancelActionInstruct
       }
     }
 
-    GatewayCache newCache = cacheService.getById(rmRequest.getCaseId());
+    GatewayCaseRecord newCache = cacheService.getById(rmRequest.getCaseId());
     if (newCache != null) {
       cacheService.save(newCache.toBuilder().lastActionInstruction(rmRequest.getActionInstruction().toString())
           .lastActionTime(messageReceivedTime)

@@ -12,7 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.ons.census.fwmt.common.error.GatewayException;
 import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
 import uk.gov.ons.census.fwmt.events.component.GatewayEventManager;
-import uk.gov.ons.census.fwmt.jobservice.data.GatewayCache;
+import uk.gov.ons.census.fwmt.jobservice.data.GatewayCaseRecord;
 import uk.gov.ons.census.fwmt.jobservice.hh.HhRequestBuilder;
 import uk.gov.ons.census.fwmt.jobservice.http.comet.CometRestClient;
 import uk.gov.ons.census.fwmt.jobservice.service.routing.RoutingValidator;
@@ -33,7 +33,7 @@ public class HhUpdateHeldProcessorTest {
   private CometRestClient cometRestClient;
 
   @Mock
-  private GatewayCache gatewayCache;
+  private GatewayCaseRecord gatewayCache;
 
   @Mock
   private GatewayEventManager eventManager;
@@ -51,7 +51,7 @@ public class HhUpdateHeldProcessorTest {
   @DisplayName("Should hold a HH update that does not exists in FWMT")
   public void shouldHoldAHhUpdateThatDoesNotExistInFwmt() throws GatewayException {
     final FwmtActionInstruction instruction = HhRequestBuilder.updateActionInstruction();
-    GatewayCache gatewayCache = GatewayCache.builder()
+    GatewayCaseRecord gatewayCache = GatewayCaseRecord.builder()
         .caseId("ac623e62-4f4b-11eb-ae93-0242ac130002").existsInFwmt(false).build();
     hhUpdateHeld.process(instruction, gatewayCache,  Instant.now());
     verify(eventManager, atLeast(1)).triggerEvent(any(), spiedEvent.capture(), any(String[].class));
@@ -74,7 +74,7 @@ public class HhUpdateHeldProcessorTest {
   public void shouldHoldAHhUpdateThatDoesNotExistInFwmtForANisraCase() throws GatewayException {
     final FwmtActionInstruction instruction = HhRequestBuilder.updateActionInstruction();
     instruction.setOa("N1234");
-    GatewayCache gatewayCache = GatewayCache.builder()
+    GatewayCaseRecord gatewayCache = GatewayCaseRecord.builder()
         .caseId("ac623e62-4f4b-11eb-ae93-0242ac130002").existsInFwmt(false).build();
     hhUpdateHeld.process(instruction, gatewayCache,  Instant.now());
     verify(eventManager, atLeast(1)).triggerEvent(any(), spiedEvent.capture(), any(String[].class));

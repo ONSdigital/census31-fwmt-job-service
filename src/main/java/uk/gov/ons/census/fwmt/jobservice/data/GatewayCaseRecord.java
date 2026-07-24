@@ -19,8 +19,8 @@ import java.time.Instant;
 @AllArgsConstructor
 @Entity
 @ToString
-@Table(name = "gateway_cache")
-public class GatewayCache {
+@Table(name = "gateway_case_record")
+public class GatewayCaseRecord {
   @Id
   @Column(name = "case_id", unique = true, nullable = false)
   public String caseId;
@@ -79,12 +79,10 @@ public class GatewayCache {
 
   // display only the details related to request routing
   public String toRoutingString() {
-    return "GatewayCache(" +
+    return "GatewayCaseRecord(" +
         "existsInFwmt=" + this.existsInFwmt + ", " +
         "delivered=" + this.delivered + ")";
   }
 
-//  public void setLastActionTime(Date lastActionTime) {
-//    this.lastActionTime = new Date(lastActionTime.getTime());
-//  }
+
 }

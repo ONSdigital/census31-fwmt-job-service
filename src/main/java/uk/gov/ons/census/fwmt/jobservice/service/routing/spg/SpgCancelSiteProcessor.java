@@ -9,9 +9,9 @@ import uk.gov.ons.census.fwmt.common.error.GatewayException;
 import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstructionType;
 import uk.gov.ons.census.fwmt.common.rm.dto.FwmtCancelActionInstruction;
 import uk.gov.ons.census.fwmt.events.component.GatewayEventManager;
-import uk.gov.ons.census.fwmt.jobservice.data.GatewayCache;
+import uk.gov.ons.census.fwmt.jobservice.data.GatewayCaseRecord;
 import uk.gov.ons.census.fwmt.jobservice.http.comet.CometRestClient;
-import uk.gov.ons.census.fwmt.jobservice.service.GatewayCacheService;
+import uk.gov.ons.census.fwmt.jobservice.service.GatewayCaseRecordService;
 import uk.gov.ons.census.fwmt.jobservice.service.processor.InboundProcessor;
 import uk.gov.ons.census.fwmt.jobservice.service.processor.ProcessorKey;
 import uk.gov.ons.census.fwmt.jobservice.service.routing.RoutingValidator;
@@ -37,7 +37,7 @@ public class SpgCancelSiteProcessor implements InboundProcessor<FwmtCancelAction
   private RoutingValidator routingValidator;
 
   @Autowired
-  private GatewayCacheService cacheService;
+  private GatewayCaseRecordService cacheService;
 
   private static ProcessorKey key = ProcessorKey.builder()
       .actionInstruction(ActionInstructionType.CANCEL.toString())
@@ -56,7 +56,7 @@ public class SpgCancelSiteProcessor implements InboundProcessor<FwmtCancelAction
   // TODO Find ignore formatting tag
   // TODO Make eventManager Annotation
   @Override
-  public boolean isValid(FwmtCancelActionInstruction rmRequest, GatewayCache cache) {
+  public boolean isValid(FwmtCancelActionInstruction rmRequest, GatewayCaseRecord cache) {
     try {
       // relies on the validation of: SpgRouter, SpgCancelRouter
       return rmRequest.getActionInstruction() == ActionInstructionType.CANCEL
@@ -72,7 +72,7 @@ public class SpgCancelSiteProcessor implements InboundProcessor<FwmtCancelAction
   // TODO Acceptance test should check delete is sent (new event)
   // TODO Can event be added in class where its used, rather than config, or can it be added when used first time
   @Override
-  public void process(FwmtCancelActionInstruction rmRequest, GatewayCache cache, Instant messageReceivedTime) throws GatewayException {
+  public void process(FwmtCancelActionInstruction rmRequest, GatewayCaseRecord cache, Instant messageReceivedTime) throws GatewayException {
     boolean alreadyCancelled = false;
     ResponseEntity<Void> response = null;
     eventManager.triggerEvent(String.valueOf(rmRequest.getCaseId()), COMET_CANCEL_PRE_SENDING,
@@ -95,9 +95,9 @@ public class SpgCancelSiteProcessor implements InboundProcessor<FwmtCancelAction
       }
     }
 
-    GatewayCache newCache = cacheService.getById(rmRequest.getCaseId());
+    GatewayCaseRecord newCache = cacheService.getById(rmRequest.getCaseId());
     if (newCache == null) {
-      cacheService.save(GatewayCache.builder().caseId(rmRequest.getCaseId()).existsInFwmt(true)
+      cacheService.save(GatewayCaseRecord.builder().caseId(rmRequest.getCaseId()).existsInFwmt(true)
           .type(2).lastActionInstruction(rmRequest.getActionInstruction().toString())
           .lastActionTime(messageReceivedTime).build());
     } else {

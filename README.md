@@ -36,6 +36,11 @@ To run:
 
 ![](docs/tm-canonical-update.png "tm - canonical - update - mapping")
 
+## Transition Architecture Notes
+
+See `docs/transition-strategy-architecture.md` for resolver/strategy execution design,
+runtime sequence, and migration notes for the Transitioner refactor.
+
 ## Copyright
 Copyright(C) 2020 Crown Copyright (Office for National Statistics)
 

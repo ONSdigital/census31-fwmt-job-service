@@ -1,0 +1,1 @@
+ALTER TABLE gateway_cache RENAME TO gateway_case_record;
