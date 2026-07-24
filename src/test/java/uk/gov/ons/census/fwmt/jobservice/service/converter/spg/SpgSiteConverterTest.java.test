@@ -13,9 +13,9 @@ import uk.gov.ons.census.fwmt.common.data.modelcase.SurveyType;
 import uk.gov.ons.census.fwmt.common.error.GatewayException;
 import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
 import uk.gov.ons.census.fwmt.events.component.GatewayEventManager;
-import uk.gov.ons.census.fwmt.jobservice.data.GatewayCache;
+import uk.gov.ons.census.fwmt.jobservice.data.GatewayCaseRecord;
 import uk.gov.ons.census.fwmt.jobservice.http.comet.CometRestClient;
-import uk.gov.ons.census.fwmt.jobservice.service.GatewayCacheService;
+import uk.gov.ons.census.fwmt.jobservice.service.GatewayCaseRecordService;
 import uk.gov.ons.census.fwmt.jobservice.service.SpgFollowUpSchedulingService;
 import uk.gov.ons.census.fwmt.jobservice.service.routing.RoutingValidator;
 import uk.gov.ons.census.fwmt.jobservice.service.routing.spg.SpgCancelRouter;
@@ -36,7 +36,7 @@ class SpgSiteConverterTest {
   public SpgSiteConverterTest() {
     // mocks
     CometRestClient cometRestClient = Mockito.mock(CometRestClient.class);
-    GatewayCacheService gatewayCacheService = Mockito.mock(GatewayCacheService.class);
+    GatewayCaseRecordService gatewayCacheService = Mockito.mock(GatewayCaseRecordService.class);
     SpgFollowUpSchedulingService spgFollowUpSchedulingService = Mockito.mock(SpgFollowUpSchedulingService.class);
     GatewayEventManager eventManager = Mockito.mock(GatewayEventManager.class);
 
@@ -54,7 +54,7 @@ class SpgSiteConverterTest {
   @Test
   void confirm_valid_spgRequest_can_be_converted() {
     FwmtActionInstruction ffu = SpgRequestBuilder.makeSite();
-    GatewayCache cache = GatewayCache.builder().build();
+    GatewayCaseRecord cache = GatewayCaseRecord.builder().build();
     assertTrue(router.isValid(ffu, cache));
   }
 
@@ -66,7 +66,7 @@ class SpgSiteConverterTest {
     ffu.setAddressType(null);
     ffu.setAddressLevel(null);
     ffu.setSecureEstablishment(false);
-    GatewayCache cache = GatewayCache.builder().build();
+    GatewayCaseRecord cache = GatewayCaseRecord.builder().build();
     assertFalse(router.isValid(ffu, cache));
   }
 
@@ -74,7 +74,7 @@ class SpgSiteConverterTest {
   void confirm_spgRequest_with_invalid_actionInstruction_returns_false() {
     FwmtActionInstruction ffu = SpgRequestBuilder.makeSite();
     ffu.setActionInstruction(null);
-    GatewayCache cache = GatewayCache.builder().build();
+    GatewayCaseRecord cache = GatewayCaseRecord.builder().build();
     assertFalse(router.isValid(ffu, cache));
   }
 
@@ -82,7 +82,7 @@ class SpgSiteConverterTest {
   void confirm_spgRequest_with_invalid_surveyName_returns_false() {
     FwmtActionInstruction ffu = SpgRequestBuilder.makeSite();
     ffu.setSurveyName("nonsense");
-    GatewayCache cache = GatewayCache.builder().build();
+    GatewayCaseRecord cache = GatewayCaseRecord.builder().build();
     assertFalse(router.isValid(ffu, cache));
   }
 
@@ -90,7 +90,7 @@ class SpgSiteConverterTest {
   void confirm_spgRequest_with_invalid_addressType_returns_false() {
     FwmtActionInstruction ffu = SpgRequestBuilder.makeSite();
     ffu.setAddressType("nonsense");
-    GatewayCache cache = GatewayCache.builder().build();
+    GatewayCaseRecord cache = GatewayCaseRecord.builder().build();
     assertFalse(router.isValid(ffu, cache));
   }
 
@@ -98,14 +98,14 @@ class SpgSiteConverterTest {
   void confirm_spgRequest_with_invalid_addressLevel_returns_false() {
     FwmtActionInstruction ffu = SpgRequestBuilder.makeSite();
     ffu.setAddressLevel("nonsense");
-    GatewayCache cache = GatewayCache.builder().build();
+    GatewayCaseRecord cache = GatewayCaseRecord.builder().build();
     assertFalse(router.isValid(ffu, cache));
   }
 
   @Test
   void confirm_valid_spgRequest_creates_valid_TM_request() throws GatewayException {
     FwmtActionInstruction ffu = SpgRequestBuilder.makeSite();
-    GatewayCache cache = GatewayCache.builder().build();
+    GatewayCaseRecord cache = GatewayCaseRecord.builder().build();
 
     CaseCreateRequest actualTmRequest = SpgCreateConverter.convertSite(ffu, cache);
 

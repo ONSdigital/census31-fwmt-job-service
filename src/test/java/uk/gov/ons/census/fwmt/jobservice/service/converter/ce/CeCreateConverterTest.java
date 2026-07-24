@@ -7,24 +7,24 @@ import uk.gov.ons.census.fwmt.common.error.GatewayException;
 import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
 import uk.gov.ons.census.fwmt.events.component.GatewayEventManager;
 import uk.gov.ons.census.fwmt.jobservice.ce.CeRequestBuilder;
-import uk.gov.ons.census.fwmt.jobservice.data.GatewayCache;
+import uk.gov.ons.census.fwmt.jobservice.data.GatewayCaseRecord;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class CeCreateConverterTest {
-    private GatewayCache cache;
-    private GatewayCache cacheWithNoCareCodes;
-    private GatewayCache cacheWithNoAccessInfo;
+    private GatewayCaseRecord cache;
+    private GatewayCaseRecord cacheWithNoCareCodes;
+    private GatewayCaseRecord cacheWithNoAccessInfo;
 
     public CeCreateConverterTest() {
-        cache = GatewayCache.builder()
+        cache = GatewayCaseRecord.builder()
                 .careCodes("careCode1")
                 .accessInfo("this is access info")
                 .build();
-        cacheWithNoCareCodes = GatewayCache.builder()
+        cacheWithNoCareCodes = GatewayCaseRecord.builder()
                 .accessInfo("this is access info")
                 .build();
-        cacheWithNoAccessInfo = GatewayCache.builder()
+        cacheWithNoAccessInfo = GatewayCaseRecord.builder()
                 .careCodes("careCode1")
                 .build();
 
@@ -74,7 +74,7 @@ class CeCreateConverterTest {
     @Test
     public void test_convertCeEstabDeliverSecure_noCache() {
         FwmtActionInstruction ffu = CeRequestBuilder.makeSite();
-        CaseRequest cr = CeCreateConverter.convertCeEstabDeliverSecure(ffu, GatewayCache.builder().build());
+        CaseRequest cr = CeCreateConverter.convertCeEstabDeliverSecure(ffu, GatewayCaseRecord.builder().build());
         System.out.println(cr);
         assertEquals( "Secure Establishment", cr.getDescription());
         assertEquals("" , cr.getSpecialInstructions());
@@ -101,7 +101,7 @@ class CeCreateConverterTest {
     @Test
     public void test_convertCeEstabDeliver_noCache() {
         FwmtActionInstruction ffu = CeRequestBuilder.makeSite();
-        CaseRequest cr = CeCreateConverter.convertCeEstabDeliver(ffu, GatewayCache.builder().build());
+        CaseRequest cr = CeCreateConverter.convertCeEstabDeliver(ffu, GatewayCaseRecord.builder().build());
         System.out.println(cr);
         assertEquals( "", cr.getDescription());
         assertEquals("" , cr.getSpecialInstructions());

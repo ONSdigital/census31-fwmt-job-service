@@ -10,9 +10,9 @@ import uk.gov.ons.census.fwmt.common.error.GatewayException;
 import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstructionType;
 import uk.gov.ons.census.fwmt.common.rm.dto.FwmtCancelActionInstruction;
 import uk.gov.ons.census.fwmt.events.component.GatewayEventManager;
-import uk.gov.ons.census.fwmt.jobservice.data.GatewayCache;
+import uk.gov.ons.census.fwmt.jobservice.data.GatewayCaseRecord;
 import uk.gov.ons.census.fwmt.jobservice.http.comet.CometRestClient;
-import uk.gov.ons.census.fwmt.jobservice.service.GatewayCacheService;
+import uk.gov.ons.census.fwmt.jobservice.service.GatewayCaseRecordService;
 import uk.gov.ons.census.fwmt.jobservice.service.converter.hh.HhCancelConverter;
 import uk.gov.ons.census.fwmt.jobservice.service.processor.InboundProcessor;
 import uk.gov.ons.census.fwmt.jobservice.service.processor.ProcessorKey;
@@ -50,14 +50,14 @@ public class HhCancel implements InboundProcessor<FwmtCancelActionInstruction> {
   private RoutingValidator routingValidator;
 
   @Autowired
-  private GatewayCacheService cacheService;
+  private GatewayCaseRecordService cacheService;
 
   @Override
   public ProcessorKey getKey() {
     return key;
   }
 
-  @Override public boolean isValid(FwmtCancelActionInstruction rmRequest, GatewayCache cache) {
+  @Override public boolean isValid(FwmtCancelActionInstruction rmRequest, GatewayCaseRecord cache) {
     try {
       return rmRequest.getActionInstruction() == ActionInstructionType.CANCEL
           && rmRequest.getSurveyName().equals("CENSUS")
@@ -70,7 +70,7 @@ public class HhCancel implements InboundProcessor<FwmtCancelActionInstruction> {
     }
   }
 
-  @Override public void process(FwmtCancelActionInstruction rmRequest, GatewayCache cache, Instant messageReceivedTime)
+  @Override public void process(FwmtCancelActionInstruction rmRequest, GatewayCaseRecord cache, Instant messageReceivedTime)
       throws GatewayException {
 
       boolean alreadyCancelled = false;
@@ -104,7 +104,7 @@ public class HhCancel implements InboundProcessor<FwmtCancelActionInstruction> {
       }
 
       if(response != null && !alreadyCancelled) {
-        GatewayCache newCache = cacheService.getById(rmRequest.getCaseId());
+        GatewayCaseRecord newCache = cacheService.getById(rmRequest.getCaseId());
         if (newCache != null) {
           cacheService.save(newCache.toBuilder().lastActionInstruction(rmRequest.getActionInstruction().toString())
               .lastActionTime(messageReceivedTime)

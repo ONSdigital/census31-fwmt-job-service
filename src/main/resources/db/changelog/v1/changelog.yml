@@ -7,7 +7,7 @@ databaseChangeLog:
         - sqlFile:
             path: initial_table.sql
             relativeToChangelogFile: true
-            splitStatements: false2
+            splitStatements: false
   - changeSet:
       id: v2
       author: Steve Scorfield
@@ -16,7 +16,7 @@ databaseChangeLog:
         - sqlFile:
             path: add_uprns.sql
             relativeToChangelogFile: true
-            splitStatements: false2
+            splitStatements: false
   - changeSet:
       id: v3
       author: Steve Scorfield
@@ -25,7 +25,7 @@ databaseChangeLog:
         - sqlFile:
             path: add_type.sql
             relativeToChangelogFile: true
-            splitStatements: false2
+            splitStatements: false
   - changeSet:
       id: v4
       author: Steve Scorfield
@@ -34,7 +34,7 @@ databaseChangeLog:
         - sqlFile:
             path: add_index_to_uprn.sql
             relativeToChangelogFile: true
-            splitStatements: false2
+            splitStatements: false
   - changeSet:
       id: v5
       author: Steve Scorfield
@@ -43,7 +43,7 @@ databaseChangeLog:
         - sqlFile:
             path: add_message_caching.sql
             relativeToChangelogFile: true
-            splitStatements: false2
+            splitStatements: false
   - changeSet:
       id: v6
       author: Steve Scorfield
@@ -52,7 +52,7 @@ databaseChangeLog:
         - sqlFile:
             path: change_cachetype.sql
             relativeToChangelogFile: true
-            splitStatements: false2
+            splitStatements: false
   - changeSet:
       id: v7
       author: Steve Scorfield
@@ -61,7 +61,7 @@ databaseChangeLog:
         - sqlFile:
             path: add_lastactioninstruction_and_time.sql
             relativeToChangelogFile: true
-            splitStatements: false2
+            splitStatements: false
   - changeSet:
       id: v8
       author: Steve Scorfield
@@ -70,7 +70,7 @@ databaseChangeLog:
         - sqlFile:
             path: add_individual_case_id.sql
             relativeToChangelogFile: true
-            splitStatements: false2
+            splitStatements: false
   - changeSet:
       id: v9
       author: Jacob Harrison
@@ -79,7 +79,7 @@ databaseChangeLog:
         - sqlFile:
             path: add_oa.sql
             relativeToChangelogFile: true
-            splitStatements: false2
+            splitStatements: false
   - changeSet:
       id: v10
       author: Jacob Harrison
@@ -88,7 +88,7 @@ databaseChangeLog:
         - sqlFile:
             path: manager_details.sql
             relativeToChangelogFile: true
-            splitStatements: false2
+            splitStatements: false
   - changeSet:
       id: v11
       author: Jacob Harrison
@@ -97,7 +97,7 @@ databaseChangeLog:
         - sqlFile:
             path: manager_phone.sql
             relativeToChangelogFile: true
-            splitStatements: false2
+            splitStatements: false
   - changeSet:
       id: v12
       author: Jacob Harrison
@@ -106,7 +106,7 @@ databaseChangeLog:
         - sqlFile:
             path: residents_and_bedspaces.sql
             relativeToChangelogFile: true
-            splitStatements: false2
+            splitStatements: false
   - changeSet:
       id: v13
       author: Steve Scorfield
@@ -115,7 +115,7 @@ databaseChangeLog:
         - sqlFile:
             path: update_individual_case_id_varchar_value.sql
             relativeToChangelogFile: true
-            splitStatements: false2
+            splitStatements: false
   - changeSet:
       id: v14
       author: Jacob Harrison
@@ -124,7 +124,7 @@ databaseChangeLog:
         - sqlFile:
             path: add_column_original_case_id.sql
             relativeToChangelogFile: true
-            splitStatements: false2
+            splitStatements: false
   - changeSet:
       id: v15
       author: Bobby and Ramesh
@@ -133,7 +133,7 @@ databaseChangeLog:
         - sqlFile:
             path: add_column_index.sql
             relativeToChangelogFile: true
-            splitStatements: false2
+            splitStatements: false
 
   - changeSet:
       id: v16
@@ -143,13 +143,22 @@ databaseChangeLog:
         - sqlFile:
             path: quarantined_table.sql
             relativeToChangelogFile: true
-            splitStatements: false2
+            splitStatements: false
   - changeSet:
       id: v17
       author: Simon Diaz
-      comment: Add Index for Ops 
+      comment: Add Index for Ops
       changes:
         - sqlFile:
             path: add_last_action_instruction_index.sql
             relativeToChangelogFile: true
-            splitStatements: false2
+            splitStatements: false
+  - changeSet:
+      id: v18
+      author: Simon Diaz
+      comment: Rename to gateway_case_record
+      changes:
+        - sqlFile:
+            path: add_to_gateway_case_record.sql
+            relativeToChangelogFile: true
+            splitStatements: false

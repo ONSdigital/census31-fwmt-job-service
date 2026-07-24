@@ -14,10 +14,10 @@ import org.springframework.web.client.RestClientException;
 import uk.gov.ons.census.fwmt.common.error.GatewayException;
 import uk.gov.ons.census.fwmt.common.rm.dto.FwmtCancelActionInstruction;
 import uk.gov.ons.census.fwmt.events.component.GatewayEventManager;
-import uk.gov.ons.census.fwmt.jobservice.data.GatewayCache;
+import uk.gov.ons.census.fwmt.jobservice.data.GatewayCaseRecord;
 import uk.gov.ons.census.fwmt.jobservice.helper.FwmtCancelJobRequestBuilder;
 import uk.gov.ons.census.fwmt.jobservice.http.comet.CometRestClient;
-import uk.gov.ons.census.fwmt.jobservice.service.GatewayCacheService;
+import uk.gov.ons.census.fwmt.jobservice.service.GatewayCaseRecordService;
 import uk.gov.ons.census.fwmt.jobservice.service.routing.RoutingValidator;
 
 import java.time.Instant;
@@ -48,7 +48,7 @@ public class CcsCancelProcessorTest {
   private RoutingValidator routingValidator;
 
   @Mock
-  private GatewayCacheService cacheService;
+  private GatewayCaseRecordService cacheService;
 
   @Captor
   private ArgumentCaptor<String> spiedEvent;
@@ -57,7 +57,7 @@ public class CcsCancelProcessorTest {
   @DisplayName("Should send a CCS CE cancel")
   public void shouldSendACcsCeCancel() throws GatewayException {
     final FwmtCancelActionInstruction instruction = new FwmtCancelJobRequestBuilder().cancelCcsCeActionInstruction();
-    GatewayCache gatewayCache = GatewayCache.builder()
+    GatewayCaseRecord gatewayCache = GatewayCaseRecord.builder()
         .caseId("ac623e62-4f4b-11eb-ae93-0242ac130002").lastActionInstruction("CREATE").build();
     ResponseEntity<Void> responseEntity = ResponseEntity.ok().build();
     when(cometRestClient.sendClose(any())).thenReturn(responseEntity);
@@ -71,7 +71,7 @@ public class CcsCancelProcessorTest {
   @DisplayName("Should ignore a CCS CE cancel on a cancel")
   public void shouldIgnoreACcsCeCancelOnCancel() throws GatewayException {
     final FwmtCancelActionInstruction instruction = new FwmtCancelJobRequestBuilder().cancelCcsCeActionInstruction();
-    GatewayCache gatewayCache = GatewayCache.builder()
+    GatewayCaseRecord gatewayCache = GatewayCaseRecord.builder()
         .caseId("ac623e62-4f4b-11eb-ae93-0242ac130002").lastActionInstruction("CREATE").build();
     when(cometRestClient.sendClose(any())).thenThrow(new RestClientException("(400 BAD_REQUEST) {“id”:[“Case State must be Open”]}"));
     ccsInterviewCECancel.process(instruction, gatewayCache,  Instant.now());
@@ -84,7 +84,7 @@ public class CcsCancelProcessorTest {
   @DisplayName("Should send a CCS HH cancel")
   public void shouldSendACcsHhCancel() throws GatewayException {
     final FwmtCancelActionInstruction instruction = new FwmtCancelJobRequestBuilder().cancelCcsHhActionInstruction();
-    GatewayCache gatewayCache = GatewayCache.builder()
+    GatewayCaseRecord gatewayCache = GatewayCaseRecord.builder()
         .caseId("ac623e62-4f4b-11eb-ae93-0242ac130002").lastActionInstruction("CREATE").build();
     ResponseEntity<Void> responseEntity = ResponseEntity.ok().build();
     when(cometRestClient.sendClose(any())).thenReturn(responseEntity);
@@ -98,7 +98,7 @@ public class CcsCancelProcessorTest {
   @DisplayName("Should ignore a CCS HH cancel on a cancel")
   public void shouldIgnoreACcsHhCancelOnCancel() throws GatewayException {
     final FwmtCancelActionInstruction instruction = new FwmtCancelJobRequestBuilder().cancelCcsHhActionInstruction();
-    GatewayCache gatewayCache = GatewayCache.builder()
+    GatewayCaseRecord gatewayCache = GatewayCaseRecord.builder()
         .caseId("ac623e62-4f4b-11eb-ae93-0242ac130002").lastActionInstruction("CREATE").build();
     when(cometRestClient.sendClose(any())).thenThrow(new RestClientException("(400 BAD_REQUEST) {“id”:[“Case State must be Open”]}"));
     ccsInterviewHHCancel.process(instruction, gatewayCache,  Instant.now());

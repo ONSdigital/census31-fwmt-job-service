@@ -11,11 +11,11 @@ import uk.gov.ons.census.fwmt.common.error.GatewayException;
 import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstructionType;
 import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
 import uk.gov.ons.census.fwmt.events.component.GatewayEventManager;
-import uk.gov.ons.census.fwmt.jobservice.data.GatewayCache;
+import uk.gov.ons.census.fwmt.jobservice.data.GatewayCaseRecord;
 import uk.gov.ons.census.fwmt.jobservice.http.comet.CometRestClient;
 import uk.gov.ons.census.fwmt.jobservice.http.rm.RmRestClient;
 import uk.gov.ons.census.fwmt.jobservice.nc.utils.NamedHouseholderRetrieval;
-import uk.gov.ons.census.fwmt.jobservice.service.GatewayCacheService;
+import uk.gov.ons.census.fwmt.jobservice.service.GatewayCaseRecordService;
 import uk.gov.ons.census.fwmt.jobservice.service.converter.nc.NcCreateConverter;
 import uk.gov.ons.census.fwmt.jobservice.service.processor.InboundProcessor;
 import uk.gov.ons.census.fwmt.jobservice.service.processor.ProcessorKey;
@@ -51,7 +51,7 @@ public class NcHhCreateEnglandAndWales implements InboundProcessor<FwmtActionIns
   private RoutingValidator routingValidator;
 
   @Autowired
-  private GatewayCacheService cacheService;
+  private GatewayCaseRecordService cacheService;
 
   @Autowired
   private NamedHouseholderRetrieval namedHouseholderRetrieval;
@@ -62,7 +62,7 @@ public class NcHhCreateEnglandAndWales implements InboundProcessor<FwmtActionIns
   }
 
   @Override
-  public boolean isValid(FwmtActionInstruction rmRequest, GatewayCache cache) {
+  public boolean isValid(FwmtActionInstruction rmRequest, GatewayCaseRecord cache) {
     try {
       return rmRequest.getActionInstruction() == ActionInstructionType.CREATE
           && rmRequest.getSurveyName().equals("CENSUS")
@@ -74,12 +74,12 @@ public class NcHhCreateEnglandAndWales implements InboundProcessor<FwmtActionIns
   }
 
   @Override
-  public void process(FwmtActionInstruction rmRequest, GatewayCache cache, Instant messageReceivedTime)
+  public void process(FwmtActionInstruction rmRequest, GatewayCaseRecord cache, Instant messageReceivedTime)
       throws GatewayException {
     CaseDetailsDTO houseHolderDetails;
     String ncCaseId = rmRequest.getCaseId();
     String originalCaseId = rmRequest.getOldCaseId();
-    GatewayCache originalCache = cacheService.getById(originalCaseId);
+    GatewayCaseRecord originalCache = cacheService.getById(originalCaseId);
     if (originalCache == null) {
       eventManager.triggerErrorEvent(this.getClass(), NOT_EXIST_WITHIN_CACHE, originalCaseId, NC_CSV_LOAD_FAILURE);
       throw new GatewayException(GatewayException.Fault.SYSTEM_ERROR, NOT_EXIST_WITHIN_CACHE);
@@ -114,7 +114,7 @@ public class NcHhCreateEnglandAndWales implements InboundProcessor<FwmtActionIns
         "rmRequest", rmRequest.toString(),
         "cache", (cache != null) ? cache.toString() : "");
 
-    cacheService.save(GatewayCache
+    cacheService.save(GatewayCaseRecord
         .builder()
         .caseId(ncCaseId)
         .originalCaseId(originalCaseId)

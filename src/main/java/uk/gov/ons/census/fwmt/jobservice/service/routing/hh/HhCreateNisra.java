@@ -9,9 +9,9 @@ import uk.gov.ons.census.fwmt.common.error.GatewayException;
 import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstructionType;
 import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
 import uk.gov.ons.census.fwmt.events.component.GatewayEventManager;
-import uk.gov.ons.census.fwmt.jobservice.data.GatewayCache;
+import uk.gov.ons.census.fwmt.jobservice.data.GatewayCaseRecord;
 import uk.gov.ons.census.fwmt.jobservice.http.comet.CometRestClient;
-import uk.gov.ons.census.fwmt.jobservice.service.GatewayCacheService;
+import uk.gov.ons.census.fwmt.jobservice.service.GatewayCaseRecordService;
 import uk.gov.ons.census.fwmt.jobservice.service.converter.hh.HhCreateConverter;
 import uk.gov.ons.census.fwmt.jobservice.service.processor.InboundProcessor;
 import uk.gov.ons.census.fwmt.jobservice.service.processor.ProcessorKey;
@@ -44,7 +44,7 @@ public class HhCreateNisra implements InboundProcessor<FwmtActionInstruction> {
   private RoutingValidator routingValidator;
 
   @Autowired
-  private GatewayCacheService cacheService;
+  private GatewayCaseRecordService cacheService;
 
   @Override
   public ProcessorKey getKey() {
@@ -52,7 +52,7 @@ public class HhCreateNisra implements InboundProcessor<FwmtActionInstruction> {
   }
 
   @Override
-  public boolean isValid(FwmtActionInstruction rmRequest, GatewayCache cache) {
+  public boolean isValid(FwmtActionInstruction rmRequest, GatewayCaseRecord cache) {
     try {
       return rmRequest.getActionInstruction() == ActionInstructionType.CREATE
           && rmRequest.getSurveyName().equals("CENSUS")
@@ -65,7 +65,7 @@ public class HhCreateNisra implements InboundProcessor<FwmtActionInstruction> {
   }
 
   @Override
-  public void process(FwmtActionInstruction rmRequest, GatewayCache cache, Instant messageReceivedTime) throws GatewayException {
+  public void process(FwmtActionInstruction rmRequest, GatewayCaseRecord cache, Instant messageReceivedTime) throws GatewayException {
     CaseRequest tmRequest = HhCreateConverter.convertHhNisra(rmRequest, cache);
 
     eventManager.triggerEvent(String.valueOf(rmRequest.getCaseId()), COMET_CREATE_PRE_SENDING,
@@ -78,9 +78,9 @@ public class HhCreateNisra implements InboundProcessor<FwmtActionInstruction> {
         "rmRequest", rmRequest.toString(),
         "cache", (cache!=null)?cache.toString():"");
 
-    GatewayCache newCache = cacheService.getById(rmRequest.getCaseId());
+    GatewayCaseRecord newCache = cacheService.getById(rmRequest.getCaseId());
     if (newCache == null) {
-      cacheService.save(GatewayCache.builder().caseId(rmRequest.getCaseId()).existsInFwmt(true)
+      cacheService.save(GatewayCaseRecord.builder().caseId(rmRequest.getCaseId()).existsInFwmt(true)
           .uprn(rmRequest.getUprn()).estabUprn(rmRequest.getEstabUprn()).type(10)
           .lastActionInstruction(rmRequest.getActionInstruction().toString())
           .lastActionTime(messageReceivedTime).build());

@@ -6,7 +6,7 @@ import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstructionType;
 import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
-import uk.gov.ons.census.fwmt.jobservice.data.GatewayCache;
+import uk.gov.ons.census.fwmt.jobservice.data.GatewayCaseRecord;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -26,7 +26,7 @@ class HHCancelledPauseTest {
         .addressLevel("U")
         .build();
 
-    final GatewayCache cache = GatewayCache.builder()
+    final GatewayCaseRecord cache = GatewayCaseRecord.builder()
         .existsInFwmt(true)
         .lastActionInstruction("CANCEL")
         .build();

@@ -14,11 +14,11 @@ import org.springframework.web.client.RestClientException;
 import uk.gov.ons.census.fwmt.common.error.GatewayException;
 import uk.gov.ons.census.fwmt.common.rm.dto.FwmtCancelActionInstruction;
 import uk.gov.ons.census.fwmt.events.component.GatewayEventManager;
-import uk.gov.ons.census.fwmt.jobservice.data.GatewayCache;
+import uk.gov.ons.census.fwmt.jobservice.data.GatewayCaseRecord;
 import uk.gov.ons.census.fwmt.jobservice.helper.NcActionInstructionBuilder;
 import uk.gov.ons.census.fwmt.jobservice.http.comet.CometRestClient;
 import uk.gov.ons.census.fwmt.jobservice.http.rm.RmRestClient;
-import uk.gov.ons.census.fwmt.jobservice.service.GatewayCacheService;
+import uk.gov.ons.census.fwmt.jobservice.service.GatewayCaseRecordService;
 import uk.gov.ons.census.fwmt.jobservice.service.routing.RoutingValidator;
 
 import java.time.Instant;
@@ -43,10 +43,10 @@ public class NcCancelProcessorTest {
   private CometRestClient cometRestClient;
 
   @Mock
-  private GatewayCacheService cacheService;
+  private GatewayCaseRecordService cacheService;
 
   @Mock
-  private GatewayCache gatewayCache;
+  private GatewayCaseRecord gatewayCache;
 
   @Mock
   private GatewayEventManager eventManager;
@@ -61,7 +61,7 @@ public class NcCancelProcessorTest {
   private ResponseEntity<Void> responseEntity;
 
   @Captor
-  private ArgumentCaptor<GatewayCache> spiedCache;
+  private ArgumentCaptor<GatewayCaseRecord> spiedCache;
 
   @Captor
   private ArgumentCaptor<String> spiedEvent;
@@ -70,7 +70,7 @@ public class NcCancelProcessorTest {
   @DisplayName("Should send cancel NC HH caseId to TM")
   public void shouldHandleNCHHCancel() throws GatewayException {
     final FwmtCancelActionInstruction instruction = new NcActionInstructionBuilder().createNcHhCancelInstruction();
-    GatewayCache gatewayCache = GatewayCache.builder()
+    GatewayCaseRecord gatewayCache = GatewayCaseRecord.builder()
         .caseId("c66c995e-571d-11eb-ae93-0242ac130002").careCodes("Mind dog").accessInfo("1234")
         .originalCaseId("ac623e62-4f4b-11eb-ae93-0242ac130002").lastActionInstruction("CREATED").build();
     ResponseEntity<Void> responseEntity = ResponseEntity.ok().build();
@@ -90,7 +90,7 @@ public class NcCancelProcessorTest {
   @DisplayName("Should send cancel NC CE caseId to TM")
   public void shouldHandleNCCECancel() throws GatewayException {
     final FwmtCancelActionInstruction instruction = new NcActionInstructionBuilder().createNcCeCancelInstruction();
-    GatewayCache gatewayCache = GatewayCache.builder()
+    GatewayCaseRecord gatewayCache = GatewayCaseRecord.builder()
         .caseId("c66c995e-571d-11eb-ae93-0242ac130002").careCodes("Mind dog").accessInfo("1234")
         .originalCaseId("ac623e62-4f4b-11eb-ae93-0242ac130002").lastActionInstruction("CREATED").build();
     ResponseEntity<Void> responseEntity = ResponseEntity.ok().build();
@@ -110,7 +110,7 @@ public class NcCancelProcessorTest {
   @DisplayName("Should ignore a NC HH cancel on a cancel")
   public void shouldIgnoreANcHHCancelOnCancel() throws GatewayException {
     final FwmtCancelActionInstruction instruction = new NcActionInstructionBuilder().createNcHhCancelInstruction();
-    GatewayCache gatewayCache = GatewayCache.builder()
+    GatewayCaseRecord gatewayCache = GatewayCaseRecord.builder()
         .caseId("ac623e62-4f4b-11eb-ae93-0242ac130002").lastActionInstruction("CREATE").build();
     when(cometRestClient.sendClose(any())).thenThrow(new RestClientException("(400 BAD_REQUEST) {“id”:[“Case State must be Open”]}"));
     ncHhCancel.process(instruction, gatewayCache,  Instant.now());
@@ -126,7 +126,7 @@ public class NcCancelProcessorTest {
   @DisplayName("Should ignore a NC CE cancel on a cancel")
   public void shouldIgnoreANcCeCancelOnCancel() throws GatewayException {
     final FwmtCancelActionInstruction instruction = new NcActionInstructionBuilder().createNcCeCancelInstruction();
-    GatewayCache gatewayCache = GatewayCache.builder()
+    GatewayCaseRecord gatewayCache = GatewayCaseRecord.builder()
         .caseId("ac623e62-4f4b-11eb-ae93-0242ac130002").lastActionInstruction("CREATE").build();
     when(cometRestClient.sendClose(any())).thenThrow(new RestClientException("(400 BAD_REQUEST) {“id”:[“Case State must be Open”]}"));
     ncCeCancel.process(instruction, gatewayCache,  Instant.now());

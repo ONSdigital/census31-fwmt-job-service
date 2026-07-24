@@ -7,7 +7,7 @@ import uk.gov.ons.census.fwmt.jobservice.repository.MessageCacheRepository;
 
 /**
  * This class is bare-bones because it's a simple connector between the rest of the code and the caching implementation
- * Please don't subvert this class by touching the GatewayCacheRepository
+ * Please don't subvert this class by touching the GatewayCaseRecordRepository
  * If we ever change from a database to redis, this class will form the breaking point
  */
 

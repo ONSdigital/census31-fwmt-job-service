@@ -14,10 +14,10 @@ import uk.gov.ons.census.fwmt.common.data.tm.CaseRequest;
 import uk.gov.ons.census.fwmt.common.error.GatewayException;
 import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
 import uk.gov.ons.census.fwmt.events.component.GatewayEventManager;
-import uk.gov.ons.census.fwmt.jobservice.data.GatewayCache;
+import uk.gov.ons.census.fwmt.jobservice.data.GatewayCaseRecord;
 import uk.gov.ons.census.fwmt.jobservice.hh.HhRequestBuilder;
 import uk.gov.ons.census.fwmt.jobservice.http.comet.CometRestClient;
-import uk.gov.ons.census.fwmt.jobservice.service.GatewayCacheService;
+import uk.gov.ons.census.fwmt.jobservice.service.GatewayCaseRecordService;
 import uk.gov.ons.census.fwmt.jobservice.service.routing.RoutingValidator;
 
 import java.time.Instant;
@@ -38,10 +38,10 @@ public class HhUpdateNisraProcessorTest {
   private CometRestClient cometRestClient;
 
   @Mock
-  private GatewayCacheService cacheService;
+  private GatewayCaseRecordService cacheService;
 
   @Mock
-  private GatewayCache gatewayCache;
+  private GatewayCaseRecord gatewayCache;
 
   @Mock
   private GatewayEventManager eventManager;
@@ -50,7 +50,7 @@ public class HhUpdateNisraProcessorTest {
   private RoutingValidator routingValidator;
 
   @Captor
-  private ArgumentCaptor<GatewayCache> spiedCache;
+  private ArgumentCaptor<GatewayCaseRecord> spiedCache;
 
   @Captor
   private ArgumentCaptor<CaseRequest> tmRequest;
@@ -59,7 +59,7 @@ public class HhUpdateNisraProcessorTest {
   @DisplayName("Should send NISRA required officer to TM as update ")
   public void shouldSendNisraRequiredOfficerToTmAsUpdate() throws GatewayException {
     final FwmtActionInstruction instruction = HhRequestBuilder.updateActionInstruction();
-    GatewayCache gatewayCache = GatewayCache.builder()
+    GatewayCaseRecord gatewayCache = GatewayCaseRecord.builder()
         .caseId("ac623e62-4f4b-11eb-ae93-0242ac130002").build();
     when(cacheService.getById(anyString())).thenReturn(gatewayCache);
     ResponseEntity<Void> responseEntity = ResponseEntity.ok().build();

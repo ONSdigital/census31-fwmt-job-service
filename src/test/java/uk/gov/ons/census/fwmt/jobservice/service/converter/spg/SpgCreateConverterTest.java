@@ -6,18 +6,18 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import uk.gov.ons.census.fwmt.common.data.tm.CaseRequest;
 import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
-import uk.gov.ons.census.fwmt.jobservice.data.GatewayCache;
+import uk.gov.ons.census.fwmt.jobservice.data.GatewayCaseRecord;
 import uk.gov.ons.census.fwmt.jobservice.helper.SpgActionInstructionBuilder;
 
 class SpgCreateConverterTest {
     @Mock
-    private GatewayCache gatewayCache;
+    private GatewayCaseRecord gatewayCache;
 
     @Test
     @DisplayName("Should include careCodes to in description for SPG Site")
     public void shouldIncludeCareCodesInDescriptionForSpgSite() {
         final FwmtActionInstruction actionInstruction = new SpgActionInstructionBuilder().createSpgSite();
-        GatewayCache gatewayCache = GatewayCache.builder()
+        GatewayCaseRecord gatewayCache = GatewayCaseRecord.builder()
             .caseId("ac623e62-4f4b-11eb-ae93-0242ac130002").careCodes("Mind dog").accessInfo("1234").build();
         CaseRequest spgSite = SpgCreateConverter.convertSite(actionInstruction, gatewayCache);
         String expectedSpecialInstruction = gatewayCache.accessInfo + "\n" + gatewayCache.careCodes + "\n";
@@ -29,7 +29,7 @@ class SpgCreateConverterTest {
     @DisplayName("Should include careCodes to in description for SPG Unit-F")
     public void shouldIncludeCareCodesInDescriptionForSpgUnitFollowup() {
         final FwmtActionInstruction actionInstruction = new SpgActionInstructionBuilder().createSpgUnitFollowup();
-        GatewayCache gatewayCache = GatewayCache.builder()
+        GatewayCaseRecord gatewayCache = GatewayCaseRecord.builder()
             .caseId("ac623e62-4f4b-11eb-ae93-0242ac130002").careCodes("Mind dog").accessInfo("1234").build();
         CaseRequest spgSite = SpgCreateConverter.convertSite(actionInstruction, gatewayCache);
         String expectedSpecialInstruction = gatewayCache.accessInfo + "\n" + gatewayCache.careCodes + "\n";
