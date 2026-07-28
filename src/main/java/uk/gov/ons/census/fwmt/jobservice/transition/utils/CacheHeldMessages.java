@@ -8,9 +8,9 @@ import org.springframework.stereotype.Component;
 import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
 import uk.gov.ons.census.fwmt.common.rm.dto.FwmtCancelActionInstruction;
 import uk.gov.ons.census.fwmt.events.component.GatewayEventManager;
-import uk.gov.ons.census.fwmt.jobservice.data.GatewayCache;
+import uk.gov.ons.census.fwmt.jobservice.data.GatewayCaseRecord;
 import uk.gov.ons.census.fwmt.jobservice.data.MessageCache;
-import uk.gov.ons.census.fwmt.jobservice.service.GatewayCacheService;
+import uk.gov.ons.census.fwmt.jobservice.service.GatewayCaseRecordService;
 import uk.gov.ons.census.fwmt.jobservice.service.MessageCacheService;
 
 import java.time.Instant;
@@ -22,7 +22,7 @@ import static uk.gov.ons.census.fwmt.jobservice.config.GatewayEventsConfig.MESSA
 public class CacheHeldMessages {
 
   @Autowired
-  private GatewayCacheService cacheService;
+  private GatewayCaseRecordService cacheService;
 
   @Autowired
   private GatewayEventManager eventManager;
@@ -30,7 +30,7 @@ public class CacheHeldMessages {
   @Autowired
   private MessageCacheService messageCacheService;
 
-  public void cacheMessage(MessageCache messageCache, GatewayCache cache, Object rmRequest, Instant messageQueueTime) {
+  public void cacheMessage(MessageCache messageCache, GatewayCaseRecord cache, Object rmRequest, Instant messageQueueTime) {
     int type = 0;
     String actionInstruction;
     String addressLevel;
@@ -58,7 +58,7 @@ public class CacheHeldMessages {
     }
 
     if (cache == null) {
-      cacheService.save(GatewayCache.builder().caseId(caseId).existsInFwmt(false)
+      cacheService.save(GatewayCaseRecord.builder().caseId(caseId).existsInFwmt(false)
           .lastActionTime(messageQueueTime).lastActionInstruction(actionInstruction).type(type).build());
     } else {
       cacheService.save(cache.toBuilder().lastActionTime(messageQueueTime)

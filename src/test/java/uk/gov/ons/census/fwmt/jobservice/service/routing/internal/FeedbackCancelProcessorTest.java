@@ -14,10 +14,10 @@ import org.springframework.web.client.RestClientException;
 import uk.gov.ons.census.fwmt.common.error.GatewayException;
 import uk.gov.ons.census.fwmt.common.rm.dto.FwmtCancelActionInstruction;
 import uk.gov.ons.census.fwmt.events.component.GatewayEventManager;
-import uk.gov.ons.census.fwmt.jobservice.data.GatewayCache;
+import uk.gov.ons.census.fwmt.jobservice.data.GatewayCaseRecord;
 import uk.gov.ons.census.fwmt.jobservice.helper.FwmtCancelJobRequestBuilder;
 import uk.gov.ons.census.fwmt.jobservice.http.comet.CometRestClient;
-import uk.gov.ons.census.fwmt.jobservice.service.GatewayCacheService;
+import uk.gov.ons.census.fwmt.jobservice.service.GatewayCaseRecordService;
 import uk.gov.ons.census.fwmt.jobservice.service.routing.RoutingValidator;
 
 import java.time.Instant;
@@ -46,10 +46,10 @@ public class FeedbackCancelProcessorTest {
   private RoutingValidator routingValidator;
 
   @Mock
-  private GatewayCacheService cacheService;
+  private GatewayCaseRecordService cacheService;
 
   @Captor
-  private ArgumentCaptor<GatewayCache> spiedCache;
+  private ArgumentCaptor<GatewayCaseRecord> spiedCache;
 
   @Captor
   private ArgumentCaptor<String> spiedEvent;
@@ -58,7 +58,7 @@ public class FeedbackCancelProcessorTest {
   @DisplayName("Should send a Feedback cancel")
   public void shouldSendAFeedbackCancel() throws GatewayException {
     final FwmtCancelActionInstruction instruction = new FwmtCancelJobRequestBuilder().cancelFeedbackActionInstruction();
-    GatewayCache gatewayCache = GatewayCache.builder()
+    GatewayCaseRecord gatewayCache = GatewayCaseRecord.builder()
         .caseId("ac623e62-4f4b-11eb-ae93-0242ac130002").lastActionInstruction("CREATE").build();
     ResponseEntity<Void> responseEntity = ResponseEntity.ok().build();
     when(cometRestClient.sendClose(any())).thenReturn(responseEntity);
@@ -76,7 +76,7 @@ public class FeedbackCancelProcessorTest {
   @DisplayName("Should ignore a Feedback cancel on a cancel")
   public void shouldIgnoreAFeedbackCancelOnCancel() throws GatewayException {
     final FwmtCancelActionInstruction instruction = new FwmtCancelJobRequestBuilder().cancelFeedbackActionInstruction();
-    GatewayCache gatewayCache = GatewayCache.builder()
+    GatewayCaseRecord gatewayCache = GatewayCaseRecord.builder()
         .caseId("ac623e62-4f4b-11eb-ae93-0242ac130002").lastActionInstruction("CREATE").build();
     when(cometRestClient.sendClose(any())).thenThrow(new RestClientException("(400 BAD_REQUEST) {“id”:[“Case State must be Open”]}"));
     when(cacheService.getById(anyString())).thenReturn(gatewayCache);

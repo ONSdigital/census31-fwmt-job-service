@@ -10,10 +10,10 @@ import uk.gov.ons.census.fwmt.common.error.GatewayException;
 import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstructionType;
 import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
 import uk.gov.ons.census.fwmt.events.component.GatewayEventManager;
-import uk.gov.ons.census.fwmt.jobservice.data.GatewayCache;
+import uk.gov.ons.census.fwmt.jobservice.data.GatewayCaseRecord;
 import uk.gov.ons.census.fwmt.jobservice.http.comet.CometRestClient;
 import uk.gov.ons.census.fwmt.jobservice.messaging.RmFieldMessagePublisher;
-import uk.gov.ons.census.fwmt.jobservice.service.GatewayCacheService;
+import uk.gov.ons.census.fwmt.jobservice.service.GatewayCaseRecordService;
 import uk.gov.ons.census.fwmt.jobservice.service.converter.spg.SpgUpdateConverter;
 import uk.gov.ons.census.fwmt.jobservice.service.processor.InboundProcessor;
 import uk.gov.ons.census.fwmt.jobservice.service.processor.ProcessorKey;
@@ -52,7 +52,7 @@ public class SpgUpdateUnitProcessor implements InboundProcessor<FwmtActionInstru
   private RoutingValidator routingValidator;
 
   @Autowired
-  private GatewayCacheService cacheService;
+  private GatewayCaseRecordService cacheService;
 
   // TODO This should faile or we should have a test
   // @Autowired
@@ -67,7 +67,7 @@ public class SpgUpdateUnitProcessor implements InboundProcessor<FwmtActionInstru
   }
 
   @Override
-  public boolean isValid(FwmtActionInstruction rmRequest, GatewayCache cache) {
+  public boolean isValid(FwmtActionInstruction rmRequest, GatewayCaseRecord cache) {
     try {
       return rmRequest.getActionInstruction() == ActionInstructionType.UPDATE
           && rmRequest.getSurveyName().equals("CENSUS")
@@ -80,7 +80,7 @@ public class SpgUpdateUnitProcessor implements InboundProcessor<FwmtActionInstru
   }
 
   @Override
-  public void process(FwmtActionInstruction rmRequest, GatewayCache cache, Instant messageReceivedTime) throws GatewayException {
+  public void process(FwmtActionInstruction rmRequest, GatewayCaseRecord cache, Instant messageReceivedTime) throws GatewayException {
     boolean alreadyCancelled = false;
     ResponseEntity<Void> response = null;
 
@@ -129,7 +129,7 @@ public class SpgUpdateUnitProcessor implements InboundProcessor<FwmtActionInstru
           "rmRequest", rmRequest.toString(),
           "cache", (cache != null) ? cache.toString() : "");
 
-      GatewayCache newCache = cacheService.getById(rmRequest.getCaseId());
+      GatewayCaseRecord newCache = cacheService.getById(rmRequest.getCaseId());
       if (newCache != null) {
         cacheService.save(newCache.toBuilder().lastActionInstruction(rmRequest.getActionInstruction().toString())
             .lastActionTime(messageReceivedTime)

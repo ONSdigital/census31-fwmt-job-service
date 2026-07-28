@@ -15,9 +15,9 @@ import uk.gov.ons.census.fwmt.common.data.tm.SurveyType;
 import uk.gov.ons.census.fwmt.common.error.GatewayException;
 import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
 import uk.gov.ons.census.fwmt.events.component.GatewayEventManager;
-import uk.gov.ons.census.fwmt.jobservice.data.GatewayCache;
+import uk.gov.ons.census.fwmt.jobservice.data.GatewayCaseRecord;
 import uk.gov.ons.census.fwmt.jobservice.http.comet.CometRestClient;
-import uk.gov.ons.census.fwmt.jobservice.service.GatewayCacheService;
+import uk.gov.ons.census.fwmt.jobservice.service.GatewayCaseRecordService;
 import uk.gov.ons.census.fwmt.jobservice.service.routing.RoutingValidator;
 
 import java.time.Instant;
@@ -44,10 +44,10 @@ public class CeSwitchCreateProcessorTest {
   private RoutingValidator routingValidator;
 
   @Mock
-  private GatewayCacheService cacheService;
+  private GatewayCaseRecordService cacheService;
 
   @Captor
-  private ArgumentCaptor<GatewayCache> spiedCache;
+  private ArgumentCaptor<GatewayCaseRecord> spiedCache;
 
   @Captor
   private ArgumentCaptor<String> spiedEvent;
@@ -56,8 +56,8 @@ public class CeSwitchCreateProcessorTest {
     return FwmtActionInstruction.builder().caseRef("345").build();
   }
 
-  private GatewayCache createGatewayCache(String caseId, int type, int usualResidents) {
-    return GatewayCache.builder().caseId(caseId).type(type).usualResidents(usualResidents).build();
+  private GatewayCaseRecord createGatewayCache(String caseId, int type, int usualResidents) {
+    return GatewayCaseRecord.builder().caseId(caseId).type(type).usualResidents(usualResidents).build();
   }
 
   @Test
@@ -77,7 +77,7 @@ public class CeSwitchCreateProcessorTest {
     final FwmtActionInstruction instruction = createInstruction();
     instruction.setSurveyType(SurveyType.CE_SITE);
     instruction.setCaseId("1234");
-    GatewayCache cache = createGatewayCache("1234", 1, 10);
+    GatewayCaseRecord cache = createGatewayCache("1234", 1, 10);
     ResponseEntity<Void> responseEntity = ResponseEntity.ok().build();
     when(cometRestClient.sendClose(any())).thenReturn(responseEntity);
     ceSwitchCreateProcessor.process(instruction, cache, Instant.now());
@@ -92,7 +92,7 @@ public class CeSwitchCreateProcessorTest {
     final FwmtActionInstruction instruction = createInstruction();
     instruction.setSurveyType(SurveyType.CE_SITE);
     instruction.setCaseId("1234");
-    GatewayCache cache = createGatewayCache("1234", 1, 10);
+    GatewayCaseRecord cache = createGatewayCache("1234", 1, 10);
     when(cometRestClient.sendClose(any())).thenThrow(new RestClientException("(400 BAD_REQUEST) {“id”:[“Case State must be Open”]}"));
     ceSwitchCreateProcessor.process(instruction, cache,  Instant.now());
     verify(eventManager, atLeast(2)).triggerEvent(any(), spiedEvent.capture(), any(String[].class));

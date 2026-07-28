@@ -15,11 +15,11 @@ import uk.gov.ons.census.fwmt.common.data.tm.CaseRequest;
 import uk.gov.ons.census.fwmt.common.error.GatewayException;
 import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
 import uk.gov.ons.census.fwmt.events.component.GatewayEventManager;
-import uk.gov.ons.census.fwmt.jobservice.data.GatewayCache;
+import uk.gov.ons.census.fwmt.jobservice.data.GatewayCaseRecord;
 import uk.gov.ons.census.fwmt.jobservice.helper.NcActionInstructionBuilder;
 import uk.gov.ons.census.fwmt.jobservice.http.comet.CometRestClient;
 import uk.gov.ons.census.fwmt.jobservice.http.rm.RmRestClient;
-import uk.gov.ons.census.fwmt.jobservice.service.GatewayCacheService;
+import uk.gov.ons.census.fwmt.jobservice.service.GatewayCaseRecordService;
 import uk.gov.ons.census.fwmt.jobservice.service.routing.RoutingValidator;
 
 import java.time.Instant;
@@ -40,10 +40,10 @@ public class NcCreateProcessorTest {
   private CometRestClient cometRestClient;
 
   @Mock
-  private GatewayCacheService cacheService;
+  private GatewayCaseRecordService cacheService;
 
   @Mock
-  private GatewayCache gatewayCache;
+  private GatewayCaseRecord gatewayCache;
 
   @Mock
   private GatewayEventManager eventManager;
@@ -55,13 +55,13 @@ public class NcCreateProcessorTest {
   private RoutingValidator routingValidator;
 
   @Captor
-  private ArgumentCaptor<GatewayCache> spiedCache;
+  private ArgumentCaptor<GatewayCaseRecord> spiedCache;
 
   @Test
   @DisplayName("Should save the original case id")
   public void shouldHandleIncorrectSurveyTypeCE() throws GatewayException {
     final FwmtActionInstruction instruction = new NcActionInstructionBuilder().createNcActionInstruction();
-    final GatewayCache originalCache = GatewayCache.builder()
+    final GatewayCaseRecord originalCache = GatewayCaseRecord.builder()
         .caseId("ac623e62-4f4b-11eb-ae93-0242ac130002").careCodes("Mind dog").accessInfo("1234").build();
 
     ResponseEntity<Void> responseEntity = ResponseEntity.ok().build();
@@ -79,7 +79,7 @@ public class NcCreateProcessorTest {
   public void shouldHandleNullRefusalValue() throws GatewayException {
     final FwmtActionInstruction instruction = new NcActionInstructionBuilder().createNcActionInstruction();
     final CaseDetailsDTO caseDetailsDTO = new CaseDetailsDTO();
-    final GatewayCache originalCache = new GatewayCache();
+    final GatewayCaseRecord originalCache = new GatewayCaseRecord();
 
     when(cacheService.getById(anyString())).thenReturn(originalCache);
     when(rmRestClient.getCase(instruction.getOldCaseId())).thenReturn(caseDetailsDTO);

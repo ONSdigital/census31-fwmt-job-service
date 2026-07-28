@@ -9,9 +9,9 @@ import uk.gov.ons.census.fwmt.common.error.GatewayException;
 import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstructionType;
 import uk.gov.ons.census.fwmt.common.rm.dto.FwmtCancelActionInstruction;
 import uk.gov.ons.census.fwmt.events.component.GatewayEventManager;
-import uk.gov.ons.census.fwmt.jobservice.data.GatewayCache;
+import uk.gov.ons.census.fwmt.jobservice.data.GatewayCaseRecord;
 import uk.gov.ons.census.fwmt.jobservice.http.comet.CometRestClient;
-import uk.gov.ons.census.fwmt.jobservice.service.GatewayCacheService;
+import uk.gov.ons.census.fwmt.jobservice.service.GatewayCaseRecordService;
 import uk.gov.ons.census.fwmt.jobservice.service.processor.InboundProcessor;
 import uk.gov.ons.census.fwmt.jobservice.service.processor.ProcessorKey;
 import uk.gov.ons.census.fwmt.jobservice.service.routing.RoutingValidator;
@@ -46,7 +46,7 @@ public class NcCeCancel implements InboundProcessor<FwmtCancelActionInstruction>
   private RoutingValidator routingValidator;
 
   @Autowired
-  private GatewayCacheService cacheService;
+  private GatewayCaseRecordService cacheService;
 
   @Override public ProcessorKey getKey() {
     return key;
@@ -57,7 +57,7 @@ public class NcCeCancel implements InboundProcessor<FwmtCancelActionInstruction>
     //       this cancel MUST send the NC Case Id to TM!
 
   @Override
-  public boolean isValid(FwmtCancelActionInstruction rmRequest, GatewayCache cache) {
+  public boolean isValid(FwmtCancelActionInstruction rmRequest, GatewayCaseRecord cache) {
     try {
       return rmRequest.getActionInstruction() == ActionInstructionType.CANCEL
           && rmRequest.getSurveyName().equals("CENSUS")
@@ -71,7 +71,7 @@ public class NcCeCancel implements InboundProcessor<FwmtCancelActionInstruction>
   }
 
   @Override
-  public void process(FwmtCancelActionInstruction rmRequest, GatewayCache cache, Instant messageReceivedTime)
+  public void process(FwmtCancelActionInstruction rmRequest, GatewayCaseRecord cache, Instant messageReceivedTime)
       throws GatewayException {
     boolean alreadyCancelled = false;
     ResponseEntity<Void> response = null;

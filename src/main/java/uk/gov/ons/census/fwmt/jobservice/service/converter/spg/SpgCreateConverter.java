@@ -6,7 +6,7 @@ import uk.gov.ons.census.fwmt.common.data.tm.CeCaseExtension;
 import uk.gov.ons.census.fwmt.common.data.tm.Geography;
 import uk.gov.ons.census.fwmt.common.data.tm.SurveyType;
 import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
-import uk.gov.ons.census.fwmt.jobservice.data.GatewayCache;
+import uk.gov.ons.census.fwmt.jobservice.data.GatewayCaseRecord;
 import uk.gov.ons.census.fwmt.jobservice.service.converter.common.CommonCreateConverter;
 
 import java.util.List;
@@ -20,7 +20,7 @@ public final class SpgCreateConverter {
   }
 
   public static CaseRequest.CaseRequestBuilder convertSPG(
-      FwmtActionInstruction ffu, GatewayCache cache, CaseRequest.CaseRequestBuilder builder) {
+      FwmtActionInstruction ffu, GatewayCaseRecord cache, CaseRequest.CaseRequestBuilder builder) {
 
     CaseRequest.CaseRequestBuilder commonBuilder = CommonCreateConverter.convertCommon(ffu, cache, builder);
     commonBuilder.requiredOfficer(ffu.getFieldOfficerId());
@@ -50,7 +50,7 @@ public final class SpgCreateConverter {
     return commonBuilder;
   }
 
-  public static CaseRequest convertSecureSite(FwmtActionInstruction ffu, GatewayCache cache) {
+  public static CaseRequest convertSecureSite(FwmtActionInstruction ffu, GatewayCaseRecord cache) {
     return SpgCreateConverter.convertSPG(ffu, cache, CaseRequest.builder())
         .surveyType(SurveyType.SPG_Site)
         .reference("SECSS_" + ffu.getCaseRef())
@@ -58,7 +58,7 @@ public final class SpgCreateConverter {
         .specialInstructions(getSpecialInstructions(cache))
         .build();
   }
-  public static CaseRequest convertSecureUnitFollowup(FwmtActionInstruction ffu, GatewayCache cache) {
+  public static CaseRequest convertSecureUnitFollowup(FwmtActionInstruction ffu, GatewayCaseRecord cache) {
     return SpgCreateConverter.convertSPG(ffu, cache, CaseRequest.builder())
         .surveyType(SurveyType.SPG_Unit_F)    
         .reference("SECSU_" + ffu.getCaseRef())
@@ -67,7 +67,7 @@ public final class SpgCreateConverter {
         .build();
   }
 
-  public static CaseRequest convertSite(FwmtActionInstruction ffu, GatewayCache cache) {
+  public static CaseRequest convertSite(FwmtActionInstruction ffu, GatewayCaseRecord cache) {
     return SpgCreateConverter.convertSPG(ffu, cache, CaseRequest.builder())
         .surveyType(SurveyType.SPG_Site)
         .description(getCareCodes(cache))
@@ -75,7 +75,7 @@ public final class SpgCreateConverter {
         .build();
   }
 
-  public static CaseRequest convertUnitDeliver(FwmtActionInstruction ffu, GatewayCache cache) {
+  public static CaseRequest convertUnitDeliver(FwmtActionInstruction ffu, GatewayCaseRecord cache) {
     return SpgCreateConverter.convertSPG(ffu, cache, CaseRequest.builder())
         .surveyType(SurveyType.SPG_Unit_D)
         .description(getCareCodes(cache))
@@ -83,7 +83,7 @@ public final class SpgCreateConverter {
         .build();
   }
 
-  public static CaseRequest convertUnitFollowup(FwmtActionInstruction ffu, GatewayCache cache) {
+  public static CaseRequest convertUnitFollowup(FwmtActionInstruction ffu, GatewayCaseRecord cache) {
     return SpgCreateConverter.convertSPG(ffu, cache, CaseRequest.builder())
         .surveyType(SurveyType.SPG_Unit_F)
         .description(getCareCodes(cache))
@@ -91,14 +91,14 @@ public final class SpgCreateConverter {
         .build();
   }
 
-  private static String getCareCodes(GatewayCache cache) {
+  private static String getCareCodes(GatewayCaseRecord cache) {
     if (cache != null && cache.getCareCodes() != null && !cache.getCareCodes().isEmpty()) {
       return cache.getCareCodes() + "\n";
     }
     return "";
   }
 
-  private static String getSpecialInstructions(GatewayCache cache) {
+  private static String getSpecialInstructions(GatewayCaseRecord cache) {
     StringBuilder instruction = new StringBuilder();
     if (cache != null && cache.getAccessInfo() != null && !cache.getAccessInfo().isEmpty()) {
       instruction.append(cache.getAccessInfo());

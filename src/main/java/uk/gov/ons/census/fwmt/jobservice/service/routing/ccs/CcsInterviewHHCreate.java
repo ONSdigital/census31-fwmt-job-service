@@ -10,9 +10,9 @@ import uk.gov.ons.census.fwmt.common.error.GatewayException;
 import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstructionType;
 import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
 import uk.gov.ons.census.fwmt.events.component.GatewayEventManager;
-import uk.gov.ons.census.fwmt.jobservice.data.GatewayCache;
+import uk.gov.ons.census.fwmt.jobservice.data.GatewayCaseRecord;
 import uk.gov.ons.census.fwmt.jobservice.http.comet.CometRestClient;
-import uk.gov.ons.census.fwmt.jobservice.service.GatewayCacheService;
+import uk.gov.ons.census.fwmt.jobservice.service.GatewayCaseRecordService;
 import uk.gov.ons.census.fwmt.jobservice.service.converter.ccs.CcsInterviewCreateConverter;
 import uk.gov.ons.census.fwmt.jobservice.service.processor.InboundProcessor;
 import uk.gov.ons.census.fwmt.jobservice.service.processor.ProcessorKey;
@@ -48,7 +48,7 @@ public class CcsInterviewHHCreate implements InboundProcessor<FwmtActionInstruct
   private RoutingValidator routingValidator;
 
   @Autowired
-  private GatewayCacheService cacheService;
+  private GatewayCaseRecordService cacheService;
 
   @Override
   public ProcessorKey getKey() {
@@ -56,7 +56,7 @@ public class CcsInterviewHHCreate implements InboundProcessor<FwmtActionInstruct
   }
 
   @Override
-  public boolean isValid(FwmtActionInstruction rmRequest, GatewayCache cache) {
+  public boolean isValid(FwmtActionInstruction rmRequest, GatewayCaseRecord cache) {
     try {
       return rmRequest.getActionInstruction() == ActionInstructionType.CREATE
           && rmRequest.getSurveyName().equals("CCS")
@@ -69,7 +69,7 @@ public class CcsInterviewHHCreate implements InboundProcessor<FwmtActionInstruct
   }
 
   @Override
-  public void process(FwmtActionInstruction rmRequest, GatewayCache cache, Instant messageReceivedTime)
+  public void process(FwmtActionInstruction rmRequest, GatewayCaseRecord cache, Instant messageReceivedTime)
       throws GatewayException {
     CaseRequest tmRequest = CcsInterviewCreateConverter.convertCcsInterview(rmRequest, cache, eqUrl);
 
@@ -80,7 +80,7 @@ public class CcsInterviewHHCreate implements InboundProcessor<FwmtActionInstruct
     ResponseEntity<Void> response = cometRestClient.sendCreate(tmRequest, rmRequest.getCaseId());
     routingValidator.validateResponseCode(response, rmRequest.getCaseId(), "Create", FAILED_TO_CREATE_TM_JOB);
 
-    GatewayCache newCache = cacheService.getById(rmRequest.getCaseId());
+    GatewayCaseRecord newCache = cacheService.getById(rmRequest.getCaseId());
     if (newCache != null) {
       cacheService.save(newCache.toBuilder()
           .caseId(rmRequest.getCaseId())

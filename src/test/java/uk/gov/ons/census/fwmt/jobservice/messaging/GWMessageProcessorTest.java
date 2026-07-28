@@ -15,7 +15,7 @@ import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
 import uk.gov.ons.census.fwmt.common.rm.dto.FwmtCancelActionInstruction;
 import uk.gov.ons.census.fwmt.common.rm.dto.FwmtCommonInstruction;
 import uk.gov.ons.census.fwmt.events.component.GatewayEventManager;
-import uk.gov.ons.census.fwmt.jobservice.service.GatewayCacheService;
+import uk.gov.ons.census.fwmt.jobservice.service.GatewayCaseRecordService;
 import uk.gov.ons.census.fwmt.jobservice.service.JobService;
 
 import java.time.Instant;
@@ -32,7 +32,7 @@ class GWMessageProcessorTest {
   private GWMessageProcessor gwMessageProcessor;
 
   @Mock
-  private GatewayCacheService cacheService;
+  private GatewayCaseRecordService cacheService;
 
   @Mock
   private JobService jobService;

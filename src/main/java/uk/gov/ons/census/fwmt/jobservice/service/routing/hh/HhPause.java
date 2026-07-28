@@ -10,9 +10,9 @@ import uk.gov.ons.census.fwmt.common.error.GatewayException;
 import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstructionType;
 import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
 import uk.gov.ons.census.fwmt.events.component.GatewayEventManager;
-import uk.gov.ons.census.fwmt.jobservice.data.GatewayCache;
+import uk.gov.ons.census.fwmt.jobservice.data.GatewayCaseRecord;
 import uk.gov.ons.census.fwmt.jobservice.http.comet.CometRestClient;
-import uk.gov.ons.census.fwmt.jobservice.service.GatewayCacheService;
+import uk.gov.ons.census.fwmt.jobservice.service.GatewayCaseRecordService;
 import uk.gov.ons.census.fwmt.jobservice.service.converter.hh.HhPauseConverter;
 import uk.gov.ons.census.fwmt.jobservice.service.processor.InboundProcessor;
 import uk.gov.ons.census.fwmt.jobservice.service.processor.ProcessorKey;
@@ -50,7 +50,7 @@ public class HhPause implements InboundProcessor<FwmtActionInstruction> {
   private RoutingValidator routingValidator;
 
   @Autowired
-  private GatewayCacheService cacheService;
+  private GatewayCaseRecordService cacheService;
 
   @Override
   public ProcessorKey getKey() {
@@ -58,7 +58,7 @@ public class HhPause implements InboundProcessor<FwmtActionInstruction> {
   }
 
   @Override
-  public boolean isValid(FwmtActionInstruction rmRequest, GatewayCache cache) {
+  public boolean isValid(FwmtActionInstruction rmRequest, GatewayCaseRecord cache) {
     try {
       return rmRequest.getActionInstruction() == ActionInstructionType.PAUSE
           && rmRequest.getSurveyName().equals("CENSUS")
@@ -71,7 +71,7 @@ public class HhPause implements InboundProcessor<FwmtActionInstruction> {
   }
 
   @Override
-  public void process(FwmtActionInstruction rmRequest, GatewayCache cache, Instant messageReceivedTime) throws GatewayException {
+  public void process(FwmtActionInstruction rmRequest, GatewayCaseRecord cache, Instant messageReceivedTime) throws GatewayException {
 
     boolean alreadyCancelled = false;
     ResponseEntity<Void> response = null;
@@ -102,7 +102,7 @@ public class HhPause implements InboundProcessor<FwmtActionInstruction> {
     }
 
     if (response != null && !alreadyCancelled) {
-      GatewayCache newCache = cacheService.getById(rmRequest.getCaseId());
+      GatewayCaseRecord newCache = cacheService.getById(rmRequest.getCaseId());
       if (newCache != null) {
         cacheService.save(newCache.toBuilder().lastActionInstruction(ActionInstructionType.CANCEL.toString())
             .lastActionTime(messageReceivedTime)

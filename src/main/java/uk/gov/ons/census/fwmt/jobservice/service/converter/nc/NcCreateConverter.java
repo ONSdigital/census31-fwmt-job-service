@@ -2,7 +2,7 @@ package uk.gov.ons.census.fwmt.jobservice.service.converter.nc;
 
 import uk.gov.ons.census.fwmt.common.data.tm.*;
 import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
-import uk.gov.ons.census.fwmt.jobservice.data.GatewayCache;
+import uk.gov.ons.census.fwmt.jobservice.data.GatewayCaseRecord;
 import uk.gov.ons.census.fwmt.jobservice.service.converter.common.CommonCreateConverter;
 
 import java.util.List;
@@ -14,7 +14,7 @@ public class NcCreateConverter {
   }
 
   public static CaseRequest.CaseRequestBuilder convertNC(
-      FwmtActionInstruction ffu, GatewayCache cache, CaseRequest.CaseRequestBuilder builder) {
+      FwmtActionInstruction ffu, GatewayCaseRecord cache, CaseRequest.CaseRequestBuilder builder) {
     CaseRequest.CaseRequestBuilder commonBuilder = CommonCreateConverter.convertCommon(ffu, cache, builder);
 
     commonBuilder.reference(ffu.getCaseRef());
@@ -55,8 +55,8 @@ public class NcCreateConverter {
     return commonBuilder;
   }
 
-  public static CaseRequest convertHhNcEnglandAndWales(FwmtActionInstruction ffu, GatewayCache cache, String householder,
-      GatewayCache previousDetails) {
+  public static CaseRequest convertHhNcEnglandAndWales(FwmtActionInstruction ffu, GatewayCaseRecord cache, String householder,
+      GatewayCaseRecord previousDetails) {
     return NcCreateConverter
         .convertNC(ffu, cache, CaseRequest.builder())
         .category("HH")
@@ -66,8 +66,8 @@ public class NcCreateConverter {
         .build();
   }
 
-  public static CaseRequest convertCeNcEnglandAndWales(FwmtActionInstruction ffu, GatewayCache cache, String householder,
-      GatewayCache previousDetails) {
+  public static CaseRequest convertCeNcEnglandAndWales(FwmtActionInstruction ffu, GatewayCaseRecord cache, String householder,
+      GatewayCaseRecord previousDetails) {
     return NcCreateConverter
         .convertNC(ffu, cache, CaseRequest.builder())
         .category("CE")
@@ -77,7 +77,7 @@ public class NcCreateConverter {
         .build();
   }
 
-  private static String getDescription(FwmtActionInstruction ffu, GatewayCache cache, String householder) {
+  private static String getDescription(FwmtActionInstruction ffu, GatewayCaseRecord cache, String householder) {
     StringBuilder description = new StringBuilder();
     if (cache != null && cache.getCareCodes() != null && !cache.getCareCodes().isEmpty()) {
       description.append(cache.getCareCodes());
@@ -90,7 +90,7 @@ public class NcCreateConverter {
     return description.toString();
   }
 
-  private static String getSpecialInstructions(GatewayCache cache) {
+  private static String getSpecialInstructions(GatewayCaseRecord cache) {
     StringBuilder instruction = new StringBuilder();
     if (cache != null && cache.getCareCodes() != null && !cache.getCareCodes().isEmpty()) {
       instruction.append(cache.getCareCodes());

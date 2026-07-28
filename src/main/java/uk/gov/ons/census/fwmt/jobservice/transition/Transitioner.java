@@ -7,23 +7,18 @@ import uk.gov.ons.census.fwmt.common.error.GatewayException;
 import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
 import uk.gov.ons.census.fwmt.common.rm.dto.FwmtCancelActionInstruction;
 import uk.gov.ons.census.fwmt.events.component.GatewayEventManager;
-import uk.gov.ons.census.fwmt.jobservice.data.GatewayCache;
+import uk.gov.ons.census.fwmt.jobservice.data.GatewayCaseRecord;
 import uk.gov.ons.census.fwmt.jobservice.data.MessageCache;
 import uk.gov.ons.census.fwmt.jobservice.service.MessageCacheService;
 import uk.gov.ons.census.fwmt.jobservice.service.converter.TransitionRule;
 import uk.gov.ons.census.fwmt.jobservice.service.processor.InboundProcessor;
-import uk.gov.ons.census.fwmt.jobservice.transition.utils.CacheHeldMessages;
-import uk.gov.ons.census.fwmt.jobservice.transition.utils.MergeMessages;
 import uk.gov.ons.census.fwmt.jobservice.transition.utils.RetrieveTransitionRules;
 
 import java.time.Instant;
 
-import static uk.gov.ons.census.fwmt.jobservice.config.GatewayEventsConfig.NO_ACTION_REQUIRED;
-
 @Slf4j
 @Component
 public class Transitioner {
-  private static final String REJECTED_RM_REQUEST = "REJECTED_RM_REQUEST";
   private static final String PRE_TRANSITION = "PRE_TRANSITION";
   private static final String POST_TRANSITION = "POST_TRANSITION";
 
@@ -34,100 +29,136 @@ public class Transitioner {
   private MessageCacheService messageCacheService;
 
   @Autowired
-  private CacheHeldMessages cacheHeldMessages;
-
-  @Autowired
   private RetrieveTransitionRules retrieveTransitionRules;
 
   @Autowired
-  private MergeMessages mergeMessages;
+  private NoActionTransitionProcessor<?> noActionTransitionProcessor;
 
-  public void processTransition(GatewayCache cache, Object rmRequestReceived,
-        InboundProcessor<?> processor, Instant messageQueueTime) throws GatewayException {
-    boolean isCancel = false;
-    String actionInstruction;
-    String caseId;
-    String caseRef;
-    FwmtActionInstruction rmRequestCreateUpdate = null;
-    FwmtCancelActionInstruction rmRequestCancel = null;
-    InboundProcessor<FwmtActionInstruction> processorCreateUpdate = null;
-    InboundProcessor<FwmtCancelActionInstruction> processorCancel = null;
+  @Autowired
+  private RejectTransitionProcessor<?> rejectTransitionProcessor;
 
-    if (rmRequestReceived instanceof FwmtActionInstruction) {
-      rmRequestCreateUpdate = (FwmtActionInstruction) rmRequestReceived;
-      processorCreateUpdate = (InboundProcessor<FwmtActionInstruction>) processor;
-      actionInstruction = rmRequestCreateUpdate.getActionInstruction().toString();
-      caseId = rmRequestCreateUpdate.getCaseId();
-      caseRef = rmRequestCreateUpdate.getCaseRef();
-    } else {
-      rmRequestCancel = (FwmtCancelActionInstruction) rmRequestReceived;
-      processorCancel = (InboundProcessor<FwmtCancelActionInstruction>) processor;
-      actionInstruction = rmRequestCancel.getActionInstruction().toString();
-      caseId = rmRequestCancel.getCaseId();
-      caseRef = "";
-      isCancel = true;
+  @Autowired
+  private ProcessTransitionProcessor<?> processTransitionProcessor;
+
+  @Autowired
+  private MergeTransitionProcessor<?> mergeTransitionProcessor;
+
+  @Autowired
+  private TransitionRequestActionExecutor requestActionExecutor;
+
+  public TransitionAction<FwmtActionInstruction> resolveTransitionAction(
+      FwmtActionInstruction rmRequest, InboundProcessor<FwmtActionInstruction> processor,
+      GatewayCaseRecord cache, Instant messageQueueTime) throws GatewayException {
+    return resolveTransitionInternal(
+        rmRequest,
+        processor,
+        cache,
+        messageQueueTime,
+        rmRequest.getCaseId(),
+        rmRequest.getCaseRef(),
+        rmRequest.getActionInstruction().toString(),
+        false);
+  }
+
+  public TransitionAction<FwmtCancelActionInstruction> resolveTransitionAction(
+      FwmtCancelActionInstruction rmRequest, InboundProcessor<FwmtCancelActionInstruction> processor,
+      GatewayCaseRecord cache, Instant messageQueueTime) throws GatewayException {
+    return resolveTransitionInternal(
+        rmRequest,
+        processor,
+        cache,
+        messageQueueTime,
+        rmRequest.getCaseId(),
+        "",
+        rmRequest.getActionInstruction().toString(),
+        true);
+  }
+
+  public <T> void apply(TransitionAction<T> resolution) throws GatewayException {
+    resolution.getProcessor().execute(resolution.getContext());
+    requestActionExecutor.execute(resolution.getContext());
+  }
+
+  private <T> TransitionAction<T> resolveTransitionInternal(T rmRequest,
+                                                            InboundProcessor<T> processor, GatewayCaseRecord cache, Instant messageQueueTime, String caseId,
+                                                            String caseRef, String actionInstruction, boolean isCancel) throws GatewayException {
+    triggerPreTransitionEvent(caseId, caseRef, actionInstruction, cache);
+    validateMessageQueueTime(messageQueueTime, caseId);
+
+    TransitionRule transitionRule = retrieveTransitionRules.collectTransitionRules(cache, actionInstruction, caseId, messageQueueTime);
+    MessageCache messageCache = messageCacheService.getById(caseId);
+
+    triggerPostTransitionEvent(caseId, transitionRule);
+
+    TransitionContext<T> context = TransitionContext.<T>builder()
+        .caseId(caseId)
+        .caseRef(caseRef)
+        .actionInstruction(actionInstruction)
+        .request(rmRequest)
+        .inboundProcessor(processor)
+        .gatewayCaseRecord(cache)
+        .messageCache(messageCache)
+        .transitionRule(transitionRule)
+        .messageQueueTime(messageQueueTime)
+        .cancel(isCancel)
+        .build();
+
+    return TransitionAction.<T>builder()
+        .processor(selectTransitionProcessor(context))
+        .context(context)
+        .build();
+  }
+
+  private void validateMessageQueueTime(Instant messageQueueTime, String caseId)
+      throws GatewayException {
+    if (messageQueueTime == null) {
+      throw new GatewayException(GatewayException.Fault.VALIDATION_FAILED,
+          "Message did not include a timestamp", caseId);
     }
+  }
 
+  private void triggerPreTransitionEvent(String caseId, String caseRef, String actionInstruction,
+      GatewayCaseRecord cache) {
     eventManager.triggerEvent(caseId, PRE_TRANSITION,
         "Case Reference", caseRef,
         "Action Instruction", actionInstruction,
-        "Cached Action Instruction", (cache != null && cache.getLastActionInstruction() !=null ? cache.getLastActionInstruction() : "no cache"));
+        "Cached Action Instruction",
+        (cache != null && cache.getLastActionInstruction() != null ? cache.getLastActionInstruction()
+            : "no cache"));
+  }
 
-    if (messageQueueTime == null) {
-      throw new GatewayException(GatewayException.Fault.VALIDATION_FAILED, "Message did not include a timestamp", caseId);
-    }
-
-    TransitionRule returnedRules = retrieveTransitionRules
-        .collectTransitionRules(cache, actionInstruction, caseId, messageQueueTime);
-
-    MessageCache messageCache = messageCacheService.getById(caseId);
-
+  private void triggerPostTransitionEvent(String caseId, TransitionRule returnedRules) {
     eventManager.triggerEvent(caseId, POST_TRANSITION,
         "Action type", returnedRules.getAction().toString(),
         "Request action", returnedRules.getRequestAction().toString());
+  }
 
-    switch (returnedRules.getAction()) {
-      case NO_ACTION:
-        eventManager
-            .triggerEvent(caseId, NO_ACTION_REQUIRED,
-                "Case Ref", caseRef);
-        break;
-      case REJECT:
-        eventManager.triggerErrorEvent(this.getClass(), "Request from RM rejected",
-            String.valueOf(caseId), REJECTED_RM_REQUEST);
-        break;
-      case PROCESS:
-        if (isCancel) {
-          processorCancel.process(rmRequestCancel, cache, messageQueueTime);
-        } else {
-          processorCreateUpdate.process(rmRequestCreateUpdate, cache, messageQueueTime);
-        }
-        break;
-      case MERGE:
-        if (!isCancel) {
-          processorCreateUpdate.process(rmRequestCreateUpdate, cache, messageQueueTime);
-        }
-        mergeMessages.mergeRecords(messageCache);
-        break;
-      default:
-        throw new GatewayException(GatewayException.Fault.VALIDATION_FAILED, "No such transition rule", caseId);
-    }
+  private <T> TransitionProcessor<T> selectTransitionProcessor(TransitionContext<T> context)
+      throws GatewayException {
+      return switch (context.getTransitionRule().getAction()) {
+          case NO_ACTION -> castTransitionProcessor(noActionTransitionProcessor);
+          case REJECT -> castTransitionProcessor(rejectTransitionProcessor);
+          case PROCESS -> {
+              if (context.getInboundProcessor() == null) {
+                  throw new GatewayException(GatewayException.Fault.VALIDATION_FAILED,
+                          "No processor available for transition action PROCESS", context.getCaseId());
+              }
+              yield castTransitionProcessor(processTransitionProcessor);
+          }
+          case MERGE -> {
+              if (!context.isCancel() && context.getInboundProcessor() == null) {
+                  throw new GatewayException(GatewayException.Fault.VALIDATION_FAILED,
+                          "No processor available for transition action MERGE", context.getCaseId());
+              }
+              yield castTransitionProcessor(mergeTransitionProcessor);
+          }
+          default -> throw new GatewayException(GatewayException.Fault.VALIDATION_FAILED,
+                  "No such transition rule", context.getCaseId());
+      };
+  }
 
-  switch (returnedRules.getRequestAction()) {
-    case SAVE:
-      if (isCancel) {
-        cacheHeldMessages.cacheMessage(messageCache, cache, rmRequestCancel, messageQueueTime);
-      } else {
-        cacheHeldMessages.cacheMessage(messageCache, cache, rmRequestCreateUpdate, messageQueueTime);
-      }
-      break;
-    case CLEAR:
-      if (messageCache != null) {
-        messageCacheService.delete(messageCache);
-      }
-      break;
-    default:
-      break;
-    }
+  @SuppressWarnings("unchecked")
+  private <T> TransitionProcessor<T> castTransitionProcessor(TransitionProcessor<?> processor) {
+    return (TransitionProcessor<T>) processor;
   }
 }

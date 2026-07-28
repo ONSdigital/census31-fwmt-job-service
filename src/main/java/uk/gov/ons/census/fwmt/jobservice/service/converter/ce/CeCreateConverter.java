@@ -6,7 +6,7 @@ import uk.gov.ons.census.fwmt.common.data.tm.CeCaseExtension;
 import uk.gov.ons.census.fwmt.common.data.tm.Geography;
 import uk.gov.ons.census.fwmt.common.data.tm.SurveyType;
 import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
-import uk.gov.ons.census.fwmt.jobservice.data.GatewayCache;
+import uk.gov.ons.census.fwmt.jobservice.data.GatewayCaseRecord;
 import uk.gov.ons.census.fwmt.jobservice.service.converter.common.CommonCreateConverter;
 
 import java.util.List;
@@ -21,7 +21,7 @@ public final class CeCreateConverter {
   }
 
   public static CaseRequest.CaseRequestBuilder convertCE(
-      FwmtActionInstruction ffu, GatewayCache cache, CaseRequest.CaseRequestBuilder builder,
+      FwmtActionInstruction ffu, GatewayCaseRecord cache, CaseRequest.CaseRequestBuilder builder,
       boolean isEstab, boolean isUnit) {
 
     boolean ce1Completed = false;
@@ -79,7 +79,7 @@ public final class CeCreateConverter {
     return commonBuilder;
   }
 
-  public static CaseRequest convertCeEstabDeliver(FwmtActionInstruction ffu, GatewayCache cache) {
+  public static CaseRequest convertCeEstabDeliver(FwmtActionInstruction ffu, GatewayCaseRecord cache) {
     return CeCreateConverter
         .convertCE(ffu, cache, CaseRequest.builder(), true, false)
         .surveyType(SurveyType.CE_EST_D)
@@ -88,7 +88,7 @@ public final class CeCreateConverter {
         .build();
   }
 
-  public static CaseRequest convertCeEstabDeliverSecure(FwmtActionInstruction ffu, GatewayCache cache) {
+  public static CaseRequest convertCeEstabDeliverSecure(FwmtActionInstruction ffu, GatewayCaseRecord cache) {
     return CeCreateConverter.convertCE(ffu, cache, CaseRequest.builder(), true, false)
         .surveyType(SurveyType.CE_EST_D)
         .reference("SECCE_" + ffu.getCaseRef())
@@ -97,7 +97,7 @@ public final class CeCreateConverter {
         .build();
   }
 
-  public static CaseRequest convertCeEstabFollowup(FwmtActionInstruction ffu, GatewayCache cache) {
+  public static CaseRequest convertCeEstabFollowup(FwmtActionInstruction ffu, GatewayCaseRecord cache) {
     return CeCreateConverter
         .convertCE(ffu, cache, CaseRequest.builder(), true, false)
         .surveyType(SurveyType.CE_EST_F)
@@ -106,7 +106,7 @@ public final class CeCreateConverter {
         .build();
   }
 
-  public static CaseRequest convertCeEstabFollowupSecure(FwmtActionInstruction ffu, GatewayCache cache)  {
+  public static CaseRequest convertCeEstabFollowupSecure(FwmtActionInstruction ffu, GatewayCaseRecord cache)  {
     return CeCreateConverter.convertCE(ffu, cache, CaseRequest.builder(), true, false)
         .surveyType(SurveyType.CE_EST_F)
         .reference("SECCE_" + ffu.getCaseRef())
@@ -115,7 +115,7 @@ public final class CeCreateConverter {
         .build();
   }
 
-  public static CaseRequest convertCeSite(FwmtActionInstruction ffu, GatewayCache cache) {
+  public static CaseRequest convertCeSite(FwmtActionInstruction ffu, GatewayCaseRecord cache) {
     return CeCreateConverter
         .convertCE(ffu, cache, CaseRequest.builder(), false, false)
         .surveyType(SurveyType.CE_SITE)
@@ -124,7 +124,7 @@ public final class CeCreateConverter {
         .build();
   }
 
-  public static CaseRequest convertCeSiteSecure(FwmtActionInstruction ffu, GatewayCache cache) {
+  public static CaseRequest convertCeSiteSecure(FwmtActionInstruction ffu, GatewayCaseRecord cache) {
     return CeCreateConverter.convertCE(ffu, cache, CaseRequest.builder(), false, false)
         .surveyType(SurveyType.CE_SITE)
         .reference("SECCS_" + ffu.getCaseRef())
@@ -133,7 +133,7 @@ public final class CeCreateConverter {
         .build();
   }
 
-  public static CaseRequest convertCeUnitDeliver(FwmtActionInstruction ffu, GatewayCache cache) {
+  public static CaseRequest convertCeUnitDeliver(FwmtActionInstruction ffu, GatewayCaseRecord cache) {
     return CeCreateConverter
         .convertCE(ffu, cache, CaseRequest.builder(), false, true)
         .surveyType(SurveyType.CE_UNIT_D)
@@ -142,7 +142,7 @@ public final class CeCreateConverter {
         .build();
   }
 
-  public static CaseRequest convertCeUnitDeliverSecure(FwmtActionInstruction ffu, GatewayCache cache) {
+  public static CaseRequest convertCeUnitDeliverSecure(FwmtActionInstruction ffu, GatewayCaseRecord cache) {
     return CeCreateConverter.convertCE(ffu, cache, CaseRequest.builder(), false, true)
         .surveyType(SurveyType.CE_UNIT_D)
         .reference("SECCU_" + ffu.getCaseRef())
@@ -151,7 +151,7 @@ public final class CeCreateConverter {
         .build();
   }
 
-  public static CaseRequest convertCeUnitFollowup(FwmtActionInstruction ffu, GatewayCache cache) {
+  public static CaseRequest convertCeUnitFollowup(FwmtActionInstruction ffu, GatewayCaseRecord cache) {
     return CeCreateConverter
         .convertCE(ffu, cache, CaseRequest.builder(), false, true)
         .surveyType(SurveyType.CE_UNIT_F)
@@ -160,7 +160,7 @@ public final class CeCreateConverter {
         .build();
   }
 
-  public static CaseRequest convertCeUnitFollowupSecure(FwmtActionInstruction ffu, GatewayCache cache) {
+  public static CaseRequest convertCeUnitFollowupSecure(FwmtActionInstruction ffu, GatewayCaseRecord cache) {
     return CeCreateConverter.convertCE(ffu, cache, CaseRequest.builder(), false, true)
         .surveyType(SurveyType.CE_UNIT_F)
         .reference("SECCU_" + ffu.getCaseRef())
@@ -169,13 +169,13 @@ public final class CeCreateConverter {
         .build();
   }
 
-  private static String getDescription(GatewayCache cache, String referenceType) {
+  private static String getDescription(GatewayCaseRecord cache, String referenceType) {
     StringBuilder description = new StringBuilder(getDescription(cache));
     description.append(referenceType);
     return description.toString();
   }
 
-  private static String getDescription(GatewayCache cache) {
+  private static String getDescription(GatewayCaseRecord cache) {
     StringBuilder description = new StringBuilder("");
     if (cache != null && cache.getCareCodes() != null && !cache.getCareCodes().isEmpty()) {
       description.append(cache.getCareCodes()).append("\n");
@@ -183,7 +183,7 @@ public final class CeCreateConverter {
     return description.toString();
   }
 
-  private static String getSpecialInstructions(GatewayCache cache) {
+  private static String getSpecialInstructions(GatewayCaseRecord cache) {
     StringBuilder instruction = new StringBuilder(getDescription(cache));
     if (cache != null && cache.getAccessInfo() != null && !cache.getAccessInfo().isEmpty()) {
       instruction.append(cache.getAccessInfo());

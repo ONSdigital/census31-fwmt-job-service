@@ -7,7 +7,7 @@ import uk.gov.ons.census.fwmt.common.error.GatewayException;
 import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstructionType;
 import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
 import uk.gov.ons.census.fwmt.events.component.GatewayEventManager;
-import uk.gov.ons.census.fwmt.jobservice.data.GatewayCache;
+import uk.gov.ons.census.fwmt.jobservice.data.GatewayCaseRecord;
 import uk.gov.ons.census.fwmt.jobservice.service.processor.InboundProcessor;
 import uk.gov.ons.census.fwmt.jobservice.service.processor.ProcessorKey;
 
@@ -35,7 +35,7 @@ public class NisraCaseExists implements InboundProcessor<FwmtActionInstruction> 
   }
 
   @Override
-  public boolean isValid(FwmtActionInstruction rmRequest, GatewayCache cache) {
+  public boolean isValid(FwmtActionInstruction rmRequest, GatewayCaseRecord cache) {
     try {
       return rmRequest.getActionInstruction() == ActionInstructionType.CREATE
           && rmRequest.getSurveyName().equals("CENSUS")
@@ -48,7 +48,7 @@ public class NisraCaseExists implements InboundProcessor<FwmtActionInstruction> 
   }
 
   @Override
-  public void process(FwmtActionInstruction rmRequest, GatewayCache cache, Instant messageReceivedTime) throws GatewayException {
+  public void process(FwmtActionInstruction rmRequest, GatewayCaseRecord cache, Instant messageReceivedTime) throws GatewayException {
     eventManager.triggerEvent(String.valueOf(rmRequest.getCaseId()), NISRA_CASE_EXISTS,
         "UPRN", rmRequest.getUprn(),
         "Estab UPRN", rmRequest.getEstabUprn());

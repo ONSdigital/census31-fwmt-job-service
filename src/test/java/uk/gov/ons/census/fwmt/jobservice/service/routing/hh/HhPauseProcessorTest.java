@@ -15,10 +15,10 @@ import uk.gov.ons.census.fwmt.common.data.tm.CasePauseRequest;
 import uk.gov.ons.census.fwmt.common.error.GatewayException;
 import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
 import uk.gov.ons.census.fwmt.events.component.GatewayEventManager;
-import uk.gov.ons.census.fwmt.jobservice.data.GatewayCache;
+import uk.gov.ons.census.fwmt.jobservice.data.GatewayCaseRecord;
 import uk.gov.ons.census.fwmt.jobservice.hh.HhRequestBuilder;
 import uk.gov.ons.census.fwmt.jobservice.http.comet.CometRestClient;
-import uk.gov.ons.census.fwmt.jobservice.service.GatewayCacheService;
+import uk.gov.ons.census.fwmt.jobservice.service.GatewayCaseRecordService;
 import uk.gov.ons.census.fwmt.jobservice.service.routing.RoutingValidator;
 
 import java.time.Instant;
@@ -41,10 +41,10 @@ public class HhPauseProcessorTest {
   private CometRestClient cometRestClient;
 
   @Mock
-  private GatewayCacheService cacheService;
+  private GatewayCaseRecordService cacheService;
 
   @Mock
-  private GatewayCache gatewayCache;
+  private GatewayCaseRecord gatewayCache;
 
   @Mock
   private GatewayEventManager eventManager;
@@ -56,7 +56,7 @@ public class HhPauseProcessorTest {
   private RoutingValidator routingValidator;
 
   @Captor
-  private ArgumentCaptor<GatewayCache> spiedCache;
+  private ArgumentCaptor<GatewayCaseRecord> spiedCache;
 
   @Captor
   private ArgumentCaptor<String> spiedEvent;
@@ -65,7 +65,7 @@ public class HhPauseProcessorTest {
   @DisplayName("Should save HH Pause as cancel")
   public void shouldSaveHhPauseAsCancel() throws GatewayException {
     final FwmtActionInstruction instruction = HhRequestBuilder.createPauseInstruction();
-    GatewayCache gatewayCache = GatewayCache.builder()
+    GatewayCaseRecord gatewayCache = GatewayCaseRecord.builder()
         .caseId("ac623e62-4f4b-11eb-ae93-0242ac130002").build();
     when(cacheService.getById(anyString())).thenReturn(gatewayCache);
     ResponseEntity<Void> responseEntity = ResponseEntity.ok().build();
@@ -80,7 +80,7 @@ public class HhPauseProcessorTest {
   @DisplayName("Should ignore a HH pause on a closed case in TM")
   public void shouldIgnoreAHhPauseOnAClosedCaseinTm() throws GatewayException {
     final FwmtActionInstruction instruction = HhRequestBuilder.createPauseInstruction();
-    GatewayCache gatewayCache = GatewayCache.builder()
+    GatewayCaseRecord gatewayCache = GatewayCaseRecord.builder()
         .caseId("ac623e62-4f4b-11eb-ae93-0242ac130002").lastActionInstruction("CREATE").build();
     when(cometRestClient.sendPause(any(CasePauseRequest.class), eq(instruction.getCaseId())))
         .thenThrow(new RestClientException("(404 BAD_REQUEST) {“id”:[“Unable to find Case”]}"));

@@ -11,9 +11,9 @@ import uk.gov.ons.census.fwmt.common.error.GatewayException;
 import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstructionType;
 import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
 import uk.gov.ons.census.fwmt.events.component.GatewayEventManager;
-import uk.gov.ons.census.fwmt.jobservice.data.GatewayCache;
+import uk.gov.ons.census.fwmt.jobservice.data.GatewayCaseRecord;
 import uk.gov.ons.census.fwmt.jobservice.http.comet.CometRestClient;
-import uk.gov.ons.census.fwmt.jobservice.service.GatewayCacheService;
+import uk.gov.ons.census.fwmt.jobservice.service.GatewayCaseRecordService;
 import uk.gov.ons.census.fwmt.jobservice.service.converter.common.CommonSwitchConverter;
 import uk.gov.ons.census.fwmt.jobservice.service.processor.InboundProcessor;
 import uk.gov.ons.census.fwmt.jobservice.service.processor.ProcessorKey;
@@ -53,7 +53,7 @@ public class CeSwitchCreateProcessor implements InboundProcessor<FwmtActionInstr
   private RoutingValidator routingValidator;
 
   @Autowired
-  private GatewayCacheService cacheService;
+  private GatewayCaseRecordService cacheService;
 
   @Override
   public ProcessorKey getKey() {
@@ -61,7 +61,7 @@ public class CeSwitchCreateProcessor implements InboundProcessor<FwmtActionInstr
   }
 
   @Override
-  public boolean isValid(FwmtActionInstruction rmRequest, GatewayCache cache) {
+  public boolean isValid(FwmtActionInstruction rmRequest, GatewayCaseRecord cache) {
     try {
       return rmRequest.getActionInstruction() == ActionInstructionType.SWITCH_CE_TYPE
           && rmRequest.getSurveyName().equals("CENSUS")
@@ -73,7 +73,7 @@ public class CeSwitchCreateProcessor implements InboundProcessor<FwmtActionInstr
   }
 
   @Override
-  public void process(FwmtActionInstruction rmRequest, GatewayCache cache, Instant messageReceivedTime) throws GatewayException {
+  public void process(FwmtActionInstruction rmRequest, GatewayCaseRecord cache, Instant messageReceivedTime) throws GatewayException {
     ReopenCaseRequest tmRequest;
 
     eventManager.triggerEvent(String.valueOf(rmRequest.getCaseId()), PROCESSING_CE_SWITCH_CREATE);
@@ -108,7 +108,7 @@ public class CeSwitchCreateProcessor implements InboundProcessor<FwmtActionInstr
     }
   }
 
-  private void processSwitch(GatewayCache cache, FwmtActionInstruction rmRequest, ReopenCaseRequest tmRequest)
+  private void processSwitch(GatewayCaseRecord cache, FwmtActionInstruction rmRequest, ReopenCaseRequest tmRequest)
       throws GatewayException {
 
     boolean alreadyCancelled = false;

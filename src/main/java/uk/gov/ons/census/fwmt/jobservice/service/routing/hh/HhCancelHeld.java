@@ -7,7 +7,7 @@ import uk.gov.ons.census.fwmt.common.error.GatewayException;
 import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstructionType;
 import uk.gov.ons.census.fwmt.common.rm.dto.FwmtCancelActionInstruction;
 import uk.gov.ons.census.fwmt.events.component.GatewayEventManager;
-import uk.gov.ons.census.fwmt.jobservice.data.GatewayCache;
+import uk.gov.ons.census.fwmt.jobservice.data.GatewayCaseRecord;
 import uk.gov.ons.census.fwmt.jobservice.service.processor.InboundProcessor;
 import uk.gov.ons.census.fwmt.jobservice.service.processor.ProcessorKey;
 
@@ -38,7 +38,7 @@ public class HhCancelHeld implements InboundProcessor<FwmtCancelActionInstructio
     return key;
   }
 
-  @Override public boolean isValid(FwmtCancelActionInstruction rmRequest, GatewayCache cache) {
+  @Override public boolean isValid(FwmtCancelActionInstruction rmRequest, GatewayCaseRecord cache) {
     try {
       return rmRequest.getActionInstruction() == ActionInstructionType.CANCEL
           && rmRequest.getSurveyName().equals("CENSUS")
@@ -52,7 +52,7 @@ public class HhCancelHeld implements InboundProcessor<FwmtCancelActionInstructio
     }
   }
 
-  @Override public void process(FwmtCancelActionInstruction rmRequest, GatewayCache cache, Instant messageReceivedTime)
+  @Override public void process(FwmtCancelActionInstruction rmRequest, GatewayCaseRecord cache, Instant messageReceivedTime)
       throws GatewayException {
 
     eventManager.triggerEvent(String.valueOf(rmRequest.getCaseId()), HH_CANCEL_HELD,

@@ -11,10 +11,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.ons.census.fwmt.common.rm.dto.FwmtCancelActionInstruction;
 import uk.gov.ons.census.fwmt.events.component.GatewayEventManager;
-import uk.gov.ons.census.fwmt.jobservice.data.GatewayCache;
+import uk.gov.ons.census.fwmt.jobservice.data.GatewayCaseRecord;
 import uk.gov.ons.census.fwmt.jobservice.data.MessageCache;
 import uk.gov.ons.census.fwmt.jobservice.helper.FwmtCancelJobRequestBuilder;
-import uk.gov.ons.census.fwmt.jobservice.service.GatewayCacheService;
+import uk.gov.ons.census.fwmt.jobservice.service.GatewayCaseRecordService;
 import uk.gov.ons.census.fwmt.jobservice.service.MessageCacheService;
 
 import java.time.Instant;
@@ -31,10 +31,10 @@ class CacheHeldMessagesTest {
     private GatewayEventManager eventManager;
 
     @Mock
-    private GatewayCache gatewayCache;
+    private GatewayCaseRecord gatewayCache;
 
     @Mock
-    private GatewayCacheService cacheService;
+    private GatewayCaseRecordService cacheService;
 
     @Mock
     private MessageCache messageCache;
@@ -43,7 +43,7 @@ class CacheHeldMessagesTest {
     private MessageCacheService messageCacheService;
 
     @Captor
-    private ArgumentCaptor<GatewayCache> spiedCache;
+    private ArgumentCaptor<GatewayCaseRecord> spiedCache;
 
     @Test
     @DisplayName("Should not save existsInFwmt to true in cache")
@@ -51,7 +51,7 @@ class CacheHeldMessagesTest {
         final FwmtCancelActionInstruction cancelActionInstruction = new FwmtCancelJobRequestBuilder().cancelActionInstruction();
         long epochTimeStamp = Long.parseLong("1613035113");
         final Instant receivedMessageTime = Instant.ofEpochMilli(epochTimeStamp);
-        GatewayCache gatewayCache = null;
+        GatewayCaseRecord gatewayCache = null;
         MessageCache messageCache = MessageCache.builder().message("Test message").messageType("Cancel")
             .caseId("ac623e62-4f4b-11eb-ae93-0242ac130002").build();
         cacheHeldMessages.cacheMessage(messageCache, gatewayCache, cancelActionInstruction, receivedMessageTime);
