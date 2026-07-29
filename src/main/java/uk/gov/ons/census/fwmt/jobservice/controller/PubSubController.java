@@ -15,10 +15,7 @@ import uk.gov.ons.census.fwmt.common.error.GatewayException;
 @Slf4j
 @RestController
 @RequestMapping("/jobs")
-public class RabbitQueueController {
-
-  public static final String originQ = "GW.Transient.ErrorQ";
-  public static final String destRoute = "GW.Field";
+public class PubSubController {
 
   @Autowired
   private PubSubTemplate pubSubTemplate;
