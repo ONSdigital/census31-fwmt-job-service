@@ -29,14 +29,18 @@ spring:
     password: postgres
   cloud:
     gcp:
-      project-id: ${FWMT_PUBSUB_PROJECT:fwmt-local}
+      project-id: fwmt-local
       credentials:
-        enabled: false
-      firestore:
         enabled: false
       pubsub:
         enabled: true
-        emulator-host: ${PUBSUB_EMULATOR_HOST:localhost:8085}
+
+springdoc:
+  swagger-ui:
+    enabled: true
+    url: /v3/api-docs.yaml
+  api-docs:
+    enabled: true
 
 management:
   # Place /info and /health in the root
@@ -44,7 +48,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: ${MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE:health,info,env,refresh}
+        include: health,info,env,refresh
   endpoint:
     health:
       show-details: always
