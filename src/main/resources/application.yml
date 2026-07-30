@@ -168,7 +168,7 @@ resthttp:
       maxTotal: 100
 
 app:
-  testing: false
+  testing: true
   messaging:
     provider: pubsub
     maxRetryCount: 5
