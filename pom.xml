@@ -16,7 +16,7 @@
   <name>census31-fwmt-job-service</name>
 
   <properties>
-    <fwmt.common.version>27.0.2</fwmt.common.version>
+    <fwmt.common.version>27.0.1</fwmt.common.version>
     <fwmt.events.version>27.0.1</fwmt.events.version>
     <fwmt.storage.utils.version>27.0.1</fwmt.storage.utils.version>
   </properties>
@@ -171,6 +171,13 @@
   </dependencies>
 
   <build>
+    <extensions>
+      <extension>
+        <groupId>com.google.cloud.artifactregistry</groupId>
+        <artifactId>artifactregistry-maven-wagon</artifactId>
+        <version>2.2.0</version>
+      </extension>
+    </extensions>
     <plugins>
       <plugin>
         <groupId>org.springframework.boot</groupId>
@@ -192,6 +199,12 @@
         <artifactId>maven-failsafe-plugin</artifactId>
       </plugin>
     </plugins>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>true</filtering>
+      </resource>
+    </resources>
   </build>
 
   <profiles>
