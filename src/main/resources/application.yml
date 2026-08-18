@@ -1,6 +1,8 @@
 server:
   port: 8025
 
+version: ${project.version}
+
 spring:
   application:
     name: census31-fwmt-job-service

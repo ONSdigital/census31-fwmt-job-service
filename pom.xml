@@ -7,7 +7,7 @@
   <parent>
     <groupId>uk.gov.ons.census.fwmt</groupId>
     <artifactId>census31-fwmt-common-parent</artifactId>
-    <version>27.0.4</version>
+    <version>27.0.3</version>
     <relativePath/>
   </parent>
 
@@ -156,6 +156,13 @@
   </dependencies>
 
   <build>
+    <extensions>
+      <extension>
+        <groupId>com.google.cloud.artifactregistry</groupId>
+        <artifactId>artifactregistry-maven-wagon</artifactId>
+        <version>2.2.0</version>
+      </extension>
+    </extensions>
     <plugins>
       <plugin>
         <groupId>org.springframework.boot</groupId>
@@ -177,6 +184,12 @@
         <artifactId>maven-failsafe-plugin</artifactId>
       </plugin>
     </plugins>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>true</filtering>
+      </resource>
+    </resources>
   </build>
 
   <profiles>
