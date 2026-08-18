@@ -9,8 +9,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication(scanBasePackages = {
     "uk.gov.ons.census.fwmt.jobservice",
-    "uk.gov.ons.census.fwmt.events",
-    "uk.gov.census.ffa.storage.utils"
+    "uk.gov.ons.census.fwmt.common.events",
+    "uk.gov.ons.census.fwmt.common.storageutils"
 })
 @EnableIntegration
 @EnableRetry

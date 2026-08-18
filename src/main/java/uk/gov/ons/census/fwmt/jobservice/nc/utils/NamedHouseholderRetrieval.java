@@ -25,7 +25,7 @@ import uk.gov.ons.census.fwmt.common.data.nc.CaseDetailsEventDTO;
 import uk.gov.ons.census.fwmt.common.data.nc.CaseDetailsEventHardRefusal;
 import uk.gov.ons.census.fwmt.common.data.nc.RefusalContact;
 import uk.gov.ons.census.fwmt.common.error.GatewayException;
-import uk.gov.ons.census.fwmt.events.component.GatewayEventManager;
+import uk.gov.ons.census.fwmt.common.events.component.GatewayEventManager;
 
 @Service
 public class NamedHouseholderRetrieval {
