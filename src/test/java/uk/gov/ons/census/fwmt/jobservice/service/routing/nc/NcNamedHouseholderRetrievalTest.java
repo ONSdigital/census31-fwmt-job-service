@@ -22,7 +22,7 @@ import uk.gov.ons.census.fwmt.common.data.nc.CaseDetailsDTO;
 import uk.gov.ons.census.fwmt.common.data.nc.CaseDetailsEventDTO;
 import uk.gov.ons.census.fwmt.common.data.nc.CaseDetailsEventHardRefusal;
 import uk.gov.ons.census.fwmt.common.error.GatewayException;
-import uk.gov.ons.census.fwmt.events.component.GatewayEventManager;
+import uk.gov.ons.census.fwmt.common.events.component.GatewayEventManager;
 import uk.gov.ons.census.fwmt.jobservice.helper.NcCaseDetailsDtoBuilder;
 import uk.gov.ons.census.fwmt.jobservice.nc.utils.NamedHouseholderRetrieval;
 
