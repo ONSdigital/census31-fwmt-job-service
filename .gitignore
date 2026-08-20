@@ -40,4 +40,5 @@ local.properties
 .vscode/
 
 /GatewayEventsConfig.java
+.flattened-pom.xml
 
