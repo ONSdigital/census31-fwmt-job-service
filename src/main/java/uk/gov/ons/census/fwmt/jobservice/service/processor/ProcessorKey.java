@@ -27,7 +27,7 @@ public class ProcessorKey {
         .actionInstruction(rmRequest.getActionInstruction().toString())
         .surveyName(rmRequest.getSurveyName())
         .addressType(rmRequest.getAddressType())
-        .addressLevel(("HH").equals(rmRequest.getAddressType()) && rmRequest.getAddressLevel() == null)
+        .addressLevel(("HH".equals(rmRequest.getAddressType()) && rmRequest.getAddressLevel() == null)
             ? DEFAULT_HH_ADDRESS_LEVEL : rmRequest.getAddressLevel()).build();
   }
 
