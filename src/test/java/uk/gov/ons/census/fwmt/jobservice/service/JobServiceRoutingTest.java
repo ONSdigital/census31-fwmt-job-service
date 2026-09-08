@@ -97,7 +97,6 @@ class JobServiceRoutingTest {
     request.setActionInstruction(ActionInstructionType.CREATE);
     request.setCaseId(CASE_ID);
     request.setAddressType("HH");
-    request.setAddressLevel("U");
     request.setSurveyName("CENSUS");
     return request;
   }

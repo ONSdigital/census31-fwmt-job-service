@@ -12,6 +12,7 @@ public class ProcessorKey {
   private String surveyName;
   private String addressType;
   private String addressLevel;
+  private static final String DEFAULT_HH_ADDRESS_LEVEL = "U";
 
   public static ProcessorKey buildKey(FwmtCancelActionInstruction rmRequest) {
     return ProcessorKey.builder()
@@ -26,7 +27,8 @@ public class ProcessorKey {
         .actionInstruction(rmRequest.getActionInstruction().toString())
         .surveyName(rmRequest.getSurveyName())
         .addressType(rmRequest.getAddressType())
-        .addressLevel(rmRequest.getAddressLevel()).build();
+        .addressLevel(("HH".equals(rmRequest.getAddressType()) && rmRequest.getAddressLevel() == null)
+            ? DEFAULT_HH_ADDRESS_LEVEL : rmRequest.getAddressLevel()).build();
   }
 
   @Override
