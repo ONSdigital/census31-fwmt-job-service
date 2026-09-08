@@ -24,7 +24,6 @@ class InboundProcessorConfigTest {
       .actionInstruction("CREATE")
       .surveyName("CENSUS")
       .addressType("HH")
-      .addressLevel("U")
       .build();
 
   private static final ProcessorKey CANCEL_KEY = ProcessorKey.builder()
@@ -110,7 +109,6 @@ class InboundProcessorConfigTest {
     request.setActionInstruction(ActionInstructionType.CREATE);
     request.setSurveyName("CENSUS");
     request.setAddressType("HH");
-    request.setAddressLevel("U");
     request.setCaseId("case-id");
     return request;
   }

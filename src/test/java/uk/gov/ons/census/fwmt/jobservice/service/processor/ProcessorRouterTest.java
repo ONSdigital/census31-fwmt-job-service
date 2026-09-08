@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -36,7 +37,6 @@ class ProcessorRouterTest {
       .actionInstruction("CREATE")
       .surveyName("CENSUS")
       .addressType("HH")
-      .addressLevel("U")
       .build();
 
   @Mock
@@ -184,12 +184,51 @@ class ProcessorRouterTest {
     assertTrue(result.isEmpty());
   }
 
+  @Test
+  void buildHHKey_withNoAddressLevel_appliesDefault() {
+    FwmtActionInstruction instruction = FwmtActionInstruction.builder()
+        .actionInstruction(ActionInstructionType.CREATE)
+        .surveyName("CENSUS")
+        .addressType("HH")
+        .build();
+
+    ProcessorKey key = ProcessorKey.buildKey(instruction);
+
+    assertEquals("U", key.getAddressLevel());
+  }
+
+  @Test
+  void buildCEKey_withAddressLevel_keepsProvidedAddressLevel() {
+    FwmtActionInstruction instruction = FwmtActionInstruction.builder()
+        .actionInstruction(ActionInstructionType.CREATE)
+        .surveyName("CENSUS")
+        .addressType("CE")
+        .addressLevel("E")
+        .build();
+
+    ProcessorKey key = ProcessorKey.buildKey(instruction);
+
+    assertEquals("E", key.getAddressLevel());
+  }
+
+  @Test
+  void buildNonCREATEKey_withNoAddressLevel_keepsNullAddressLevel() {
+    FwmtActionInstruction instruction = FwmtActionInstruction.builder()
+        .actionInstruction(ActionInstructionType.SWITCH_CE_TYPE)
+        .surveyName("CENSUS")
+        .addressType("CE")
+        .build();
+
+    ProcessorKey key = ProcessorKey.buildKey(instruction);
+
+    assertNull(key.getAddressLevel());
+  }
+
   private FwmtActionInstruction buildRequest() {
     FwmtActionInstruction request = new FwmtActionInstruction();
     request.setActionInstruction(ActionInstructionType.CREATE);
     request.setSurveyName("CENSUS");
     request.setAddressType("HH");
-    request.setAddressLevel("U");
     request.setCaseId(CASE_ID);
     return request;
   }
