@@ -13,6 +13,7 @@ import uk.gov.ons.census.fwmt.common.data.tm.*;
 import uk.gov.ons.census.fwmt.common.error.GatewayException;
 import uk.gov.ons.census.fwmt.common.events.component.GatewayEventManager;
 import uk.gov.ons.census.fwmt.jobservice.config.CometConfig;
+import uk.gov.ons.census.fwmt.jobservice.http.UrlPathResolver;
 
 import java.net.MalformedURLException;
 import java.util.Arrays;
@@ -56,7 +57,7 @@ public class CometRestClient {
     this.gatewayEventManager = gatewayEventManager;
     this.restTemplate = restTemplate;
     this.restTemplate.setInterceptors(Arrays.asList(cometPerfRequestInterceptor));
-    this.cometUrl = cometConfig.baseUrl + cometConfig.caseCreatePath;
+    this.cometUrl = UrlPathResolver.join(cometConfig.baseUrl, cometConfig.caseCreatePath);
     this.auth = null;
 
     this.basePath = cometUrl + "{}";
