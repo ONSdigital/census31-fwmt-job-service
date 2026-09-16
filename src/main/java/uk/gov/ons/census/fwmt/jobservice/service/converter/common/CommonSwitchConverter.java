@@ -24,7 +24,7 @@ public final class CommonSwitchConverter {
 
   public static ReopenCaseRequest converEstabFollowup(FwmtActionInstruction ffu) {
     return CommonSwitchConverter.convertCommon(ffu)
-        .surveyType(SurveyType.CE_EST_F)
+        .surveyType(SurveyType.CE_EST)
         .uaa(ffu.isUndeliveredAsAddress())
         .blank(ffu.isBlankFormReturned())
         .build();

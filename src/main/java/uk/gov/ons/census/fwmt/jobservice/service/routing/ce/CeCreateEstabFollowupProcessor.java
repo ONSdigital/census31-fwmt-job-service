@@ -58,7 +58,7 @@ public class CeCreateEstabFollowupProcessor implements InboundProcessor<FwmtActi
   @Override
   public boolean isValid(FwmtActionInstruction rmRequest, GatewayCaseRecord cache) {
     try {
-      boolean estabUprnAndTypeExists = cacheService.doesEstabUprnAndTypeExist(rmRequest.getUprn(), 3);
+      boolean uprnAndTypeExists = cacheService.doesUprnAndTypeExist(rmRequest.getUprn(), 3);
       return rmRequest.getActionInstruction() == ActionInstructionType.CREATE
           && rmRequest.getSurveyName().equals("CENSUS")
           && rmRequest.getAddressType().equals("CE")
@@ -66,7 +66,7 @@ public class CeCreateEstabFollowupProcessor implements InboundProcessor<FwmtActi
           && !rmRequest.isHandDeliver()
           && (cache == null
           || cache.existsInFwmt)
-          && !estabUprnAndTypeExists
+          && !uprnAndTypeExists
           && !rmRequest.isNc();
     } catch (NullPointerException e) {
       return false;
@@ -92,10 +92,10 @@ public class CeCreateEstabFollowupProcessor implements InboundProcessor<FwmtActi
     GatewayCaseRecord newCache = cacheService.getById(rmRequest.getCaseId());
     if (newCache == null) {
       cacheService.save(GatewayCaseRecord.builder().type(1).caseId(rmRequest.getCaseId()).existsInFwmt(true)
-          .uprn(rmRequest.getUprn()).estabUprn(rmRequest.getEstabUprn()).type(1).lastActionInstruction(rmRequest.getActionInstruction().toString())
+          .uprn(rmRequest.getUprn()).type(1).lastActionInstruction(rmRequest.getActionInstruction().toString())
           .lastActionTime(messageReceivedTime).build());
     } else {
-      cacheService.save(newCache.toBuilder().existsInFwmt(true).uprn(rmRequest.getUprn()).estabUprn(rmRequest.getEstabUprn())
+      cacheService.save(newCache.toBuilder().existsInFwmt(true).uprn(rmRequest.getUprn())
           .type(1).lastActionInstruction(rmRequest.getActionInstruction().toString())
           .lastActionTime(messageReceivedTime).build());
     }
