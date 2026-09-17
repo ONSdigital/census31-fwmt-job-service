@@ -81,7 +81,7 @@ public class CeSwitchCreateProcessor implements InboundProcessor<FwmtActionInstr
       cache.setType(1);
       tmRequest = CommonSwitchConverter.convertEstabDeliver(rmRequest);
       processSwitch(cache, rmRequest, tmRequest);
-    } else if (rmRequest.getSurveyType().equals(SurveyType.CE_EST_F)) {
+    } else if (rmRequest.getSurveyType().equals(SurveyType.CE_EST)) {
       cache.setType(1);
       tmRequest = CommonSwitchConverter.converEstabFollowup(rmRequest);
       processSwitch(cache, rmRequest, tmRequest);

@@ -44,7 +44,7 @@ public final class CeCreateConverter {
         .postcode(ffu.getPostcode())
         .geography(outGeography)
         .uprn(Long.parseLong(ffu.getUprn()))
-        .estabUprn(Long.parseLong(ffu.getEstabUprn()))
+        .estabUprn(ffu.getEstabUprn() == null ? null : Long.parseLong(ffu.getEstabUprn()))
         .build();
     commonBuilder.address(outAddress);
 
@@ -98,17 +98,19 @@ public final class CeCreateConverter {
   }
 
   public static CaseRequest convertCeEstabFollowup(FwmtActionInstruction ffu, GatewayCaseRecord cache) {
+    SurveyType surveyType = ffu.getCeExpectedCapacity() > 0 ? SurveyType.CE_EST  : SurveyType.CE_ESTWU;
     return CeCreateConverter
         .convertCE(ffu, cache, CaseRequest.builder(), true, false)
-        .surveyType(SurveyType.CE_EST_F)
+        .surveyType(surveyType)
         .description(getDescription(cache))
         .specialInstructions(getSpecialInstructions(cache))
         .build();
   }
 
   public static CaseRequest convertCeEstabFollowupSecure(FwmtActionInstruction ffu, GatewayCaseRecord cache)  {
+    SurveyType surveyType = ffu.getCeExpectedCapacity() > 0 ? SurveyType.CE_EST  : SurveyType.CE_ESTWU;
     return CeCreateConverter.convertCE(ffu, cache, CaseRequest.builder(), true, false)
-        .surveyType(SurveyType.CE_EST_F)
+        .surveyType(surveyType)
         .reference("SECCE_" + ffu.getCaseRef())
         .description(getDescription(cache, SECURE_ESTABLISHMENT))
         .specialInstructions(getSpecialInstructions(cache))
