@@ -184,3 +184,6 @@ app:
     pubsub:
       rm-field-subscription: job-service-RM-Field
       gw-field-subscription: job-service-GW-Field
+      fieldwork-action-instruction-subscription: job-service-fieldwork-action-instruction
+      fieldwork-action-instruction-topic: event_fieldwork_action-instruction
+      message-time-attribute: occurredAt

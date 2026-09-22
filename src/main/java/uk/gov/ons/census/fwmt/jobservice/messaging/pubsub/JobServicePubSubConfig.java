@@ -27,6 +27,9 @@ public class JobServicePubSubConfig {
   @Value("${app.messaging.pubsub.gw-field-subscription:job-service-GW-Field}")
   private String gwFieldSubscription;
 
+  @Value("${app.messaging.pubsub.fieldwork-action-instruction-subscription:job-service-fieldwork-action-instruction}")
+  private String fieldworkActionInstructionSubscription;
+
   @Bean(name = "rmFieldPubSubInputChannel")
   public MessageChannel rmFieldPubSubInputChannel() {
     return new DirectChannel();
@@ -34,6 +37,11 @@ public class JobServicePubSubConfig {
 
   @Bean(name = "gwFieldPubSubInputChannel")
   public MessageChannel gwFieldPubSubInputChannel() {
+    return new DirectChannel();
+  }
+
+  @Bean(name = "fieldworkActionInstructionPubSubInputChannel")
+  public MessageChannel fieldworkActionInstructionPubSubInputChannel() {
     return new DirectChannel();
   }
 
@@ -58,6 +66,17 @@ public class JobServicePubSubConfig {
   }
 
   @Bean
+  public PubSubInboundChannelAdapter fieldworkActionInstructionPubSubInbound(
+      @Qualifier("fieldworkActionInstructionPubSubInputChannel") MessageChannel inputChannel,
+      PubSubTemplate pubSubTemplate) {
+    PubSubInboundChannelAdapter adapter =
+        new PubSubInboundChannelAdapter(pubSubTemplate, fieldworkActionInstructionSubscription);
+    adapter.setOutputChannel(inputChannel);
+    adapter.setAckMode(AckMode.AUTO);
+    return adapter;
+  }
+
+  @Bean
   @ServiceActivator(inputChannel = "rmFieldPubSubInputChannel")
   public MessageHandler rmFieldPubSubHandler(FieldWorkerInstructionMessageDispatcher dispatcher) {
     return pubSubHandler(dispatcher);
@@ -67,6 +86,20 @@ public class JobServicePubSubConfig {
   @ServiceActivator(inputChannel = "gwFieldPubSubInputChannel")
   public MessageHandler gwFieldPubSubHandler(FieldWorkerInstructionMessageDispatcher dispatcher) {
     return pubSubHandler(dispatcher);
+  }
+
+  @Bean
+  @ServiceActivator(inputChannel = "fieldworkActionInstructionPubSubInputChannel")
+  public MessageHandler fieldworkActionInstructionPubSubHandler(
+      FieldWorkerInstructionMessageDispatcher dispatcher) {
+    return message -> {
+      BasicAcknowledgeablePubsubMessage original = message.getHeaders()
+          .get(GcpPubSubHeaders.ORIGINAL_MESSAGE, BasicAcknowledgeablePubsubMessage.class);
+      if (original == null) {
+        throw new IllegalStateException("Missing original Pub/Sub message header");
+      }
+      dispatcher.dispatchRmAdapterInstruction(original.getPubsubMessage());
+    };
   }
 
   private static MessageHandler pubSubHandler(FieldWorkerInstructionMessageDispatcher dispatcher) {

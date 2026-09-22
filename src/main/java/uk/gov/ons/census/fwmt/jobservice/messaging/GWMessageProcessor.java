@@ -30,6 +30,16 @@ public class GWMessageProcessor {
   private final MessageExceptionHandler messageExceptionHandler;
 
   public void processCreateInstruction(FwmtActionInstruction instruction, Instant messageTime, PubsubMessage message) {
+    processCreateInstruction(instruction, messageTime, message, false);
+  }
+
+  public void processCreateInstructionAndPropagate(
+      FwmtActionInstruction instruction, Instant messageTime, PubsubMessage message) {
+    processCreateInstruction(instruction, messageTime, message, true);
+  }
+
+  private void processCreateInstruction(
+      FwmtActionInstruction instruction, Instant messageTime, PubsubMessage message, boolean propagateFailure) {
     try {
       switch (instruction.getActionInstruction()) {
       case CREATE: {
@@ -64,13 +74,25 @@ public class GWMessageProcessor {
       }
     } catch (RestClientException e) {
       handleTransientException(instruction, message, e);
+      rethrowIfRequired(propagateFailure, e);
     } catch (Exception e) {
       handlePermException(instruction, message, e);
+      rethrowIfRequired(propagateFailure, e);
     }
   }
 
   public void processCancelInstruction(
       FwmtCancelActionInstruction instruction, Instant messageTime, PubsubMessage message) {
+    processCancelInstruction(instruction, messageTime, message, false);
+  }
+
+  public void processCancelInstructionAndPropagate(
+      FwmtCancelActionInstruction instruction, Instant messageTime, PubsubMessage message) {
+    processCancelInstruction(instruction, messageTime, message, true);
+  }
+
+  private void processCancelInstruction(
+      FwmtCancelActionInstruction instruction, Instant messageTime, PubsubMessage message, boolean propagateFailure) {
     try {
       if (instruction.getActionInstruction() == ActionInstructionType.CANCEL) {
         gatewayEventManager
@@ -85,8 +107,19 @@ public class GWMessageProcessor {
       }
     } catch (RestClientException e) {
       handleTransientException(instruction, message, e);
+      rethrowIfRequired(propagateFailure, e);
     } catch (Exception e) {
       handlePermException(instruction, message, e);
+      rethrowIfRequired(propagateFailure, e);
+    }
+  }
+
+  private static void rethrowIfRequired(boolean propagateFailure, Exception exception) {
+    if (propagateFailure) {
+      if (exception instanceof RuntimeException runtimeException) {
+        throw runtimeException;
+      }
+      throw new IllegalStateException("Failed to process action instruction", exception);
     }
   }
 
