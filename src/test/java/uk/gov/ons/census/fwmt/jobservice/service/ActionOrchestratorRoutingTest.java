@@ -11,7 +11,7 @@ import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
 import uk.gov.ons.census.fwmt.common.rm.dto.FwmtCancelActionInstruction;
 import uk.gov.ons.census.fwmt.common.events.component.GatewayEventManager;
 import uk.gov.ons.census.fwmt.jobservice.data.GatewayCaseRecord;
-import uk.gov.ons.census.fwmt.jobservice.messaging.RmFieldMessagePublisher;
+import uk.gov.ons.census.fwmt.jobservice.messaging.FieldworkActionInstructionPublisher;
 import uk.gov.ons.census.fwmt.jobservice.service.processor.InboundProcessor;
 import uk.gov.ons.census.fwmt.jobservice.service.processor.ProcessorRouter;
 import uk.gov.ons.census.fwmt.jobservice.service.routing.ignore.CeUpdateIgnoreProcessor;
@@ -40,7 +40,7 @@ class ActionOrchestratorRoutingTest {
   @Mock private GatewayCaseRecordService cacheService;
   @Mock private TmDispatchService tmDispatchService;
   @Mock private GatewayEventManager eventManager;
-  @Mock private RmFieldMessagePublisher rmFieldPublisher;
+  @Mock private FieldworkActionInstructionPublisher fieldworkActionInstructionPublisher;
   @Mock private CeUpdateIgnoreProcessor ceUpdateIgnoreProcessor;
 
   @Mock private ProcessorRouter<FwmtActionInstruction> createRouter;
@@ -73,7 +73,7 @@ class ActionOrchestratorRoutingTest {
 
     updateActionOrchestrator.process(request, Instant.now());
 
-    verify(rmFieldPublisher).publish(request);
+    verify(fieldworkActionInstructionPublisher).publish(request);
     verify(updateRouter, never()).resolveOptional(any(), any(), any());
   }
 
