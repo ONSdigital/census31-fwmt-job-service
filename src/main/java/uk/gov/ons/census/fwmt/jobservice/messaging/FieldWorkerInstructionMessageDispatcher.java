@@ -34,24 +34,32 @@ public class FieldWorkerInstructionMessageDispatcher {
     }
   }
 
-  public void dispatchRmAdapterInstruction(PubsubMessage pubsubMessage) {
-    RmAdapterActionInstructionDecoder.DecodedMessage decoded = rmAdapterDecoder.decode(pubsubMessage);
+  public void dispatchExternalActionInstruction(PubsubMessage pubsubMessage) {
+    dispatchActionInstruction(pubsubMessage, ActionInstructionContract.EXTERNAL_RM_ADAPTER);
+  }
+
+  public void dispatchInternalActionInstruction(PubsubMessage pubsubMessage) {
+    dispatchActionInstruction(pubsubMessage, ActionInstructionContract.INTERNAL_FWMT);
+  }
+
+  private void dispatchActionInstruction(PubsubMessage pubsubMessage, ActionInstructionContract contract) {
+    RmAdapterActionInstructionDecoder.DecodedMessage decoded = rmAdapterDecoder.decode(pubsubMessage, contract);
     if (decoded.getMetadata().getOccurredAt().isEmpty()) {
       log.warn("RM adapter message has no occurredAt; using receive time eventId={} correlationId={} "
           + "actionInstruction={}", decoded.getMetadata().getEventId(), decoded.getMetadata().getCorrelationId(),
           actionInstruction(decoded.getInstruction()));
     }
     log.info("Received RM adapter action instruction eventId={} correlationId={} eventType={} "
-        + "schemaVersion={} actionInstruction={}", decoded.getMetadata().getEventId(),
+        + "schemaVersion={} contract={} actionInstruction={}", decoded.getMetadata().getEventId(),
         decoded.getMetadata().getCorrelationId(), decoded.getMetadata().getEventType(),
-        decoded.getMetadata().getSchemaVersion(), actionInstruction(decoded.getInstruction()));
+        decoded.getMetadata().getSchemaVersion(), contract, actionInstruction(decoded.getInstruction()));
 
     if (decoded.getInstruction() instanceof FwmtActionInstruction instruction) {
       gwMessageProcessor.processCreateInstructionAndPropagate(instruction, decoded.getMessageTime(), pubsubMessage);
     } else if (decoded.getInstruction() instanceof FwmtCancelActionInstruction instruction) {
       gwMessageProcessor.processCancelInstructionAndPropagate(instruction, decoded.getMessageTime(), pubsubMessage);
     } else {
-      throw new IllegalArgumentException("Unsupported RM adapter instruction payload");
+      throw new IllegalArgumentException("Unsupported action instruction payload");
     }
   }
 

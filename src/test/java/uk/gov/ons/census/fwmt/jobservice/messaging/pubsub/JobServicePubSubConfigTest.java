@@ -28,7 +28,7 @@ class JobServicePubSubConfigTest {
   private BasicAcknowledgeablePubsubMessage originalMessage;
 
   @Test
-  void internalHandlerDelegatesToRmAdapterDispatcher() {
+  void internalHandlerDelegatesToInternalDispatcher() {
     PubsubMessage pubsubMessage = PubsubMessage.newBuilder()
         .setData(ByteString.copyFromUtf8("{}"))
         .build();
@@ -39,7 +39,7 @@ class JobServicePubSubConfigTest {
         .setHeader(GcpPubSubHeaders.ORIGINAL_MESSAGE, originalMessage)
         .build());
 
-    verify(dispatcher).dispatchRmAdapterInstruction(pubsubMessage);
+    verify(dispatcher).dispatchInternalActionInstruction(pubsubMessage);
   }
 
   @Test

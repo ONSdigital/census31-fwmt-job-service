@@ -20,6 +20,10 @@ public class RmAdapterActionInstructionDecoder {
   }
 
   public DecodedMessage decode(PubsubMessage message) {
+    return decode(message, ActionInstructionContract.EXTERNAL_RM_ADAPTER);
+  }
+
+  public DecodedMessage decode(PubsubMessage message, ActionInstructionContract contract) {
     String json = message.getData().toStringUtf8();
     try {
       var payload = objectMapper.readTree(json);
@@ -29,8 +33,11 @@ public class RmAdapterActionInstructionDecoder {
       if (action == null) {
         throw new IllegalArgumentException("Missing actionInstruction in RM adapter payload");
       }
-      if (!"CENSUS".equals(payload.path("surveyName").textValue())) {
-        throw new IllegalArgumentException("RM adapter payload must use surveyName=CENSUS");
+      String surveyName = payload.path("surveyName").textValue();
+      boolean validSurvey = "CENSUS".equals(surveyName)
+          || contract == ActionInstructionContract.INTERNAL_FWMT && "FEEDBACK".equals(surveyName);
+      if (!validSurvey) {
+        throw new IllegalArgumentException("Action instruction payload has an invalid surveyName for " + contract);
       }
 
       Object instruction = action == ActionInstructionType.CANCEL

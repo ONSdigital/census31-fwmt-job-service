@@ -29,7 +29,8 @@ class RmAdapterActionInstructionDecoderTest {
             + "\"fieldOfficerId\":\"officer-123\"}",
         "case-123", "2026-09-21T10:15:30Z");
 
-    RmAdapterActionInstructionDecoder.DecodedMessage decoded = decoder.decode(message);
+      RmAdapterActionInstructionDecoder.DecodedMessage decoded = decoder.decode(
+        message, ActionInstructionContract.EXTERNAL_RM_ADAPTER);
 
     assertThat(decoded.getInstruction()).isInstanceOf(FwmtActionInstruction.class);
     FwmtActionInstruction instruction = (FwmtActionInstruction) decoded.getInstruction();
@@ -44,7 +45,8 @@ class RmAdapterActionInstructionDecoderTest {
         "{\"actionInstruction\":\"CANCEL\",\"surveyName\":\"CENSUS\",\"caseId\":\"case-123\"}",
         "case-123", "2026-09-21T10:15:30+01:00");
 
-    RmAdapterActionInstructionDecoder.DecodedMessage decoded = decoder.decode(message);
+      RmAdapterActionInstructionDecoder.DecodedMessage decoded = decoder.decode(
+        message, ActionInstructionContract.EXTERNAL_RM_ADAPTER);
 
     assertThat(decoded.getInstruction()).isInstanceOf(FwmtCancelActionInstruction.class);
     assertThat(decoded.getMessageTime()).isEqualTo(Instant.parse("2026-09-21T09:15:30Z"));
@@ -88,7 +90,33 @@ class RmAdapterActionInstructionDecoderTest {
         "case-123", "")))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessageContaining("surveyName");
+      assertThatThrownBy(() -> decoder.decode(message(
+        "{\"surveyName\":\"CENSUS\",\"caseId\":\"case-123\"}", "case-123", ""),
+        ActionInstructionContract.EXTERNAL_RM_ADAPTER))
+        .isInstanceOf(IllegalArgumentException.class);
   }
+
+      @Test
+      void acceptsFeedbackOnlyOnInternalLane() {
+      PubsubMessage message = message(
+        "{\"actionInstruction\":\"CANCEL\",\"surveyName\":\"FEEDBACK\","
+          + "\"addressType\":\"FEEDBACK\",\"addressLevel\":\"F\",\"caseId\":\"case-123\"}",
+        "case-123", "2026-09-21T10:15:30Z");
+
+      assertThat(decoder.decode(message, ActionInstructionContract.INTERNAL_FWMT)
+        .getInstruction()).isInstanceOf(FwmtCancelActionInstruction.class);
+      assertThatThrownBy(() -> decoder.decode(message, ActionInstructionContract.EXTERNAL_RM_ADAPTER))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessageContaining("surveyName");
+      }
+
+      @Test
+      void rejectsFeedbackActionInstructionOnInternalLane() {
+      assertThatThrownBy(() -> decoder.decode(message(
+        "{\"actionInstruction\":\"FEEDBACK\",\"surveyName\":\"FEEDBACK\",\"caseId\":\"case-123\"}",
+        "case-123", ""), ActionInstructionContract.INTERNAL_FWMT))
+        .isInstanceOf(IllegalArgumentException.class);
+      }
 
   private static PubsubMessage message(String payload, String caseId, String occurredAt) {
     return PubsubMessage.newBuilder()

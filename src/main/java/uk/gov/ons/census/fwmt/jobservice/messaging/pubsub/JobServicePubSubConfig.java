@@ -16,6 +16,7 @@ import org.springframework.integration.channel.DirectChannel;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.MessageHandler;
 import uk.gov.ons.census.fwmt.jobservice.messaging.FieldWorkerInstructionMessageDispatcher;
+import uk.gov.ons.census.fwmt.jobservice.messaging.ActionInstructionContract;
 
 @Configuration
 @Slf4j
@@ -111,24 +112,29 @@ public class JobServicePubSubConfig {
   @ServiceActivator(inputChannel = "fieldworkActionInstructionPubSubInputChannel")
   public MessageHandler fieldworkActionInstructionPubSubHandler(
       FieldWorkerInstructionMessageDispatcher dispatcher) {
-    return rmAdapterInstructionHandler(dispatcher);
+    return actionInstructionHandler(dispatcher, ActionInstructionContract.EXTERNAL_RM_ADAPTER);
   }
 
   @Bean
   @ServiceActivator(inputChannel = "fieldworkActionInstructionInternalPubSubInputChannel")
   public MessageHandler fieldworkActionInstructionInternalPubSubHandler(
       FieldWorkerInstructionMessageDispatcher dispatcher) {
-    return rmAdapterInstructionHandler(dispatcher);
+    return actionInstructionHandler(dispatcher, ActionInstructionContract.INTERNAL_FWMT);
   }
 
-  private static MessageHandler rmAdapterInstructionHandler(FieldWorkerInstructionMessageDispatcher dispatcher) {
+  private static MessageHandler actionInstructionHandler(
+      FieldWorkerInstructionMessageDispatcher dispatcher, ActionInstructionContract contract) {
     return message -> {
       BasicAcknowledgeablePubsubMessage original = message.getHeaders()
           .get(GcpPubSubHeaders.ORIGINAL_MESSAGE, BasicAcknowledgeablePubsubMessage.class);
       if (original == null) {
         throw new IllegalStateException("Missing original Pub/Sub message header");
       }
-      dispatcher.dispatchRmAdapterInstruction(original.getPubsubMessage());
+      if (contract == ActionInstructionContract.INTERNAL_FWMT) {
+        dispatcher.dispatchInternalActionInstruction(original.getPubsubMessage());
+      } else {
+        dispatcher.dispatchExternalActionInstruction(original.getPubsubMessage());
+      }
     };
   }
 
