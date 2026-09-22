@@ -52,7 +52,6 @@ class MessageExceptionHandlerTest {
     ReflectionTestUtils.setField(messageExceptionHandler, "maxRetryCount", 5);
     ReflectionTestUtils.setField(messageExceptionHandler, "gwTransientErrorTopic", "GW.Transient.ErrorQ");
     ReflectionTestUtils.setField(messageExceptionHandler, "gwPermanentErrorTopic", "GW.Permanent.ErrorQ");
-    ReflectionTestUtils.setField(messageExceptionHandler, "gwFieldQueue", "GW.Field");
   }
 
   @DisplayName("Should publish message to transient error topic")

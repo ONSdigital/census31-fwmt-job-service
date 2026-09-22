@@ -31,9 +31,6 @@ public class MessageExceptionHandler {
   @Value("${app.messaging.maxRetryCount:5}")
   private int maxRetryCount;
 
-  @Value("${app.messaging.destinations.gwField:GW.Field}")
-  private String gwFieldQueue;
-
   @Value("${app.messaging.destinations.gwTransientError:GW.Transient.ErrorQ}")
   private String gwTransientErrorTopic;
 
@@ -72,7 +69,7 @@ public class MessageExceptionHandler {
         .addressType(instruction.getAddressType())
         .nc(instruction.isNc())
         .surveyName(instruction.getSurveyName())
-        .queue(gwFieldQueue)
+        // .queue(gwFieldQueue)
         .headers(message.getAttributesMap().entrySet().stream()
             .collect(java.util.stream.Collectors.toMap(
                 java.util.Map.Entry::getKey,

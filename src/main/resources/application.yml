@@ -175,16 +175,10 @@ app:
     provider: pubsub
     maxRetryCount: 5
     destinations:
-      rmField: "RM.Field"
       fieldworkActionInstructionInternal: "event_fieldwork_action-instruction_internal"
-      gwField: "GW.Field"
       gwTransientError: "GW.Transient.ErrorQ"
       gwPermanentError: "GW.Permanent.ErrorQ"
-    subscriptions:
-      gwTransientError: job-service-GW-Transient-ErrorQ
     pubsub:
-      rm-field-subscription: job-service-RM-Field
-      gw-field-subscription: job-service-GW-Field
       fieldwork-action-instruction-subscription: job-service-fieldwork-action-instruction
       fieldwork-action-instruction-internal-subscription: job-service-fieldwork-action-instruction-internal
       fieldwork-action-instruction-topic: event_fieldwork_action-instruction

@@ -26,13 +26,6 @@
       "durable": true,
       "auto_delete": false,
       "arguments": { }
-    },
-    {
-      "name": "GW.Field",
-      "vhost": "/",
-      "durable": true,
-      "auto_delete": false,
-      "arguments": { }
     }
   ],
   "exchanges": [

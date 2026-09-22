@@ -5,8 +5,6 @@ import com.google.cloud.spring.pubsub.integration.AckMode;
 import com.google.cloud.spring.pubsub.integration.inbound.PubSubInboundChannelAdapter;
 import com.google.cloud.spring.pubsub.support.BasicAcknowledgeablePubsubMessage;
 import com.google.cloud.spring.pubsub.support.GcpPubSubHeaders;
-import com.google.pubsub.v1.PubsubMessage;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -19,30 +17,13 @@ import uk.gov.ons.census.fwmt.jobservice.messaging.FieldWorkerInstructionMessage
 import uk.gov.ons.census.fwmt.jobservice.messaging.ActionInstructionContract;
 
 @Configuration
-@Slf4j
 public class JobServicePubSubConfig {
-
-  @Value("${app.messaging.pubsub.rm-field-subscription:job-service-RM-Field}")
-  private String rmFieldSubscription;
-
-  @Value("${app.messaging.pubsub.gw-field-subscription:job-service-GW-Field}")
-  private String gwFieldSubscription;
 
   @Value("${app.messaging.pubsub.fieldwork-action-instruction-subscription:job-service-fieldwork-action-instruction}")
   private String fieldworkActionInstructionSubscription;
 
   @Value("${app.messaging.pubsub.fieldwork-action-instruction-internal-subscription:job-service-fieldwork-action-instruction-internal}")
   private String fieldworkActionInstructionInternalSubscription;
-
-  @Bean(name = "rmFieldPubSubInputChannel")
-  public MessageChannel rmFieldPubSubInputChannel() {
-    return new DirectChannel();
-  }
-
-  @Bean(name = "gwFieldPubSubInputChannel")
-  public MessageChannel gwFieldPubSubInputChannel() {
-    return new DirectChannel();
-  }
 
   @Bean(name = "fieldworkActionInstructionPubSubInputChannel")
   public MessageChannel fieldworkActionInstructionPubSubInputChannel() {
@@ -52,26 +33,6 @@ public class JobServicePubSubConfig {
   @Bean(name = "fieldworkActionInstructionInternalPubSubInputChannel")
   public MessageChannel fieldworkActionInstructionInternalPubSubInputChannel() {
     return new DirectChannel();
-  }
-
-  @Bean
-  public PubSubInboundChannelAdapter rmFieldPubSubInbound(
-      @Qualifier("rmFieldPubSubInputChannel") MessageChannel inputChannel,
-      PubSubTemplate pubSubTemplate) {
-    PubSubInboundChannelAdapter adapter = new PubSubInboundChannelAdapter(pubSubTemplate, rmFieldSubscription);
-    adapter.setOutputChannel(inputChannel);
-    adapter.setAckMode(AckMode.MANUAL);
-    return adapter;
-  }
-
-  @Bean
-  public PubSubInboundChannelAdapter gwFieldPubSubInbound(
-      @Qualifier("gwFieldPubSubInputChannel") MessageChannel inputChannel,
-      PubSubTemplate pubSubTemplate) {
-    PubSubInboundChannelAdapter adapter = new PubSubInboundChannelAdapter(pubSubTemplate, gwFieldSubscription);
-    adapter.setOutputChannel(inputChannel);
-    adapter.setAckMode(AckMode.MANUAL);
-    return adapter;
   }
 
   @Bean
@@ -94,18 +55,6 @@ public class JobServicePubSubConfig {
     adapter.setOutputChannel(inputChannel);
     adapter.setAckMode(AckMode.AUTO);
     return adapter;
-  }
-
-  @Bean
-  @ServiceActivator(inputChannel = "rmFieldPubSubInputChannel")
-  public MessageHandler rmFieldPubSubHandler(FieldWorkerInstructionMessageDispatcher dispatcher) {
-    return pubSubHandler(dispatcher);
-  }
-
-  @Bean
-  @ServiceActivator(inputChannel = "gwFieldPubSubInputChannel")
-  public MessageHandler gwFieldPubSubHandler(FieldWorkerInstructionMessageDispatcher dispatcher) {
-    return pubSubHandler(dispatcher);
   }
 
   @Bean
@@ -138,19 +87,4 @@ public class JobServicePubSubConfig {
     };
   }
 
-  private static MessageHandler pubSubHandler(FieldWorkerInstructionMessageDispatcher dispatcher) {
-    return message -> {
-      BasicAcknowledgeablePubsubMessage original =
-          message.getHeaders().get(GcpPubSubHeaders.ORIGINAL_MESSAGE, BasicAcknowledgeablePubsubMessage.class);
-      PubsubMessage pubsubMessage = original.getPubsubMessage();
-      try {
-        dispatcher.dispatch(pubsubMessage);
-        original.ack();
-      } catch (RuntimeException ex) {
-        log.error("Failed to process field worker instruction Pub/Sub message", ex);
-        original.nack();
-        throw ex;
-      }
-    };
-  }
 }
