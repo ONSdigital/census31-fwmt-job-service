@@ -3,6 +3,12 @@ spring:
     gcp:
       pubsub:
         emulator-host: localhost:8085
+app:
+  messaging:
+    destinations:
+      fieldworkActionInstructionInternal: event_fieldwork_action-instruction_internal
+    pubsub:
+      fieldwork-action-instruction-internal-subscription: job-service-fieldwork-action-instruction-internal
 management:
   endpoint:
     env:

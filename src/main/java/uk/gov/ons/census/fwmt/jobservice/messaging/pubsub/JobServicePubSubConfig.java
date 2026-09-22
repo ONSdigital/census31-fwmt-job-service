@@ -30,6 +30,9 @@ public class JobServicePubSubConfig {
   @Value("${app.messaging.pubsub.fieldwork-action-instruction-subscription:job-service-fieldwork-action-instruction}")
   private String fieldworkActionInstructionSubscription;
 
+  @Value("${app.messaging.pubsub.fieldwork-action-instruction-internal-subscription:job-service-fieldwork-action-instruction-internal}")
+  private String fieldworkActionInstructionInternalSubscription;
+
   @Bean(name = "rmFieldPubSubInputChannel")
   public MessageChannel rmFieldPubSubInputChannel() {
     return new DirectChannel();
@@ -42,6 +45,11 @@ public class JobServicePubSubConfig {
 
   @Bean(name = "fieldworkActionInstructionPubSubInputChannel")
   public MessageChannel fieldworkActionInstructionPubSubInputChannel() {
+    return new DirectChannel();
+  }
+
+  @Bean(name = "fieldworkActionInstructionInternalPubSubInputChannel")
+  public MessageChannel fieldworkActionInstructionInternalPubSubInputChannel() {
     return new DirectChannel();
   }
 
@@ -77,6 +85,17 @@ public class JobServicePubSubConfig {
   }
 
   @Bean
+  public PubSubInboundChannelAdapter fieldworkActionInstructionInternalPubSubInbound(
+      @Qualifier("fieldworkActionInstructionInternalPubSubInputChannel") MessageChannel inputChannel,
+      PubSubTemplate pubSubTemplate) {
+    PubSubInboundChannelAdapter adapter =
+        new PubSubInboundChannelAdapter(pubSubTemplate, fieldworkActionInstructionInternalSubscription);
+    adapter.setOutputChannel(inputChannel);
+    adapter.setAckMode(AckMode.AUTO);
+    return adapter;
+  }
+
+  @Bean
   @ServiceActivator(inputChannel = "rmFieldPubSubInputChannel")
   public MessageHandler rmFieldPubSubHandler(FieldWorkerInstructionMessageDispatcher dispatcher) {
     return pubSubHandler(dispatcher);
@@ -92,6 +111,17 @@ public class JobServicePubSubConfig {
   @ServiceActivator(inputChannel = "fieldworkActionInstructionPubSubInputChannel")
   public MessageHandler fieldworkActionInstructionPubSubHandler(
       FieldWorkerInstructionMessageDispatcher dispatcher) {
+    return rmAdapterInstructionHandler(dispatcher);
+  }
+
+  @Bean
+  @ServiceActivator(inputChannel = "fieldworkActionInstructionInternalPubSubInputChannel")
+  public MessageHandler fieldworkActionInstructionInternalPubSubHandler(
+      FieldWorkerInstructionMessageDispatcher dispatcher) {
+    return rmAdapterInstructionHandler(dispatcher);
+  }
+
+  private static MessageHandler rmAdapterInstructionHandler(FieldWorkerInstructionMessageDispatcher dispatcher) {
     return message -> {
       BasicAcknowledgeablePubsubMessage original = message.getHeaders()
           .get(GcpPubSubHeaders.ORIGINAL_MESSAGE, BasicAcknowledgeablePubsubMessage.class);

@@ -12,7 +12,7 @@ import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
 import uk.gov.ons.census.fwmt.common.events.component.GatewayEventManager;
 import uk.gov.ons.census.fwmt.jobservice.data.GatewayCaseRecord;
 import uk.gov.ons.census.fwmt.jobservice.http.comet.CometRestClient;
-import uk.gov.ons.census.fwmt.jobservice.messaging.RmFieldMessagePublisher;
+import uk.gov.ons.census.fwmt.jobservice.messaging.FieldworkActionInstructionPublisher;
 import uk.gov.ons.census.fwmt.jobservice.service.GatewayCaseRecordService;
 import uk.gov.ons.census.fwmt.jobservice.service.converter.spg.SpgUpdateConverter;
 import uk.gov.ons.census.fwmt.jobservice.service.processor.InboundProcessor;
@@ -59,7 +59,7 @@ public class SpgUpdateUnitProcessor implements InboundProcessor<FwmtActionInstru
   // private SpgCreateRouter createRouter;
 
   @Autowired
-  private RmFieldMessagePublisher rmFieldPublisher;
+  private FieldworkActionInstructionPublisher fieldworkActionInstructionPublisher;
 
   @Override
   public ProcessorKey getKey() {
@@ -150,6 +150,6 @@ public class SpgUpdateUnitProcessor implements InboundProcessor<FwmtActionInstru
         "Case Ref", rmRequest.getCaseRef());
 
     rmRequest.setActionInstruction(ActionInstructionType.CREATE);
-    rmFieldPublisher.publish(rmRequest);
+    fieldworkActionInstructionPublisher.publish(rmRequest);
   }
 }

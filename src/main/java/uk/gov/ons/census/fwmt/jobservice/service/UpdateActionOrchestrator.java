@@ -8,7 +8,7 @@ import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstructionType;
 import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
 import uk.gov.ons.census.fwmt.common.events.component.GatewayEventManager;
 import uk.gov.ons.census.fwmt.jobservice.data.GatewayCaseRecord;
-import uk.gov.ons.census.fwmt.jobservice.messaging.RmFieldMessagePublisher;
+import uk.gov.ons.census.fwmt.jobservice.messaging.FieldworkActionInstructionPublisher;
 import uk.gov.ons.census.fwmt.jobservice.service.processor.InboundProcessor;
 import uk.gov.ons.census.fwmt.jobservice.service.processor.ProcessorKey;
 import uk.gov.ons.census.fwmt.jobservice.service.processor.ProcessorRouter;
@@ -29,7 +29,7 @@ public class UpdateActionOrchestrator {
   private TmDispatchService tmDispatchService;
 
   @Autowired
-  private RmFieldMessagePublisher rmFieldPublisher;
+  private FieldworkActionInstructionPublisher fieldworkActionInstructionPublisher;
 
   @Autowired
   private CeUpdateIgnoreProcessor ceUpdateIgnoreProcessor;
@@ -76,7 +76,7 @@ public class UpdateActionOrchestrator {
     eventManager.triggerEvent(String.valueOf(actionInstruction.getCaseId()),
         CONVERT_SPG_UNIT_UPDATE_TO_CREATE,
         "Case Ref", actionInstruction.getCaseRef());
-    rmFieldPublisher.publish(actionInstruction);
+    fieldworkActionInstructionPublisher.publish(actionInstruction);
   }
 
   private boolean hasHeldActionInstruction(GatewayCaseRecord cache) {
