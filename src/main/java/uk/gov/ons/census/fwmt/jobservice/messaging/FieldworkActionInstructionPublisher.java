@@ -4,9 +4,9 @@ import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
 import uk.gov.ons.census.fwmt.common.rm.dto.FwmtCancelActionInstruction;
 
 /**
- * Port for publishing RM Field instructions (queue/topic name from config).
+ * Port for publishing FWMT-owned action instructions to the internal topic.
  */
-public interface RmFieldMessagePublisher {
+public interface FieldworkActionInstructionPublisher {
 
   void publish(FwmtActionInstruction actionInstruction);
 

@@ -5,8 +5,6 @@ import com.google.cloud.spring.pubsub.integration.AckMode;
 import com.google.cloud.spring.pubsub.integration.inbound.PubSubInboundChannelAdapter;
 import com.google.cloud.spring.pubsub.support.BasicAcknowledgeablePubsubMessage;
 import com.google.cloud.spring.pubsub.support.GcpPubSubHeaders;
-import com.google.pubsub.v1.PubsubMessage;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -16,72 +14,77 @@ import org.springframework.integration.channel.DirectChannel;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.MessageHandler;
 import uk.gov.ons.census.fwmt.jobservice.messaging.FieldWorkerInstructionMessageDispatcher;
+import uk.gov.ons.census.fwmt.jobservice.messaging.ActionInstructionContract;
 
 @Configuration
-@Slf4j
 public class JobServicePubSubConfig {
 
-  @Value("${app.messaging.pubsub.rm-field-subscription:job-service-RM-Field}")
-  private String rmFieldSubscription;
+  @Value("${app.messaging.pubsub.fieldwork-action-instruction-subscription:job-service-fieldwork-action-instruction}")
+  private String fieldworkActionInstructionSubscription;
 
-  @Value("${app.messaging.pubsub.gw-field-subscription:job-service-GW-Field}")
-  private String gwFieldSubscription;
+  @Value("${app.messaging.pubsub.fieldwork-action-instruction-internal-subscription:job-service-fieldwork-action-instruction-internal}")
+  private String fieldworkActionInstructionInternalSubscription;
 
-  @Bean(name = "rmFieldPubSubInputChannel")
-  public MessageChannel rmFieldPubSubInputChannel() {
+  @Bean(name = "fieldworkActionInstructionPubSubInputChannel")
+  public MessageChannel fieldworkActionInstructionPubSubInputChannel() {
     return new DirectChannel();
   }
 
-  @Bean(name = "gwFieldPubSubInputChannel")
-  public MessageChannel gwFieldPubSubInputChannel() {
+  @Bean(name = "fieldworkActionInstructionInternalPubSubInputChannel")
+  public MessageChannel fieldworkActionInstructionInternalPubSubInputChannel() {
     return new DirectChannel();
   }
 
   @Bean
-  public PubSubInboundChannelAdapter rmFieldPubSubInbound(
-      @Qualifier("rmFieldPubSubInputChannel") MessageChannel inputChannel,
+  public PubSubInboundChannelAdapter fieldworkActionInstructionPubSubInbound(
+      @Qualifier("fieldworkActionInstructionPubSubInputChannel") MessageChannel inputChannel,
       PubSubTemplate pubSubTemplate) {
-    PubSubInboundChannelAdapter adapter = new PubSubInboundChannelAdapter(pubSubTemplate, rmFieldSubscription);
+    PubSubInboundChannelAdapter adapter =
+        new PubSubInboundChannelAdapter(pubSubTemplate, fieldworkActionInstructionSubscription);
     adapter.setOutputChannel(inputChannel);
-    adapter.setAckMode(AckMode.MANUAL);
+    adapter.setAckMode(AckMode.AUTO);
     return adapter;
   }
 
   @Bean
-  public PubSubInboundChannelAdapter gwFieldPubSubInbound(
-      @Qualifier("gwFieldPubSubInputChannel") MessageChannel inputChannel,
+  public PubSubInboundChannelAdapter fieldworkActionInstructionInternalPubSubInbound(
+      @Qualifier("fieldworkActionInstructionInternalPubSubInputChannel") MessageChannel inputChannel,
       PubSubTemplate pubSubTemplate) {
-    PubSubInboundChannelAdapter adapter = new PubSubInboundChannelAdapter(pubSubTemplate, gwFieldSubscription);
+    PubSubInboundChannelAdapter adapter =
+        new PubSubInboundChannelAdapter(pubSubTemplate, fieldworkActionInstructionInternalSubscription);
     adapter.setOutputChannel(inputChannel);
-    adapter.setAckMode(AckMode.MANUAL);
+    adapter.setAckMode(AckMode.AUTO);
     return adapter;
   }
 
   @Bean
-  @ServiceActivator(inputChannel = "rmFieldPubSubInputChannel")
-  public MessageHandler rmFieldPubSubHandler(FieldWorkerInstructionMessageDispatcher dispatcher) {
-    return pubSubHandler(dispatcher);
+  @ServiceActivator(inputChannel = "fieldworkActionInstructionPubSubInputChannel")
+  public MessageHandler fieldworkActionInstructionPubSubHandler(
+      FieldWorkerInstructionMessageDispatcher dispatcher) {
+    return actionInstructionHandler(dispatcher, ActionInstructionContract.EXTERNAL_RM_ADAPTER);
   }
 
   @Bean
-  @ServiceActivator(inputChannel = "gwFieldPubSubInputChannel")
-  public MessageHandler gwFieldPubSubHandler(FieldWorkerInstructionMessageDispatcher dispatcher) {
-    return pubSubHandler(dispatcher);
+  @ServiceActivator(inputChannel = "fieldworkActionInstructionInternalPubSubInputChannel")
+  public MessageHandler fieldworkActionInstructionInternalPubSubHandler(
+      FieldWorkerInstructionMessageDispatcher dispatcher) {
+    return actionInstructionHandler(dispatcher, ActionInstructionContract.INTERNAL_FWMT);
   }
 
-  private static MessageHandler pubSubHandler(FieldWorkerInstructionMessageDispatcher dispatcher) {
+  private static MessageHandler actionInstructionHandler(
+      FieldWorkerInstructionMessageDispatcher dispatcher, ActionInstructionContract contract) {
     return message -> {
-      BasicAcknowledgeablePubsubMessage original =
-          message.getHeaders().get(GcpPubSubHeaders.ORIGINAL_MESSAGE, BasicAcknowledgeablePubsubMessage.class);
-      PubsubMessage pubsubMessage = original.getPubsubMessage();
-      try {
-        dispatcher.dispatch(pubsubMessage);
-        original.ack();
-      } catch (RuntimeException ex) {
-        log.error("Failed to process field worker instruction Pub/Sub message", ex);
-        original.nack();
-        throw ex;
+      BasicAcknowledgeablePubsubMessage original = message.getHeaders()
+          .get(GcpPubSubHeaders.ORIGINAL_MESSAGE, BasicAcknowledgeablePubsubMessage.class);
+      if (original == null) {
+        throw new IllegalStateException("Missing original Pub/Sub message header");
+      }
+      if (contract == ActionInstructionContract.INTERNAL_FWMT) {
+        dispatcher.dispatchInternalActionInstruction(original.getPubsubMessage());
+      } else {
+        dispatcher.dispatchExternalActionInstruction(original.getPubsubMessage());
       }
     };
   }
+
 }

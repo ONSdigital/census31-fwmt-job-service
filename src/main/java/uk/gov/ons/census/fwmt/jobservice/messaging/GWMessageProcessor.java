@@ -30,6 +30,16 @@ public class GWMessageProcessor {
   private final MessageExceptionHandler messageExceptionHandler;
 
   public void processCreateInstruction(FwmtActionInstruction instruction, Instant messageTime, PubsubMessage message) {
+    processCreateInstructionInternal(instruction, messageTime, message);
+  }
+
+  public void processCreateInstructionAndPropagate(
+      FwmtActionInstruction instruction, Instant messageTime, PubsubMessage message) {
+    processCreateInstructionInternal(instruction, messageTime, message);
+  }
+
+  private void processCreateInstructionInternal(
+      FwmtActionInstruction instruction, Instant messageTime, PubsubMessage message) {
     try {
       switch (instruction.getActionInstruction()) {
       case CREATE: {
@@ -70,6 +80,16 @@ public class GWMessageProcessor {
   }
 
   public void processCancelInstruction(
+      FwmtCancelActionInstruction instruction, Instant messageTime, PubsubMessage message) {
+    processCancelInstructionInternal(instruction, messageTime, message);
+  }
+
+  public void processCancelInstructionAndPropagate(
+      FwmtCancelActionInstruction instruction, Instant messageTime, PubsubMessage message) {
+    processCancelInstructionInternal(instruction, messageTime, message);
+  }
+
+  private void processCancelInstructionInternal(
       FwmtCancelActionInstruction instruction, Instant messageTime, PubsubMessage message) {
     try {
       if (instruction.getActionInstruction() == ActionInstructionType.CANCEL) {
