@@ -89,7 +89,7 @@ public class MessageExceptionHandler {
       builder.putAllAttributes(extraAttributes);
     }
 
-    pubSubTemplate.publish(topic, builder.build());
+    pubSubTemplate.publish(topic, builder.build()).join();
   }
 
   private Integer parseRetryCount(PubsubMessage message) {
