@@ -11,6 +11,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 
 class RmListenerControllerTest {
 
@@ -64,6 +66,32 @@ class RmListenerControllerTest {
     verify(internalAdapter).start();
     verify(externalAdapter, never()).stop();
     verify(externalAdapter, never()).start();
+  }
+
+  @Test
+  void exposesPostRoutesForBothSubscriptionsAndRetainsExternalLegacyRoutes() throws Exception {
+    assertThat(RmListenerController.class
+        .getMethod("stopExternalActionInstructionListener")
+        .getAnnotation(PostMapping.class).value())
+        .containsExactly("/admin/pubsub/fieldwork-action-instruction/stop");
+    assertThat(RmListenerController.class
+        .getMethod("startExternalActionInstructionListener")
+        .getAnnotation(PostMapping.class).value())
+        .containsExactly("/admin/pubsub/fieldwork-action-instruction/start");
+    assertThat(RmListenerController.class
+        .getMethod("stopInternalActionInstructionListener")
+        .getAnnotation(PostMapping.class).value())
+        .containsExactly("/admin/pubsub/fieldwork-action-instruction-internal/stop");
+    assertThat(RmListenerController.class
+        .getMethod("startInternalActionInstructionListener")
+        .getAnnotation(PostMapping.class).value())
+        .containsExactly("/admin/pubsub/fieldwork-action-instruction-internal/start");
+    assertThat(RmListenerController.class.getMethod("stopListener")
+        .getAnnotation(GetMapping.class).value())
+        .containsExactly("/RM/stopListener");
+    assertThat(RmListenerController.class.getMethod("startListener")
+        .getAnnotation(GetMapping.class).value())
+        .containsExactly("/RM/startListener");
   }
 
   @Test

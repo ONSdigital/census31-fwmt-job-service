@@ -19,6 +19,37 @@ To run:
 
     mvn spring-boot:run
 
+## Pub/Sub Listener Operations
+
+Job Service exposes authenticated controls for pausing and resuming each action-instruction
+inbound adapter independently. The application remains running when an adapter is stopped.
+The endpoints are protected by the service's HTTP Basic authentication policy in
+`WebSecurityConfig`; do not expose them publicly, and use the deployment's managed operational
+credentials rather than local defaults.
+
+| Subscription | Stop | Start |
+| --- | --- | --- |
+| External RM-adapter: `job-service-fieldwork-action-instruction` | `POST /admin/pubsub/fieldwork-action-instruction/stop` | `POST /admin/pubsub/fieldwork-action-instruction/start` |
+| Internal FWMT: `job-service-fieldwork-action-instruction-internal` | `POST /admin/pubsub/fieldwork-action-instruction-internal/stop` | `POST /admin/pubsub/fieldwork-action-instruction-internal/start` |
+
+The historical `GET /RM/stopListener` and `GET /RM/startListener` routes remain as
+backward-compatible aliases for the external subscription only. New operational automation
+should use the `POST /admin/pubsub/...` routes. Repeated stop/start requests are safe and return
+success without repeating a lifecycle transition.
+
+These controls stop or start the inbound adapter on the **Job Service instance that receives the
+HTTP request**; they do not pause other replicas. For a service-wide pause, invoke the control on
+every serving instance or use the deployment platform to coordinate replica-level operations.
+The controls do not delete, acknowledge, or drain messages from the subscription. Messages
+already delivered to a handler may finish and be acknowledged normally; messages not acknowledged
+remain subject to Pub/Sub redelivery. Stopping an adapter does not cancel work already in flight.
+
+For GCP, monitor backlog in Cloud Monitoring using
+`pubsub.googleapis.com/subscription/num_undelivered_messages`, filtered by the relevant
+`subscription_id` (the external or internal subscription above). Check each subscription
+separately; a stopped adapter does not imply that other replicas or consumers have stopped.
+Acceptance-test queue reset must not call these operational controls.
+
 ## tm-canonical-hh
  
 ![](docs/tm-canonical-hh.png "tm - canonical - hh mapping")
