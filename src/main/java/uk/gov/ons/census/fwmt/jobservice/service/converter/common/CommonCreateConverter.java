@@ -13,20 +13,20 @@ public final class CommonCreateConverter {
   }
 
   public static CaseRequest.CaseRequestBuilder convertCommon(
-      ActionInstruction ffu, GatewayCaseRecord cache, CaseRequest.CaseRequestBuilder builder) {
+      ActionInstruction actionInstruction, GatewayCaseRecord cache, CaseRequest.CaseRequestBuilder builder) {
 
-    builder.reference(ffu.getCaseRef());
+    builder.reference(actionInstruction.getCaseRef());
     builder.type(CaseType.CE);
     builder.category("Not applicable");
-    builder.estabType(ffu.getEstabType());
-    builder.coordCode(ffu.getFieldCoordinatorId());
+    builder.estabType(actionInstruction.getEstabType());
+    builder.coordCode(actionInstruction.getFieldCoordinatorId());
 
-    Contact outContact = Contact.builder().organisationName(ffu.getOrganisationName()).build();
+    Contact outContact = Contact.builder().organisationName(actionInstruction.getOrganisationName()).build();
     builder.contact(outContact);
 
     Location outLocation = Location.builder()
-        .lat(ffu.getLatitude())
-        ._long(ffu.getLongitude())
+        .lat(actionInstruction.getLatitude())
+        ._long(actionInstruction.getLongitude())
         .build();
     builder.location(outLocation);
 
@@ -35,7 +35,7 @@ public final class CommonCreateConverter {
       builder.specialInstructions(cache.getAccessInfo());
     }
 
-    builder.uaa(ffu.isUndeliveredAsAddress());
+    builder.uaa(actionInstruction.isUndeliveredAsAddress());
     builder.sai(false);
 
     return builder;

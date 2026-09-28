@@ -34,8 +34,8 @@ class CeCreateConverterTest {
 
   @Test
   public void test_convertCeEstabDeliver() {
-    ActionInstruction ffu = CeRequestBuilder.makeSite();
-    CaseRequest cr = CeCreateConverter.convertCeEstabDeliver(ffu, cache);
+    ActionInstruction actionInstruction = CeRequestBuilder.makeSite();
+    CaseRequest cr = CeCreateConverter.convertCeEstabDeliver(actionInstruction, cache);
     System.out.println(cr);
     assertEquals("careCode1\n", cr.getDescription());
     assertEquals("careCode1\n" +
@@ -44,8 +44,8 @@ class CeCreateConverterTest {
 
   @Test
   public void test_convertCeEstabDeliverSecure() {
-    ActionInstruction ffu = CeRequestBuilder.makeSite();
-    CaseRequest cr = CeCreateConverter.convertCeEstabDeliverSecure(ffu, cache);
+    ActionInstruction actionInstruction = CeRequestBuilder.makeSite();
+    CaseRequest cr = CeCreateConverter.convertCeEstabDeliverSecure(actionInstruction, cache);
     System.out.println(cr);
     assertEquals("careCode1\n" + "Secure Establishment", cr.getDescription());
     assertEquals("careCode1\n" +
@@ -54,8 +54,8 @@ class CeCreateConverterTest {
 
   @Test
   public void test_convertCeEstabDeliverSecure_noCareCodes() {
-    ActionInstruction ffu = CeRequestBuilder.makeSite();
-    CaseRequest cr = CeCreateConverter.convertCeEstabDeliverSecure(ffu, cacheWithNoCareCodes);
+    ActionInstruction actionInstruction = CeRequestBuilder.makeSite();
+    CaseRequest cr = CeCreateConverter.convertCeEstabDeliverSecure(actionInstruction, cacheWithNoCareCodes);
     System.out.println(cr);
     assertEquals("Secure Establishment", cr.getDescription());
     assertEquals("this is access info", cr.getSpecialInstructions());
@@ -63,8 +63,8 @@ class CeCreateConverterTest {
 
   @Test
   public void test_convertCeEstabDeliverSecure_noAccessInfo() {
-    ActionInstruction ffu = CeRequestBuilder.makeSite();
-    CaseRequest cr = CeCreateConverter.convertCeEstabDeliverSecure(ffu, cacheWithNoAccessInfo);
+    ActionInstruction actionInstruction = CeRequestBuilder.makeSite();
+    CaseRequest cr = CeCreateConverter.convertCeEstabDeliverSecure(actionInstruction, cacheWithNoAccessInfo);
     System.out.println(cr);
     assertEquals("careCode1\n" + "Secure Establishment", cr.getDescription());
     assertEquals("careCode1\n", cr.getSpecialInstructions());
@@ -72,8 +72,8 @@ class CeCreateConverterTest {
 
   @Test
   public void test_convertCeEstabDeliverSecure_noCache() {
-    ActionInstruction ffu = CeRequestBuilder.makeSite();
-    CaseRequest cr = CeCreateConverter.convertCeEstabDeliverSecure(ffu,
+    ActionInstruction actionInstruction = CeRequestBuilder.makeSite();
+    CaseRequest cr = CeCreateConverter.convertCeEstabDeliverSecure(actionInstruction,
         GatewayCaseRecord.builder().build());
     System.out.println(cr);
     assertEquals("Secure Establishment", cr.getDescription());
@@ -82,8 +82,8 @@ class CeCreateConverterTest {
 
   @Test
   public void test_convertCeEstabDeliver_noCareCodes() {
-    ActionInstruction ffu = CeRequestBuilder.makeSite();
-    CaseRequest cr = CeCreateConverter.convertCeEstabDeliver(ffu, cacheWithNoCareCodes);
+    ActionInstruction actionInstruction = CeRequestBuilder.makeSite();
+    CaseRequest cr = CeCreateConverter.convertCeEstabDeliver(actionInstruction, cacheWithNoCareCodes);
     System.out.println(cr);
     assertEquals("", cr.getDescription());
     assertEquals("this is access info", cr.getSpecialInstructions());
@@ -91,8 +91,8 @@ class CeCreateConverterTest {
 
   @Test
   public void test_convertCeEstabDeliver_noAccessInfo() {
-    ActionInstruction ffu = CeRequestBuilder.makeSite();
-    CaseRequest cr = CeCreateConverter.convertCeEstabDeliver(ffu, cacheWithNoAccessInfo);
+    ActionInstruction actionInstruction = CeRequestBuilder.makeSite();
+    CaseRequest cr = CeCreateConverter.convertCeEstabDeliver(actionInstruction, cacheWithNoAccessInfo);
     System.out.println(cr);
     assertEquals("careCode1\n", cr.getDescription());
     assertEquals("careCode1\n", cr.getSpecialInstructions());
@@ -100,8 +100,8 @@ class CeCreateConverterTest {
 
   @Test
   public void test_convertCeEstabDeliver_noCache() {
-    ActionInstruction ffu = CeRequestBuilder.makeSite();
-    CaseRequest cr = CeCreateConverter.convertCeEstabDeliver(ffu,
+    ActionInstruction actionInstruction = CeRequestBuilder.makeSite();
+    CaseRequest cr = CeCreateConverter.convertCeEstabDeliver(actionInstruction,
         GatewayCaseRecord.builder().build());
     System.out.println(cr);
     assertEquals("", cr.getDescription());
@@ -111,9 +111,9 @@ class CeCreateConverterTest {
 
   @Test
   public void test_convertCeEstabFollowup() {
-    ActionInstruction ffu = CeRequestBuilder.makeSite();
-    ffu.setCeExpectedCapacity(100);
-    CaseRequest cr = CeCreateConverter.convertCeEstabFollowup(ffu, cache);
+    ActionInstruction actionInstruction = CeRequestBuilder.makeSite();
+    actionInstruction.setCeExpectedCapacity(100);
+    CaseRequest cr = CeCreateConverter.convertCeEstabFollowup(actionInstruction, cache);
     System.out.println(cr);
     assertEquals("careCode1\n", cr.getDescription());
     assertEquals("careCode1\n" +
@@ -123,9 +123,9 @@ class CeCreateConverterTest {
 
   @Test
   public void test_convertCeEstabFollowupSecure() {
-    ActionInstruction ffu = CeRequestBuilder.makeSite();
-    ffu.setCeExpectedCapacity(100);
-    CaseRequest cr = CeCreateConverter.convertCeEstabFollowupSecure(ffu, cache);
+    ActionInstruction actionInstruction = CeRequestBuilder.makeSite();
+    actionInstruction.setCeExpectedCapacity(100);
+    CaseRequest cr = CeCreateConverter.convertCeEstabFollowupSecure(actionInstruction, cache);
     assertEquals("careCode1\n" + "Secure Establishment", cr.getDescription());
     assertEquals("careCode1\n" +
         "this is access info", cr.getSpecialInstructions());
@@ -134,9 +134,9 @@ class CeCreateConverterTest {
 
   @Test
   public void test_convertCeEstabFollowupWithoutUnits() {
-    ActionInstruction ffu = CeRequestBuilder.makeSite();
-    ffu.setCeExpectedCapacity(0);
-    CaseRequest cr = CeCreateConverter.convertCeEstabFollowup(ffu, cache);
+    ActionInstruction actionInstruction = CeRequestBuilder.makeSite();
+    actionInstruction.setCeExpectedCapacity(0);
+    CaseRequest cr = CeCreateConverter.convertCeEstabFollowup(actionInstruction, cache);
     assertEquals("careCode1\n", cr.getDescription());
     assertEquals("careCode1\n" +
         "this is access info", cr.getSpecialInstructions());
@@ -145,9 +145,9 @@ class CeCreateConverterTest {
 
   @Test
   public void test_convertCeEstabFollowupSecureWithoutUnits() {
-    ActionInstruction ffu = CeRequestBuilder.makeSite();
-    ffu.setCeExpectedCapacity(0);
-    CaseRequest cr = CeCreateConverter.convertCeEstabFollowupSecure(ffu, cache);
+    ActionInstruction actionInstruction = CeRequestBuilder.makeSite();
+    actionInstruction.setCeExpectedCapacity(0);
+    CaseRequest cr = CeCreateConverter.convertCeEstabFollowupSecure(actionInstruction, cache);
     System.out.println(cr);
     assertEquals("careCode1\n" + "Secure Establishment", cr.getDescription());
     assertEquals("careCode1\n" +
@@ -157,8 +157,8 @@ class CeCreateConverterTest {
 
   @Test
   public void test_convertCeSite() {
-    ActionInstruction ffu = CeRequestBuilder.makeSite();
-    CaseRequest cr = CeCreateConverter.convertCeSite(ffu, cache);
+    ActionInstruction actionInstruction = CeRequestBuilder.makeSite();
+    CaseRequest cr = CeCreateConverter.convertCeSite(actionInstruction, cache);
     System.out.println(cr);
     assertEquals("careCode1\n", cr.getDescription());
     assertEquals("careCode1\n" +
@@ -167,8 +167,8 @@ class CeCreateConverterTest {
 
   @Test
   public void test_convertCeSiteSecure() {
-    ActionInstruction ffu = CeRequestBuilder.makeSite();
-    CaseRequest cr = CeCreateConverter.convertCeSiteSecure(ffu, cache);
+    ActionInstruction actionInstruction = CeRequestBuilder.makeSite();
+    CaseRequest cr = CeCreateConverter.convertCeSiteSecure(actionInstruction, cache);
     System.out.println(cr);
     assertEquals("careCode1\n" + "Secure Site", cr.getDescription());
     assertEquals("careCode1\n" +
@@ -177,8 +177,8 @@ class CeCreateConverterTest {
 
   @Test
   public void test_convertCeUnitDeliver() {
-    ActionInstruction ffu = CeRequestBuilder.makeSite();
-    CaseRequest cr = CeCreateConverter.convertCeUnitDeliver(ffu, cache);
+    ActionInstruction actionInstruction = CeRequestBuilder.makeSite();
+    CaseRequest cr = CeCreateConverter.convertCeUnitDeliver(actionInstruction, cache);
     System.out.println(cr);
     assertEquals("careCode1\n", cr.getDescription());
     assertEquals("careCode1\n" +
@@ -187,8 +187,8 @@ class CeCreateConverterTest {
 
   @Test
   public void test_convertCeUnitDeliverSecure() {
-    ActionInstruction ffu = CeRequestBuilder.makeSite();
-    CaseRequest cr = CeCreateConverter.convertCeUnitDeliverSecure(ffu, cache);
+    ActionInstruction actionInstruction = CeRequestBuilder.makeSite();
+    CaseRequest cr = CeCreateConverter.convertCeUnitDeliverSecure(actionInstruction, cache);
     System.out.println(cr);
     assertEquals("careCode1\n" + "Secure Unit", cr.getDescription());
     assertEquals("careCode1\n" +
@@ -197,8 +197,8 @@ class CeCreateConverterTest {
 
   @Test
   public void test_convertCeUnitFollowup() {
-    ActionInstruction ffu = CeRequestBuilder.makeSite();
-    CaseRequest cr = CeCreateConverter.convertCeUnitFollowup(ffu, cache);
+    ActionInstruction actionInstruction = CeRequestBuilder.makeSite();
+    CaseRequest cr = CeCreateConverter.convertCeUnitFollowup(actionInstruction, cache);
     System.out.println(cr);
     assertEquals("careCode1\n", cr.getDescription());
     assertEquals("careCode1\n" +
@@ -207,8 +207,8 @@ class CeCreateConverterTest {
 
   @Test
   public void test_convertCeUnitFollowupSecure() {
-    ActionInstruction ffu = CeRequestBuilder.makeSite();
-    CaseRequest cr = CeCreateConverter.convertCeUnitFollowupSecure(ffu, cache);
+    ActionInstruction actionInstruction = CeRequestBuilder.makeSite();
+    CaseRequest cr = CeCreateConverter.convertCeUnitFollowupSecure(actionInstruction, cache);
     System.out.println(cr);
     assertEquals("careCode1\n" + "Secure Unit", cr.getDescription());
     assertEquals("careCode1\n" +

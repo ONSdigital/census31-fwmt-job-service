@@ -8,11 +8,11 @@ public final class HhPauseConverter {
   private HhPauseConverter() {
   }
 
-  public static CasePauseRequest buildPause(ActionInstruction ffu) {
+  public static CasePauseRequest buildPause(ActionInstruction actionInstruction) {
     return CasePauseRequest.builder()
-        .code(ffu.getPauseCode())
-        .effectiveFrom(ffu.getPauseFrom().toString())
-        .reason(ffu.getPauseReason())
+        .code(actionInstruction.getPauseCode())
+        .effectiveFrom(actionInstruction.getPauseFrom().toString())
+        .reason(actionInstruction.getPauseReason())
         .build();
   }
 }

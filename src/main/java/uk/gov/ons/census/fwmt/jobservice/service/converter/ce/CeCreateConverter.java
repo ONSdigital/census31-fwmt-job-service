@@ -21,7 +21,7 @@ public final class CeCreateConverter {
   }
 
   public static CaseRequest.CaseRequestBuilder convertCE(
-      ActionInstruction ffu, GatewayCaseRecord cache, CaseRequest.CaseRequestBuilder builder,
+      ActionInstruction actionInstruction, GatewayCaseRecord cache, CaseRequest.CaseRequestBuilder builder,
       boolean isEstab, boolean isUnit) {
 
     boolean ce1Completed = false;
@@ -29,42 +29,42 @@ public final class CeCreateConverter {
     int actualResponse = 0;
     int expectedResponse = 0;
 
-    CaseRequest.CaseRequestBuilder commonBuilder = CommonCreateConverter.convertCommon(ffu, cache, builder);
-    commonBuilder.requiredOfficer(ffu.getFieldOfficerId());
+    CaseRequest.CaseRequestBuilder commonBuilder = CommonCreateConverter.convertCommon(actionInstruction, cache, builder);
+    commonBuilder.requiredOfficer(actionInstruction.getFieldOfficerId());
 
-    Geography outGeography = Geography.builder().oa(ffu.getOa()).build();
+    Geography outGeography = Geography.builder().oa(actionInstruction.getOa()).build();
 
     Address outAddress = Address.builder()
         .lines(List.of(
-            ffu.getAddressLine1(),
-            Objects.toString(ffu.getAddressLine2(), ""),
-            Objects.toString(ffu.getAddressLine3(), "")
+            actionInstruction.getAddressLine1(),
+            Objects.toString(actionInstruction.getAddressLine2(), ""),
+            Objects.toString(actionInstruction.getAddressLine3(), "")
         ))
-        .town(ffu.getTownName())
-        .postcode(ffu.getPostcode())
+        .town(actionInstruction.getTownName())
+        .postcode(actionInstruction.getPostcode())
         .geography(outGeography)
-        .uprn(Long.parseLong(ffu.getUprn()))
-        .estabUprn(ffu.getEstabUprn() == null ? null : Long.parseLong(ffu.getEstabUprn()))
+        .uprn(Long.parseLong(actionInstruction.getUprn()))
+        .estabUprn(actionInstruction.getEstabUprn() == null ? null : Long.parseLong(actionInstruction.getEstabUprn()))
         .build();
     commonBuilder.address(outAddress);
 
     if (isEstab) {
-      if (ffu.isCe1Complete()) {
+      if (actionInstruction.isCe1Complete()) {
         ce1Completed = true;
       }
     }
 
     if (isEstab || isUnit) {
-      if (ffu.getCeActualResponses() != null && ffu.getCeActualResponses() != 0) {
-        actualResponse = ffu.getCeActualResponses();
+      if (actionInstruction.getCeActualResponses() != null && actionInstruction.getCeActualResponses() != 0) {
+        actualResponse = actionInstruction.getCeActualResponses();
       }
 
-      if (ffu.getCeExpectedCapacity() != null && ffu.getCeExpectedCapacity() != 0) {
-        expectedResponse = ffu.getCeExpectedCapacity();
+      if (actionInstruction.getCeExpectedCapacity() != null && actionInstruction.getCeExpectedCapacity() != 0) {
+        expectedResponse = actionInstruction.getCeExpectedCapacity();
       }
 
-      if (ffu.isHandDeliver()) {
-        handDelivery = ffu.isHandDeliver();
+      if (actionInstruction.isHandDeliver()) {
+        handDelivery = actionInstruction.isHandDeliver();
       }
     }
 
@@ -79,93 +79,93 @@ public final class CeCreateConverter {
     return commonBuilder;
   }
 
-  public static CaseRequest convertCeEstabDeliver(ActionInstruction ffu, GatewayCaseRecord cache) {
+  public static CaseRequest convertCeEstabDeliver(ActionInstruction actionInstruction, GatewayCaseRecord cache) {
     return CeCreateConverter
-        .convertCE(ffu, cache, CaseRequest.builder(), true, false)
+        .convertCE(actionInstruction, cache, CaseRequest.builder(), true, false)
         .surveyType(SurveyType.CE_EST_D)
         .description(getDescription(cache))
         .specialInstructions(getSpecialInstructions(cache))
         .build();
   }
 
-  public static CaseRequest convertCeEstabDeliverSecure(ActionInstruction ffu, GatewayCaseRecord cache) {
-    return CeCreateConverter.convertCE(ffu, cache, CaseRequest.builder(), true, false)
+  public static CaseRequest convertCeEstabDeliverSecure(ActionInstruction actionInstruction, GatewayCaseRecord cache) {
+    return CeCreateConverter.convertCE(actionInstruction, cache, CaseRequest.builder(), true, false)
         .surveyType(SurveyType.CE_EST_D)
-        .reference("SECCE_" + ffu.getCaseRef())
+        .reference("SECCE_" + actionInstruction.getCaseRef())
         .description(getDescription(cache,SECURE_ESTABLISHMENT))
         .specialInstructions(getSpecialInstructions(cache))
         .build();
   }
 
-  public static CaseRequest convertCeEstabFollowup(ActionInstruction ffu, GatewayCaseRecord cache) {
-    SurveyType surveyType = ffu.getCeExpectedCapacity() > 0 ? SurveyType.CE_EST  : SurveyType.CE_ESTWU;
+  public static CaseRequest convertCeEstabFollowup(ActionInstruction actionInstruction, GatewayCaseRecord cache) {
+    SurveyType surveyType = actionInstruction.getCeExpectedCapacity() > 0 ? SurveyType.CE_EST  : SurveyType.CE_ESTWU;
     return CeCreateConverter
-        .convertCE(ffu, cache, CaseRequest.builder(), true, false)
+        .convertCE(actionInstruction, cache, CaseRequest.builder(), true, false)
         .surveyType(surveyType)
         .description(getDescription(cache))
         .specialInstructions(getSpecialInstructions(cache))
         .build();
   }
 
-  public static CaseRequest convertCeEstabFollowupSecure(ActionInstruction ffu, GatewayCaseRecord cache)  {
-    SurveyType surveyType = ffu.getCeExpectedCapacity() > 0 ? SurveyType.CE_EST  : SurveyType.CE_ESTWU;
-    return CeCreateConverter.convertCE(ffu, cache, CaseRequest.builder(), true, false)
+  public static CaseRequest convertCeEstabFollowupSecure(ActionInstruction actionInstruction, GatewayCaseRecord cache)  {
+    SurveyType surveyType = actionInstruction.getCeExpectedCapacity() > 0 ? SurveyType.CE_EST  : SurveyType.CE_ESTWU;
+    return CeCreateConverter.convertCE(actionInstruction, cache, CaseRequest.builder(), true, false)
         .surveyType(surveyType)
-        .reference("SECCE_" + ffu.getCaseRef())
+        .reference("SECCE_" + actionInstruction.getCaseRef())
         .description(getDescription(cache, SECURE_ESTABLISHMENT))
         .specialInstructions(getSpecialInstructions(cache))
         .build();
   }
 
-  public static CaseRequest convertCeSite(ActionInstruction ffu, GatewayCaseRecord cache) {
+  public static CaseRequest convertCeSite(ActionInstruction actionInstruction, GatewayCaseRecord cache) {
     return CeCreateConverter
-        .convertCE(ffu, cache, CaseRequest.builder(), false, false)
+        .convertCE(actionInstruction, cache, CaseRequest.builder(), false, false)
         .surveyType(SurveyType.CE_SITE)
         .description(getDescription(cache))
         .specialInstructions(getSpecialInstructions(cache))
         .build();
   }
 
-  public static CaseRequest convertCeSiteSecure(ActionInstruction ffu, GatewayCaseRecord cache) {
-    return CeCreateConverter.convertCE(ffu, cache, CaseRequest.builder(), false, false)
+  public static CaseRequest convertCeSiteSecure(ActionInstruction actionInstruction, GatewayCaseRecord cache) {
+    return CeCreateConverter.convertCE(actionInstruction, cache, CaseRequest.builder(), false, false)
         .surveyType(SurveyType.CE_SITE)
-        .reference("SECCS_" + ffu.getCaseRef())
+        .reference("SECCS_" + actionInstruction.getCaseRef())
         .description(getDescription(cache, SECURE_SITE))
         .specialInstructions(getSpecialInstructions(cache))
         .build();
   }
 
-  public static CaseRequest convertCeUnitDeliver(ActionInstruction ffu, GatewayCaseRecord cache) {
+  public static CaseRequest convertCeUnitDeliver(ActionInstruction actionInstruction, GatewayCaseRecord cache) {
     return CeCreateConverter
-        .convertCE(ffu, cache, CaseRequest.builder(), false, true)
+        .convertCE(actionInstruction, cache, CaseRequest.builder(), false, true)
         .surveyType(SurveyType.CE_UNIT_D)
         .description(getDescription(cache) )
         .specialInstructions(getSpecialInstructions(cache))
         .build();
   }
 
-  public static CaseRequest convertCeUnitDeliverSecure(ActionInstruction ffu, GatewayCaseRecord cache) {
-    return CeCreateConverter.convertCE(ffu, cache, CaseRequest.builder(), false, true)
+  public static CaseRequest convertCeUnitDeliverSecure(ActionInstruction actionInstruction, GatewayCaseRecord cache) {
+    return CeCreateConverter.convertCE(actionInstruction, cache, CaseRequest.builder(), false, true)
         .surveyType(SurveyType.CE_UNIT_D)
-        .reference("SECCU_" + ffu.getCaseRef())
+        .reference("SECCU_" + actionInstruction.getCaseRef())
         .description(getDescription(cache, SECURE_UNIT))
         .specialInstructions(getSpecialInstructions(cache))
         .build();
   }
 
-  public static CaseRequest convertCeUnitFollowup(ActionInstruction ffu, GatewayCaseRecord cache) {
+  public static CaseRequest convertCeUnitFollowup(ActionInstruction actionInstruction, GatewayCaseRecord cache) {
     return CeCreateConverter
-        .convertCE(ffu, cache, CaseRequest.builder(), false, true)
+        .convertCE(actionInstruction, cache, CaseRequest.builder(), false, true)
         .surveyType(SurveyType.CE_UNIT_F)
         .description(getDescription(cache) )
         .specialInstructions(getSpecialInstructions(cache))
         .build();
   }
 
-  public static CaseRequest convertCeUnitFollowupSecure(ActionInstruction ffu, GatewayCaseRecord cache) {
-    return CeCreateConverter.convertCE(ffu, cache, CaseRequest.builder(), false, true)
+  public static CaseRequest convertCeUnitFollowupSecure(ActionInstruction actionInstruction, GatewayCaseRecord cache) {
+    return CeCreateConverter.convertCE(actionInstruction, cache, CaseRequest.builder(), false, true)
         .surveyType(SurveyType.CE_UNIT_F)
-        .reference("SECCU_" + ffu.getCaseRef())
+        .reference("SECCU_" + actionInstruction.getCaseRef())
         .description(getDescription(cache, SECURE_UNIT))
         .specialInstructions(getSpecialInstructions(cache))
         .build();

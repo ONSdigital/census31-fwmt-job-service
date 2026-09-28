@@ -14,7 +14,7 @@ public final class HhCancelConverter {
   private HhCancelConverter(){
   }
 
-  public static CasePauseRequest buildCancel(CancelActionInstruction ffu) {
+  public static CasePauseRequest buildCancel(CancelActionInstruction actionInstruction) {
     String currentDate = "";
     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
     currentDate = dateFormat.format(new Date(System.currentTimeMillis()));

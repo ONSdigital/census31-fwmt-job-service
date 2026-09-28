@@ -17,22 +17,22 @@ public class CcsPropertyListingCreateConverter {
   }
 
   public static CaseRequest.CaseRequestBuilder convertCcs(
-      ActionInstruction ffu, GatewayCaseRecord cache, CaseRequest.CaseRequestBuilder builder) {
-    CaseRequest.CaseRequestBuilder commonBuilder = CommonCreateConverter.convertCommon(ffu, cache, builder);
+      ActionInstruction actionInstruction, GatewayCaseRecord cache, CaseRequest.CaseRequestBuilder builder) {
+    CaseRequest.CaseRequestBuilder commonBuilder = CommonCreateConverter.convertCommon(actionInstruction, cache, builder);
 
-    commonBuilder.type((ffu.getAddressType()!=null)?CaseType.valueOf(ffu.getAddressType()):CaseType.CCS);
-    commonBuilder.surveyType((ffu.getSurveyType()!=null)?ffu.getSurveyType():SurveyType.CCS_PL);
+    commonBuilder.type((actionInstruction.getAddressType()!=null)?CaseType.valueOf(actionInstruction.getAddressType()):CaseType.CCS);
+    commonBuilder.surveyType((actionInstruction.getSurveyType()!=null)?actionInstruction.getSurveyType():SurveyType.CCS_PL);
     commonBuilder.category("Not applicable");
 
     commonBuilder.estabType("PL");
-    commonBuilder.coordCode(ffu.getFieldCoordinatorId());
-    commonBuilder.requiredOfficer(ffu.getFieldOfficerId());
+    commonBuilder.coordCode(actionInstruction.getFieldCoordinatorId());
+    commonBuilder.requiredOfficer(actionInstruction.getFieldOfficerId());
 
-    Geography outGeography = Geography.builder().oa(ffu.getOa()).build();
+    Geography outGeography = Geography.builder().oa(actionInstruction.getOa()).build();
 
     Address outAddress = Address.builder()
-        .lines(List.of(ffu.getPostcode()))
-        .postcode(ffu.getPostcode())
+        .lines(List.of(actionInstruction.getPostcode()))
+        .postcode(actionInstruction.getPostcode())
         .geography(outGeography)
         .build();
     commonBuilder.address(outAddress);
@@ -40,9 +40,9 @@ public class CcsPropertyListingCreateConverter {
     return commonBuilder;
   }
 
-  public static CaseRequest convertCcsPropertyListing(ActionInstruction ffu, GatewayCaseRecord cache) {
+  public static CaseRequest convertCcsPropertyListing(ActionInstruction actionInstruction, GatewayCaseRecord cache) {
     return CcsPropertyListingCreateConverter
-        .convertCcs(ffu, cache, CaseRequest.builder())
+        .convertCcs(actionInstruction, cache, CaseRequest.builder())
         .build();
   }
 }

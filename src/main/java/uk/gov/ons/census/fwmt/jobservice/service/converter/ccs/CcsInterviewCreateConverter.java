@@ -20,44 +20,44 @@ public class CcsInterviewCreateConverter {
   }
 
   public static CaseRequest.CaseRequestBuilder convertCcs(
-      ActionInstruction ffu, GatewayCaseRecord cache, CaseRequest.CaseRequestBuilder builder) {
-    CaseRequest.CaseRequestBuilder commonBuilder = CommonCreateConverter.convertCommon(ffu, cache, builder);
+      ActionInstruction actionInstruction, GatewayCaseRecord cache, CaseRequest.CaseRequestBuilder builder) {
+    CaseRequest.CaseRequestBuilder commonBuilder = CommonCreateConverter.convertCommon(actionInstruction, cache, builder);
 
     commonBuilder.type(CaseType.CCS);
     commonBuilder.surveyType(SurveyType.CCS_INT);
-    commonBuilder.category("HH".equals(ffu.getAddressType()) ? "HH" : "CE");
+    commonBuilder.category("HH".equals(actionInstruction.getAddressType()) ? "HH" : "CE");
 
-    if (ffu.getEstabType() != null) {
-      commonBuilder.estabType(ffu.getEstabType());
+    if (actionInstruction.getEstabType() != null) {
+      commonBuilder.estabType(actionInstruction.getEstabType());
     } else {
-      commonBuilder.estabType(ffu.getAddressType());
+      commonBuilder.estabType(actionInstruction.getAddressType());
     }
 
-    commonBuilder.coordCode(ffu.getFieldCoordinatorId());
-    commonBuilder.requiredOfficer(ffu.getFieldOfficerId());
+    commonBuilder.coordCode(actionInstruction.getFieldCoordinatorId());
+    commonBuilder.requiredOfficer(actionInstruction.getFieldOfficerId());
 
     String title = (cache != null && cache.getManagerTitle() != null ? cache.getManagerTitle() : "");
     String firstName = (cache != null && cache.getManagerFirstname() != null ? cache.getManagerFirstname() : "");
     String surname = (cache != null && cache.getManagerSurname() != null ? cache.getManagerSurname() : "");
 
     Contact outContact = Contact.builder()
-        .organisationName(ffu.getOrganisationName() != null ? ffu.getOrganisationName() : "")
+        .organisationName(actionInstruction.getOrganisationName() != null ? actionInstruction.getOrganisationName() : "")
         .name(title + " " + firstName + " " + surname)
         .phone(cache != null && cache.getManagerContactNumber() != null ? cache.getManagerContactNumber() : "")
         .build();
 
     commonBuilder.contact(outContact);
 
-    Geography outGeography = Geography.builder().oa(ffu.getOa()).build();
+    Geography outGeography = Geography.builder().oa(actionInstruction.getOa()).build();
 
     Address outAddress = Address.builder()
         .lines(List.of(
-            ffu.getAddressLine1(),
-            Objects.toString(ffu.getAddressLine2(), ""),
-            Objects.toString(ffu.getAddressLine3(), "")
+            actionInstruction.getAddressLine1(),
+            Objects.toString(actionInstruction.getAddressLine2(), ""),
+            Objects.toString(actionInstruction.getAddressLine3(), "")
         ))
-        .town(ffu.getTownName())
-        .postcode(ffu.getPostcode())
+        .town(actionInstruction.getTownName())
+        .postcode(actionInstruction.getPostcode())
         .geography(outGeography)
         .build();
     commonBuilder.address(outAddress);
@@ -65,18 +65,18 @@ public class CcsInterviewCreateConverter {
     return commonBuilder;
   }
 
-  public static CaseRequest convertCcsInterview(ActionInstruction ffu, GatewayCaseRecord cache, String eqUrl) {
+  public static CaseRequest convertCcsInterview(ActionInstruction actionInstruction, GatewayCaseRecord cache, String eqUrl) {
     return CcsInterviewCreateConverter
-        .convertCcs(ffu, cache, CaseRequest.builder())
+        .convertCcs(actionInstruction, cache, CaseRequest.builder())
         .ccs(CcsCaseExtension.builder().questionnaireUrl(eqUrl).build())
         .specialInstructions(getSpecialInstructions(cache))
-        .description(getDescription(ffu, cache))
+        .description(getDescription(actionInstruction, cache))
         .build();
   }
 
-  private static String getDescription(ActionInstruction ffu, GatewayCaseRecord cache) {
+  private static String getDescription(ActionInstruction actionInstruction, GatewayCaseRecord cache) {
     StringBuilder description = new StringBuilder();
-    if ("CE".equals(ffu.getAddressType())) {
+    if ("CE".equals(actionInstruction.getAddressType())) {
       description
           .append("No of Residents: ")
           .append(cache.getUsualResidents() != null ? cache.getUsualResidents() : "0")
