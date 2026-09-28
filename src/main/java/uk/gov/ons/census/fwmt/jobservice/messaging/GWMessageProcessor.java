@@ -33,11 +33,6 @@ public class GWMessageProcessor {
     processCreateInstructionInternal(instruction, messageTime, message);
   }
 
-  public void processCreateInstructionAndPropagate(
-      ActionInstruction instruction, Instant messageTime, PubsubMessage message) {
-    processCreateInstructionInternal(instruction, messageTime, message);
-  }
-
   private void processCreateInstructionInternal(
       ActionInstruction instruction, Instant messageTime, PubsubMessage message) {
     try {
@@ -80,11 +75,6 @@ public class GWMessageProcessor {
   }
 
   public void processCancelInstruction(
-      CancelActionInstruction instruction, Instant messageTime, PubsubMessage message) {
-    processCancelInstructionInternal(instruction, messageTime, message);
-  }
-
-  public void processCancelInstructionAndPropagate(
       CancelActionInstruction instruction, Instant messageTime, PubsubMessage message) {
     processCancelInstructionInternal(instruction, messageTime, message);
   }

@@ -55,9 +55,9 @@ public class FieldWorkerInstructionMessageDispatcher {
         decoded.getMetadata().getSchemaVersion(), contract, actionInstruction(decoded.getInstruction()));
 
     if (decoded.getInstruction() instanceof ActionInstruction instruction) {
-      gwMessageProcessor.processCreateInstructionAndPropagate(instruction, decoded.getMessageTime(), pubsubMessage);
+      gwMessageProcessor.processCreateInstruction(instruction, decoded.getMessageTime(), pubsubMessage);
     } else if (decoded.getInstruction() instanceof CancelActionInstruction instruction) {
-      gwMessageProcessor.processCancelInstructionAndPropagate(instruction, decoded.getMessageTime(), pubsubMessage);
+      gwMessageProcessor.processCancelInstruction(instruction, decoded.getMessageTime(), pubsubMessage);
     } else {
       throw new IllegalArgumentException("Unsupported action instruction payload");
     }
