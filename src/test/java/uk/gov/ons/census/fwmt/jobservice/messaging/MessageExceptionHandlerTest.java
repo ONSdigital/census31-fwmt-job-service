@@ -15,8 +15,8 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstructionType;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtCancelActionInstruction;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtCommonInstruction;
+import uk.gov.ons.census.fwmt.common.rm.dto.CancelActionInstruction;
+import uk.gov.ons.census.fwmt.common.rm.dto.CommonInstruction;
 import uk.gov.ons.census.fwmt.jobservice.data.QuarantinedMessage;
 import uk.gov.ons.census.fwmt.jobservice.repository.QuarantinedMessageRepository;
 
@@ -38,7 +38,7 @@ class MessageExceptionHandlerTest {
   @Captor
   private ArgumentCaptor<PubsubMessage> pubsubMessageArgumentCaptor;
 
-  private FwmtCommonInstruction commonInstruction = Mockito.mock(FwmtCommonInstruction.class);
+  private CommonInstruction commonInstruction = Mockito.mock(CommonInstruction.class);
 
   @InjectMocks
   private MessageExceptionHandler messageExceptionHandler;
@@ -99,7 +99,7 @@ class MessageExceptionHandlerTest {
   @Test
   void shouldPersistMessagesSentToPermQueue() {
     final PubsubMessage message = createPubsubMessage(null);
-    final FwmtCommonInstruction actionInstruction = createCanceActionInstruction();
+    final CommonInstruction actionInstruction = createCanceActionInstruction();
 
     messageExceptionHandler.handlePermMessage(message, actionInstruction);
     verify(quarantinedMessageRepository).save(commonInstructionArgumentCaptor.capture());
@@ -110,8 +110,8 @@ class MessageExceptionHandlerTest {
     assertEquals(actionInstruction.getSurveyName(), savedItem.getSurveyName());
   }
 
-  public FwmtCommonInstruction createCanceActionInstruction() {
-    FwmtCancelActionInstruction inst = new FwmtCancelActionInstruction();
+  public CommonInstruction createCanceActionInstruction() {
+    CancelActionInstruction inst = new CancelActionInstruction();
     inst.setNc(true);
     inst.setAddressLevel("level");
     inst.setAddressType("type");

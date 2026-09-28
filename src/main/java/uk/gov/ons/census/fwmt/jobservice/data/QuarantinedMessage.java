@@ -8,7 +8,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstructionType;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtCommonInstruction;
+import uk.gov.ons.census.fwmt.common.rm.dto.CommonInstruction;
 
 import jakarta.persistence.*;
 import java.time.OffsetDateTime;
@@ -21,7 +21,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Entity
 @edu.umd.cs.findbugs.annotations.SuppressFBWarnings("EI_EXPOSE_REP")
-public class QuarantinedMessage implements FwmtCommonInstruction {
+public class QuarantinedMessage implements CommonInstruction {
   @Id
   @GeneratedValue
   private UUID id;

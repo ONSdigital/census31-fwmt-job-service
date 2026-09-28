@@ -7,8 +7,8 @@ import java.time.Instant;
 import lombok.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstructionType;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtCancelActionInstruction;
+import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstruction;
+import uk.gov.ons.census.fwmt.common.rm.dto.CancelActionInstruction;
 
 @Component
 public class RmAdapterActionInstructionDecoder {
@@ -41,11 +41,11 @@ public class RmAdapterActionInstructionDecoder {
       }
 
       Object instruction = action == ActionInstructionType.CANCEL
-          ? objectMapper.readValue(json, FwmtCancelActionInstruction.class)
-          : objectMapper.readValue(json, FwmtActionInstruction.class);
+          ? objectMapper.readValue(json, CancelActionInstruction.class)
+          : objectMapper.readValue(json, ActionInstruction.class);
       String payloadCaseId = action == ActionInstructionType.CANCEL
-          ? ((FwmtCancelActionInstruction) instruction).getCaseId()
-          : ((FwmtActionInstruction) instruction).getCaseId();
+          ? ((CancelActionInstruction) instruction).getCaseId()
+          : ((ActionInstruction) instruction).getCaseId();
       String attributeCaseId = message.getAttributesOrDefault("caseId", "");
       if (!attributeCaseId.isEmpty() && !attributeCaseId.equals(payloadCaseId)) {
         throw new IllegalArgumentException("RM adapter payload caseId does not match Pub/Sub attribute");

@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import uk.gov.ons.census.fwmt.common.error.GatewayException;
 import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstructionType;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
+import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstruction;
 import uk.gov.ons.census.fwmt.common.events.component.GatewayEventManager;
 import uk.gov.ons.census.fwmt.jobservice.data.GatewayCaseRecord;
 import uk.gov.ons.census.fwmt.jobservice.service.processor.InboundProcessor;
@@ -15,7 +15,7 @@ import java.time.Instant;
 
 @Qualifier("Pause")
 @Service
-public class HHCancelledPause implements InboundProcessor<FwmtActionInstruction> {
+public class HHCancelledPause implements InboundProcessor<ActionInstruction> {
 
   private static final String CASE_ALREADY_CANCELLED = "CASE_ALREADY_CANCELLED";
 
@@ -37,7 +37,7 @@ public class HHCancelledPause implements InboundProcessor<FwmtActionInstruction>
   }
 
   @Override
-  public boolean isValid(FwmtActionInstruction rmRequest, GatewayCaseRecord cache) {
+  public boolean isValid(ActionInstruction rmRequest, GatewayCaseRecord cache) {
     try {
       return rmRequest.getActionInstruction() == ActionInstructionType.PAUSE
           && rmRequest.getSurveyName().equals("CENSUS")
@@ -50,7 +50,7 @@ public class HHCancelledPause implements InboundProcessor<FwmtActionInstruction>
   }
 
   @Override
-  public void process(FwmtActionInstruction rmRequest, GatewayCaseRecord cache, Instant messageReceivedTime) throws GatewayException {
+  public void process(ActionInstruction rmRequest, GatewayCaseRecord cache, Instant messageReceivedTime) throws GatewayException {
     eventManager.triggerEvent(String.valueOf(rmRequest.getCaseId()), CASE_ALREADY_CANCELLED,
         "Type", "HH Pause Case",
         "Action", IGNORED_PAUSE_HH);

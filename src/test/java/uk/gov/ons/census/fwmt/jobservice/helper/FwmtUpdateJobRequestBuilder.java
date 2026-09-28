@@ -1,12 +1,12 @@
 package uk.gov.ons.census.fwmt.jobservice.helper;
 
 import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstructionType;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
+import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstruction;
 
 public class FwmtUpdateJobRequestBuilder {
 
-  public FwmtActionInstruction createSpgUpdateUnit() {
-    FwmtActionInstruction fwmtActionInstruction = new FwmtActionInstruction();
+  public ActionInstruction createSpgUpdateUnit() {
+    ActionInstruction fwmtActionInstruction = new ActionInstruction();
     fwmtActionInstruction.setActionInstruction(ActionInstructionType.UPDATE);
     fwmtActionInstruction.setCaseId("ac623e62-4f4b-11eb-ae93-0242ac130002");
     fwmtActionInstruction.setSurveyName("CENSUS");

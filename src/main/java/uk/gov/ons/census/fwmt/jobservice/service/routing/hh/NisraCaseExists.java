@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import uk.gov.ons.census.fwmt.common.error.GatewayException;
 import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstructionType;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
+import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstruction;
 import uk.gov.ons.census.fwmt.common.events.component.GatewayEventManager;
 import uk.gov.ons.census.fwmt.jobservice.data.GatewayCaseRecord;
 import uk.gov.ons.census.fwmt.jobservice.service.processor.InboundProcessor;
@@ -15,7 +15,7 @@ import java.time.Instant;
 
 @Qualifier("Create")
 @Service
-public class NisraCaseExists implements InboundProcessor<FwmtActionInstruction> {
+public class NisraCaseExists implements InboundProcessor<ActionInstruction> {
 
   final private static String NISRA_CASE_EXISTS = "NISRA_CASE_EXISTS";
 
@@ -35,7 +35,7 @@ public class NisraCaseExists implements InboundProcessor<FwmtActionInstruction> 
   }
 
   @Override
-  public boolean isValid(FwmtActionInstruction rmRequest, GatewayCaseRecord cache) {
+  public boolean isValid(ActionInstruction rmRequest, GatewayCaseRecord cache) {
     try {
       return rmRequest.getActionInstruction() == ActionInstructionType.CREATE
           && rmRequest.getSurveyName().equals("CENSUS")
@@ -48,7 +48,7 @@ public class NisraCaseExists implements InboundProcessor<FwmtActionInstruction> 
   }
 
   @Override
-  public void process(FwmtActionInstruction rmRequest, GatewayCaseRecord cache, Instant messageReceivedTime) throws GatewayException {
+  public void process(ActionInstruction rmRequest, GatewayCaseRecord cache, Instant messageReceivedTime) throws GatewayException {
     eventManager.triggerEvent(String.valueOf(rmRequest.getCaseId()), NISRA_CASE_EXISTS,
         "UPRN", rmRequest.getUprn(),
         "Estab UPRN", rmRequest.getEstabUprn());

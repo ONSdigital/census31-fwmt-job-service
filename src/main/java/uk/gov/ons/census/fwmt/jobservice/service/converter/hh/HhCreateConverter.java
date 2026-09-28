@@ -5,7 +5,7 @@ import uk.gov.ons.census.fwmt.common.data.tm.CaseRequest;
 import uk.gov.ons.census.fwmt.common.data.tm.CaseType;
 import uk.gov.ons.census.fwmt.common.data.tm.Geography;
 import uk.gov.ons.census.fwmt.common.data.tm.SurveyType;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
+import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstruction;
 import uk.gov.ons.census.fwmt.jobservice.data.GatewayCaseRecord;
 import uk.gov.ons.census.fwmt.jobservice.service.converter.common.CommonCreateConverter;
 
@@ -18,7 +18,7 @@ public final class HhCreateConverter {
   }
 
   public static CaseRequest.CaseRequestBuilder convertHH(
-      FwmtActionInstruction ffu, GatewayCaseRecord cache, CaseRequest.CaseRequestBuilder builder) {
+      ActionInstruction ffu, GatewayCaseRecord cache, CaseRequest.CaseRequestBuilder builder) {
     CaseRequest.CaseRequestBuilder commonBuilder = CommonCreateConverter.convertCommon(ffu, cache, builder);
 
     commonBuilder.type(CaseType.HH);
@@ -42,7 +42,7 @@ public final class HhCreateConverter {
     return commonBuilder;
   }
 
-  public static CaseRequest convertHhEnglandAndWales(FwmtActionInstruction ffu, GatewayCaseRecord cache) {
+  public static CaseRequest convertHhEnglandAndWales(ActionInstruction ffu, GatewayCaseRecord cache) {
     return HhCreateConverter
         .convertHH(ffu, cache, CaseRequest.builder())
         .sai("Sheltered Accommodation".equals(ffu.getEstabType()))
@@ -51,7 +51,7 @@ public final class HhCreateConverter {
         .build();
   }
 
-  public static CaseRequest convertHhNisra(FwmtActionInstruction ffu, GatewayCaseRecord cache) {
+  public static CaseRequest convertHhNisra(ActionInstruction ffu, GatewayCaseRecord cache) {
     return HhCreateConverter
         .convertHH(ffu, cache, CaseRequest.builder())
         .requiredOfficer(ffu.getFieldOfficerId())

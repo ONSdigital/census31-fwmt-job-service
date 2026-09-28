@@ -4,7 +4,7 @@ import uk.gov.ons.census.fwmt.common.data.tm.CaseRequest;
 import uk.gov.ons.census.fwmt.common.data.tm.CaseType;
 import uk.gov.ons.census.fwmt.common.data.tm.Contact;
 import uk.gov.ons.census.fwmt.common.data.tm.Location;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
+import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstruction;
 import uk.gov.ons.census.fwmt.jobservice.data.GatewayCaseRecord;
 
 public final class CommonCreateConverter {
@@ -13,7 +13,7 @@ public final class CommonCreateConverter {
   }
 
   public static CaseRequest.CaseRequestBuilder convertCommon(
-      FwmtActionInstruction ffu, GatewayCaseRecord cache, CaseRequest.CaseRequestBuilder builder) {
+      ActionInstruction ffu, GatewayCaseRecord cache, CaseRequest.CaseRequestBuilder builder) {
 
     builder.reference(ffu.getCaseRef());
     builder.type(CaseType.CE);

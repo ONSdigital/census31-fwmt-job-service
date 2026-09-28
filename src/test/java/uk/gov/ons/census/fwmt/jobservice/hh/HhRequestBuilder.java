@@ -1,13 +1,13 @@
 package uk.gov.ons.census.fwmt.jobservice.hh;
 
 import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstructionType;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtCancelActionInstruction;
+import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstruction;
+import uk.gov.ons.census.fwmt.common.rm.dto.CancelActionInstruction;
 
 public final class HhRequestBuilder {
 
-    public static FwmtActionInstruction createPauseInstruction() {
-        return FwmtActionInstruction.builder()
+    public static ActionInstruction createPauseInstruction() {
+        return ActionInstruction.builder()
                 .actionInstruction(ActionInstructionType.PAUSE)
                 .surveyName("CENSUS")
                 .addressType("HH")
@@ -17,8 +17,8 @@ public final class HhRequestBuilder {
                 .build();
     }
 
-    public static FwmtActionInstruction updateActionInstruction() {
-        return FwmtActionInstruction.builder()
+    public static ActionInstruction updateActionInstruction() {
+        return ActionInstruction.builder()
             .actionInstruction(ActionInstructionType.UPDATE)
             .surveyName("CENSUS")
             .addressType("HH")
@@ -32,8 +32,8 @@ public final class HhRequestBuilder {
             .build();
     }
 
-    public static FwmtCancelActionInstruction cancelActionInstruction() {
-        return FwmtCancelActionInstruction.builder()
+    public static CancelActionInstruction cancelActionInstruction() {
+        return CancelActionInstruction.builder()
             .actionInstruction(ActionInstructionType.CANCEL)
             .surveyName("CENSUS")
             .addressType("HH")

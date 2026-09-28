@@ -5,7 +5,7 @@ import uk.gov.ons.census.fwmt.common.data.tm.CaseRequest;
 import uk.gov.ons.census.fwmt.common.data.tm.CeCaseExtension;
 import uk.gov.ons.census.fwmt.common.data.tm.Geography;
 import uk.gov.ons.census.fwmt.common.data.tm.SurveyType;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
+import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstruction;
 import uk.gov.ons.census.fwmt.jobservice.data.GatewayCaseRecord;
 import uk.gov.ons.census.fwmt.jobservice.service.converter.common.CommonCreateConverter;
 
@@ -21,7 +21,7 @@ public final class CeCreateConverter {
   }
 
   public static CaseRequest.CaseRequestBuilder convertCE(
-      FwmtActionInstruction ffu, GatewayCaseRecord cache, CaseRequest.CaseRequestBuilder builder,
+      ActionInstruction ffu, GatewayCaseRecord cache, CaseRequest.CaseRequestBuilder builder,
       boolean isEstab, boolean isUnit) {
 
     boolean ce1Completed = false;
@@ -79,7 +79,7 @@ public final class CeCreateConverter {
     return commonBuilder;
   }
 
-  public static CaseRequest convertCeEstabDeliver(FwmtActionInstruction ffu, GatewayCaseRecord cache) {
+  public static CaseRequest convertCeEstabDeliver(ActionInstruction ffu, GatewayCaseRecord cache) {
     return CeCreateConverter
         .convertCE(ffu, cache, CaseRequest.builder(), true, false)
         .surveyType(SurveyType.CE_EST_D)
@@ -88,7 +88,7 @@ public final class CeCreateConverter {
         .build();
   }
 
-  public static CaseRequest convertCeEstabDeliverSecure(FwmtActionInstruction ffu, GatewayCaseRecord cache) {
+  public static CaseRequest convertCeEstabDeliverSecure(ActionInstruction ffu, GatewayCaseRecord cache) {
     return CeCreateConverter.convertCE(ffu, cache, CaseRequest.builder(), true, false)
         .surveyType(SurveyType.CE_EST_D)
         .reference("SECCE_" + ffu.getCaseRef())
@@ -97,7 +97,7 @@ public final class CeCreateConverter {
         .build();
   }
 
-  public static CaseRequest convertCeEstabFollowup(FwmtActionInstruction ffu, GatewayCaseRecord cache) {
+  public static CaseRequest convertCeEstabFollowup(ActionInstruction ffu, GatewayCaseRecord cache) {
     SurveyType surveyType = ffu.getCeExpectedCapacity() > 0 ? SurveyType.CE_EST  : SurveyType.CE_ESTWU;
     return CeCreateConverter
         .convertCE(ffu, cache, CaseRequest.builder(), true, false)
@@ -107,7 +107,7 @@ public final class CeCreateConverter {
         .build();
   }
 
-  public static CaseRequest convertCeEstabFollowupSecure(FwmtActionInstruction ffu, GatewayCaseRecord cache)  {
+  public static CaseRequest convertCeEstabFollowupSecure(ActionInstruction ffu, GatewayCaseRecord cache)  {
     SurveyType surveyType = ffu.getCeExpectedCapacity() > 0 ? SurveyType.CE_EST  : SurveyType.CE_ESTWU;
     return CeCreateConverter.convertCE(ffu, cache, CaseRequest.builder(), true, false)
         .surveyType(surveyType)
@@ -117,7 +117,7 @@ public final class CeCreateConverter {
         .build();
   }
 
-  public static CaseRequest convertCeSite(FwmtActionInstruction ffu, GatewayCaseRecord cache) {
+  public static CaseRequest convertCeSite(ActionInstruction ffu, GatewayCaseRecord cache) {
     return CeCreateConverter
         .convertCE(ffu, cache, CaseRequest.builder(), false, false)
         .surveyType(SurveyType.CE_SITE)
@@ -126,7 +126,7 @@ public final class CeCreateConverter {
         .build();
   }
 
-  public static CaseRequest convertCeSiteSecure(FwmtActionInstruction ffu, GatewayCaseRecord cache) {
+  public static CaseRequest convertCeSiteSecure(ActionInstruction ffu, GatewayCaseRecord cache) {
     return CeCreateConverter.convertCE(ffu, cache, CaseRequest.builder(), false, false)
         .surveyType(SurveyType.CE_SITE)
         .reference("SECCS_" + ffu.getCaseRef())
@@ -135,7 +135,7 @@ public final class CeCreateConverter {
         .build();
   }
 
-  public static CaseRequest convertCeUnitDeliver(FwmtActionInstruction ffu, GatewayCaseRecord cache) {
+  public static CaseRequest convertCeUnitDeliver(ActionInstruction ffu, GatewayCaseRecord cache) {
     return CeCreateConverter
         .convertCE(ffu, cache, CaseRequest.builder(), false, true)
         .surveyType(SurveyType.CE_UNIT_D)
@@ -144,7 +144,7 @@ public final class CeCreateConverter {
         .build();
   }
 
-  public static CaseRequest convertCeUnitDeliverSecure(FwmtActionInstruction ffu, GatewayCaseRecord cache) {
+  public static CaseRequest convertCeUnitDeliverSecure(ActionInstruction ffu, GatewayCaseRecord cache) {
     return CeCreateConverter.convertCE(ffu, cache, CaseRequest.builder(), false, true)
         .surveyType(SurveyType.CE_UNIT_D)
         .reference("SECCU_" + ffu.getCaseRef())
@@ -153,7 +153,7 @@ public final class CeCreateConverter {
         .build();
   }
 
-  public static CaseRequest convertCeUnitFollowup(FwmtActionInstruction ffu, GatewayCaseRecord cache) {
+  public static CaseRequest convertCeUnitFollowup(ActionInstruction ffu, GatewayCaseRecord cache) {
     return CeCreateConverter
         .convertCE(ffu, cache, CaseRequest.builder(), false, true)
         .surveyType(SurveyType.CE_UNIT_F)
@@ -162,7 +162,7 @@ public final class CeCreateConverter {
         .build();
   }
 
-  public static CaseRequest convertCeUnitFollowupSecure(FwmtActionInstruction ffu, GatewayCaseRecord cache) {
+  public static CaseRequest convertCeUnitFollowupSecure(ActionInstruction ffu, GatewayCaseRecord cache) {
     return CeCreateConverter.convertCE(ffu, cache, CaseRequest.builder(), false, true)
         .surveyType(SurveyType.CE_UNIT_F)
         .reference("SECCU_" + ffu.getCaseRef())

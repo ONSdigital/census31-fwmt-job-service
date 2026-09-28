@@ -1,11 +1,11 @@
 package uk.gov.ons.census.fwmt.jobservice.helper;
 
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
+import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstruction;
 
 public class SpgActionInstructionBuilder {
 
-  public FwmtActionInstruction createSpgSite() {
-    FwmtActionInstruction actionInstruction = new FwmtActionInstruction();
+  public ActionInstruction createSpgSite() {
+    ActionInstruction actionInstruction = new ActionInstruction();
     actionInstruction.setSurveyName("CENSUS");
     actionInstruction.setAddressType("SPG");
     actionInstruction.setAddressLevel("E");
@@ -25,8 +25,8 @@ public class SpgActionInstructionBuilder {
     return actionInstruction;
   }
 
-  public FwmtActionInstruction createSpgUnitFollowup() {
-    FwmtActionInstruction actionInstruction = new FwmtActionInstruction();
+  public ActionInstruction createSpgUnitFollowup() {
+    ActionInstruction actionInstruction = new ActionInstruction();
     actionInstruction.setSurveyName("CENSUS");
     actionInstruction.setAddressType("SPG");
     actionInstruction.setAddressLevel("U");

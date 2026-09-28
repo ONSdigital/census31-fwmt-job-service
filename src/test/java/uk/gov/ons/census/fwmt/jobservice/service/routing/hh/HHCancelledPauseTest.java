@@ -5,7 +5,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstructionType;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
+import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstruction;
 import uk.gov.ons.census.fwmt.jobservice.data.GatewayCaseRecord;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -19,7 +19,7 @@ class HHCancelledPauseTest {
 
   @Test
   void shouldCheckisValid() {
-    final FwmtActionInstruction request = FwmtActionInstruction.builder()
+    final ActionInstruction request = ActionInstruction.builder()
         .actionInstruction(ActionInstructionType.PAUSE)
         .surveyName("CENSUS")
         .addressType("HH")

@@ -5,7 +5,7 @@ import uk.gov.ons.census.fwmt.common.data.tm.CaseRequest;
 import uk.gov.ons.census.fwmt.common.data.tm.CaseType;
 import uk.gov.ons.census.fwmt.common.data.tm.Geography;
 import uk.gov.ons.census.fwmt.common.data.tm.SurveyType;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
+import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstruction;
 import uk.gov.ons.census.fwmt.jobservice.data.GatewayCaseRecord;
 import uk.gov.ons.census.fwmt.jobservice.service.converter.common.CommonCreateConverter;
 
@@ -17,7 +17,7 @@ public class CcsPropertyListingCreateConverter {
   }
 
   public static CaseRequest.CaseRequestBuilder convertCcs(
-      FwmtActionInstruction ffu, GatewayCaseRecord cache, CaseRequest.CaseRequestBuilder builder) {
+      ActionInstruction ffu, GatewayCaseRecord cache, CaseRequest.CaseRequestBuilder builder) {
     CaseRequest.CaseRequestBuilder commonBuilder = CommonCreateConverter.convertCommon(ffu, cache, builder);
 
     commonBuilder.type((ffu.getAddressType()!=null)?CaseType.valueOf(ffu.getAddressType()):CaseType.CCS);
@@ -40,7 +40,7 @@ public class CcsPropertyListingCreateConverter {
     return commonBuilder;
   }
 
-  public static CaseRequest convertCcsPropertyListing(FwmtActionInstruction ffu, GatewayCaseRecord cache) {
+  public static CaseRequest convertCcsPropertyListing(ActionInstruction ffu, GatewayCaseRecord cache) {
     return CcsPropertyListingCreateConverter
         .convertCcs(ffu, cache, CaseRequest.builder())
         .build();

@@ -13,7 +13,7 @@ import org.springframework.http.ResponseEntity;
 import uk.gov.ons.census.fwmt.common.data.nc.CaseDetailsDTO;
 import uk.gov.ons.census.fwmt.common.data.tm.CaseRequest;
 import uk.gov.ons.census.fwmt.common.error.GatewayException;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
+import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstruction;
 import uk.gov.ons.census.fwmt.common.events.component.GatewayEventManager;
 import uk.gov.ons.census.fwmt.jobservice.data.GatewayCaseRecord;
 import uk.gov.ons.census.fwmt.jobservice.helper.NcActionInstructionBuilder;
@@ -60,7 +60,7 @@ public class NcCreateProcessorTest {
   @Test
   @DisplayName("Should save the original case id")
   public void shouldHandleIncorrectSurveyTypeCE() throws GatewayException {
-    final FwmtActionInstruction instruction = new NcActionInstructionBuilder().createNcActionInstruction();
+    final ActionInstruction instruction = new NcActionInstructionBuilder().createNcActionInstruction();
     final GatewayCaseRecord originalCache = GatewayCaseRecord.builder()
         .caseId("ac623e62-4f4b-11eb-ae93-0242ac130002").careCodes("Mind dog").accessInfo("1234").build();
 
@@ -77,7 +77,7 @@ public class NcCreateProcessorTest {
   @Test
   @DisplayName("Should not error if a null refusal value is present")
   public void shouldHandleNullRefusalValue() throws GatewayException {
-    final FwmtActionInstruction instruction = new NcActionInstructionBuilder().createNcActionInstruction();
+    final ActionInstruction instruction = new NcActionInstructionBuilder().createNcActionInstruction();
     final CaseDetailsDTO caseDetailsDTO = new CaseDetailsDTO();
     final GatewayCaseRecord originalCache = new GatewayCaseRecord();
 
@@ -94,7 +94,7 @@ public class NcCreateProcessorTest {
   @Test
   @DisplayName("Should error if original case not in cache")
   public void shouldErrorIfOriginalCaseDoesntExistInCache() {
-    final FwmtActionInstruction instruction = new NcActionInstructionBuilder().createNcActionInstruction();
+    final ActionInstruction instruction = new NcActionInstructionBuilder().createNcActionInstruction();
 
     GatewayException exception = assertThrows(GatewayException.class, () -> {
       ncHhCreateEnglandAndWales.process(instruction, null, Instant.now());

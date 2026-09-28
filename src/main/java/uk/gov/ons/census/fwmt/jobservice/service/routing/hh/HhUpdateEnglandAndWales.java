@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.ons.census.fwmt.common.data.tm.CaseRequest;
 import uk.gov.ons.census.fwmt.common.error.GatewayException;
 import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstructionType;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
+import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstruction;
 import uk.gov.ons.census.fwmt.common.events.component.GatewayEventManager;
 import uk.gov.ons.census.fwmt.jobservice.data.GatewayCaseRecord;
 import uk.gov.ons.census.fwmt.jobservice.http.comet.CometRestClient;
@@ -27,7 +27,7 @@ import static uk.gov.ons.census.fwmt.jobservice.config.GatewayEventsConfig.FAILE
 
 @Qualifier("Update")
 @Service
-public class HhUpdateEnglandAndWales implements InboundProcessor<FwmtActionInstruction> {
+public class HhUpdateEnglandAndWales implements InboundProcessor<ActionInstruction> {
 
   private static final String PROCESSING = "PROCESSING";
 
@@ -56,7 +56,7 @@ public class HhUpdateEnglandAndWales implements InboundProcessor<FwmtActionInstr
   }
 
   @Override
-  public boolean isValid(FwmtActionInstruction rmRequest, GatewayCaseRecord cache) {
+  public boolean isValid(ActionInstruction rmRequest, GatewayCaseRecord cache) {
     try {
       return rmRequest.getActionInstruction() == ActionInstructionType.UPDATE
           && rmRequest.getSurveyName().equals("CENSUS")
@@ -69,7 +69,7 @@ public class HhUpdateEnglandAndWales implements InboundProcessor<FwmtActionInstr
   }
 
   @Override
-  public void process(FwmtActionInstruction rmRequest, GatewayCaseRecord cache, Instant messageReceivedTime) throws GatewayException {
+  public void process(ActionInstruction rmRequest, GatewayCaseRecord cache, Instant messageReceivedTime) throws GatewayException {
     eventManager.triggerEvent(String.valueOf(rmRequest.getCaseId()), PROCESSING,
         "type", "HH E & W",
         "action", "Update");

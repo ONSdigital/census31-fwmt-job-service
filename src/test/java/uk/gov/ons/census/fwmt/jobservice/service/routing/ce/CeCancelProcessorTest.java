@@ -12,7 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClientException;
 import uk.gov.ons.census.fwmt.common.error.GatewayException;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtCancelActionInstruction;
+import uk.gov.ons.census.fwmt.common.rm.dto.CancelActionInstruction;
 import uk.gov.ons.census.fwmt.common.events.component.GatewayEventManager;
 import uk.gov.ons.census.fwmt.jobservice.data.GatewayCaseRecord;
 import uk.gov.ons.census.fwmt.jobservice.helper.FwmtCancelJobRequestBuilder;
@@ -60,7 +60,7 @@ public class CeCancelProcessorTest {
   @Test
   @DisplayName("Should send a CE Estab cancel")
   public void shouldSendACeEstabCancel() throws GatewayException {
-    final FwmtCancelActionInstruction instruction = new FwmtCancelJobRequestBuilder().cancelActionInstruction();
+    final CancelActionInstruction instruction = new FwmtCancelJobRequestBuilder().cancelActionInstruction();
     GatewayCaseRecord gatewayCache = GatewayCaseRecord.builder()
         .caseId("ac623e62-4f4b-11eb-ae93-0242ac130002").lastActionInstruction("CREATE").build();
     ResponseEntity<Void> responseEntity = ResponseEntity.ok().build();
@@ -78,7 +78,7 @@ public class CeCancelProcessorTest {
   @Test
   @DisplayName("Should send a CE Unit cancel")
   public void shouldSendACeUnitCancel() throws GatewayException {
-    final FwmtCancelActionInstruction instruction = new FwmtCancelJobRequestBuilder().cancelActionInstruction();
+    final CancelActionInstruction instruction = new FwmtCancelJobRequestBuilder().cancelActionInstruction();
     GatewayCaseRecord gatewayCache = GatewayCaseRecord.builder()
         .caseId("ac623e62-4f4b-11eb-ae93-0242ac130002").lastActionInstruction("CREATE").build();
     ResponseEntity<Void> responseEntity = ResponseEntity.ok().build();
@@ -96,7 +96,7 @@ public class CeCancelProcessorTest {
   @Test
   @DisplayName("Should ignore a CE Estab cancel on a cancel")
   public void shouldIgnoreACeEstabCancelOnCancel() throws GatewayException {
-    final FwmtCancelActionInstruction instruction = new FwmtCancelJobRequestBuilder().cancelActionInstruction();
+    final CancelActionInstruction instruction = new FwmtCancelJobRequestBuilder().cancelActionInstruction();
     GatewayCaseRecord gatewayCache = GatewayCaseRecord.builder()
         .caseId("ac623e62-4f4b-11eb-ae93-0242ac130002").lastActionInstruction("CREATE").build();
     when(cometRestClient.sendClose(any())).thenThrow(new RestClientException("(400 BAD_REQUEST) {“id”:[“Case State must be Open”]}"));
@@ -113,7 +113,7 @@ public class CeCancelProcessorTest {
   @Test
   @DisplayName("Should ignore a CE Unit cancel on a cancel")
   public void shouldIgnoreACeUnitCancelOnCancel() throws GatewayException {
-    final FwmtCancelActionInstruction instruction = new FwmtCancelJobRequestBuilder().cancelCeUnitActionInstruction();
+    final CancelActionInstruction instruction = new FwmtCancelJobRequestBuilder().cancelCeUnitActionInstruction();
     GatewayCaseRecord gatewayCache = GatewayCaseRecord.builder()
         .caseId("ac623e62-4f4b-11eb-ae93-0242ac130002").lastActionInstruction("CREATE").build();
     when(cometRestClient.sendClose(any())).thenThrow(new RestClientException("(400 BAD_REQUEST) {“id”:[“Case State must be Open”]}"));

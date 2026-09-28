@@ -7,7 +7,7 @@ import uk.gov.ons.census.fwmt.common.data.tm.CcsCaseExtension;
 import uk.gov.ons.census.fwmt.common.data.tm.Contact;
 import uk.gov.ons.census.fwmt.common.data.tm.Geography;
 import uk.gov.ons.census.fwmt.common.data.tm.SurveyType;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
+import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstruction;
 import uk.gov.ons.census.fwmt.jobservice.data.GatewayCaseRecord;
 import uk.gov.ons.census.fwmt.jobservice.service.converter.common.CommonCreateConverter;
 
@@ -20,7 +20,7 @@ public class CcsInterviewCreateConverter {
   }
 
   public static CaseRequest.CaseRequestBuilder convertCcs(
-      FwmtActionInstruction ffu, GatewayCaseRecord cache, CaseRequest.CaseRequestBuilder builder) {
+      ActionInstruction ffu, GatewayCaseRecord cache, CaseRequest.CaseRequestBuilder builder) {
     CaseRequest.CaseRequestBuilder commonBuilder = CommonCreateConverter.convertCommon(ffu, cache, builder);
 
     commonBuilder.type(CaseType.CCS);
@@ -65,7 +65,7 @@ public class CcsInterviewCreateConverter {
     return commonBuilder;
   }
 
-  public static CaseRequest convertCcsInterview(FwmtActionInstruction ffu, GatewayCaseRecord cache, String eqUrl) {
+  public static CaseRequest convertCcsInterview(ActionInstruction ffu, GatewayCaseRecord cache, String eqUrl) {
     return CcsInterviewCreateConverter
         .convertCcs(ffu, cache, CaseRequest.builder())
         .ccs(CcsCaseExtension.builder().questionnaireUrl(eqUrl).build())
@@ -74,7 +74,7 @@ public class CcsInterviewCreateConverter {
         .build();
   }
 
-  private static String getDescription(FwmtActionInstruction ffu, GatewayCaseRecord cache) {
+  private static String getDescription(ActionInstruction ffu, GatewayCaseRecord cache) {
     StringBuilder description = new StringBuilder();
     if ("CE".equals(ffu.getAddressType())) {
       description

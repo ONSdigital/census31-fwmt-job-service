@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.ons.census.fwmt.common.data.tm.CaseRequest;
 import uk.gov.ons.census.fwmt.common.error.GatewayException;
 import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstructionType;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
+import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstruction;
 import uk.gov.ons.census.fwmt.common.events.component.GatewayEventManager;
 import uk.gov.ons.census.fwmt.jobservice.data.GatewayCaseRecord;
 import uk.gov.ons.census.fwmt.jobservice.http.comet.CometRestClient;
@@ -25,7 +25,7 @@ import static uk.gov.ons.census.fwmt.jobservice.config.GatewayEventsConfig.FAILE
 
 @Qualifier("Create")
 @Service
-public class SpgCreateSiteProcessor implements InboundProcessor<FwmtActionInstruction> {
+public class SpgCreateSiteProcessor implements InboundProcessor<ActionInstruction> {
 
   @Autowired
   private CometRestClient cometRestClient;
@@ -52,7 +52,7 @@ public class SpgCreateSiteProcessor implements InboundProcessor<FwmtActionInstru
   }
 
   @Override
-  public boolean isValid(FwmtActionInstruction rmRequest, GatewayCaseRecord cache) {
+  public boolean isValid(ActionInstruction rmRequest, GatewayCaseRecord cache) {
     try {
       return rmRequest.getActionInstruction() == ActionInstructionType.CREATE
           && rmRequest.getSurveyName().equals("CENSUS")
@@ -69,7 +69,7 @@ public class SpgCreateSiteProcessor implements InboundProcessor<FwmtActionInstru
   //TODO add test for secure
   //TODO Why are these deprecated
   @Override
-  public void process(FwmtActionInstruction rmRequest, GatewayCaseRecord cache, Instant messageReceivedTime) throws GatewayException {
+  public void process(ActionInstruction rmRequest, GatewayCaseRecord cache, Instant messageReceivedTime) throws GatewayException {
     CaseRequest tmRequest;
     if (rmRequest.isSecureEstablishment()){
       tmRequest = SpgCreateConverter.convertSecureSite(rmRequest, cache);

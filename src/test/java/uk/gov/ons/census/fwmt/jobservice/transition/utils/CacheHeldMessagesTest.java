@@ -9,7 +9,7 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtCancelActionInstruction;
+import uk.gov.ons.census.fwmt.common.rm.dto.CancelActionInstruction;
 import uk.gov.ons.census.fwmt.common.events.component.GatewayEventManager;
 import uk.gov.ons.census.fwmt.jobservice.data.GatewayCaseRecord;
 import uk.gov.ons.census.fwmt.jobservice.data.MessageCache;
@@ -48,7 +48,7 @@ class CacheHeldMessagesTest {
     @Test
     @DisplayName("Should not save existsInFwmt to true in cache")
     public void shouldNotSaveExistsInFwmtToTrueInCache() {
-        final FwmtCancelActionInstruction cancelActionInstruction = new FwmtCancelJobRequestBuilder().cancelActionInstruction();
+        final CancelActionInstruction cancelActionInstruction = new FwmtCancelJobRequestBuilder().cancelActionInstruction();
         long epochTimeStamp = Long.parseLong("1613035113");
         final Instant receivedMessageTime = Instant.ofEpochMilli(epochTimeStamp);
         GatewayCaseRecord gatewayCache = null;

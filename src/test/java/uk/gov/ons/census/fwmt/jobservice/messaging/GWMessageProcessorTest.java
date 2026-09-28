@@ -11,9 +11,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.client.RestClientException;
 import uk.gov.ons.census.fwmt.common.error.GatewayException;
 import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstructionType;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtCancelActionInstruction;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtCommonInstruction;
+import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstruction;
+import uk.gov.ons.census.fwmt.common.rm.dto.CancelActionInstruction;
+import uk.gov.ons.census.fwmt.common.rm.dto.CommonInstruction;
 import uk.gov.ons.census.fwmt.common.events.component.GatewayEventManager;
 import uk.gov.ons.census.fwmt.jobservice.service.GatewayCaseRecordService;
 import uk.gov.ons.census.fwmt.jobservice.service.JobService;
@@ -46,7 +46,7 @@ class GWMessageProcessorTest {
   @DisplayName("Should call JobService process for CREATE")
   @Test
   public void shouldProcessActionInstruction_CREATE() throws GatewayException {
-    FwmtActionInstruction instruction = new FwmtActionInstruction();
+    ActionInstruction instruction = new ActionInstruction();
     instruction.setActionInstruction(ActionInstructionType.CREATE);
     PubsubMessage message = createPubsubMessage();
     Instant now = Instant.now();
@@ -57,7 +57,7 @@ class GWMessageProcessorTest {
   @DisplayName("Should call JobService process for SWITCH_CE_TYPE")
   @Test
   public void shouldProcessActionInstruction_SWITCH_CE_TYPE() throws GatewayException {
-    FwmtActionInstruction instruction = new FwmtActionInstruction();
+    ActionInstruction instruction = new ActionInstruction();
     instruction.setActionInstruction(ActionInstructionType.SWITCH_CE_TYPE);
     PubsubMessage message = createPubsubMessage();
     Instant now = Instant.now();
@@ -68,7 +68,7 @@ class GWMessageProcessorTest {
   @DisplayName("Should call JobService process for UPDATE")
   @Test
   public void shouldProcessActionInstruction_UPDATE() throws GatewayException {
-    FwmtActionInstruction instruction = new FwmtActionInstruction();
+    ActionInstruction instruction = new ActionInstruction();
     instruction.setActionInstruction(ActionInstructionType.UPDATE);
     PubsubMessage message = createPubsubMessage();
     Instant now = Instant.now();
@@ -79,7 +79,7 @@ class GWMessageProcessorTest {
   @DisplayName("Should call JobService process for PAUSE")
   @Test
   public void shouldProcessActionInstruction_PAUSE() throws GatewayException {
-    FwmtActionInstruction instruction = new FwmtActionInstruction();
+    ActionInstruction instruction = new ActionInstruction();
     instruction.setActionInstruction(ActionInstructionType.PAUSE);
     PubsubMessage message = createPubsubMessage();
     Instant now = Instant.now();
@@ -90,7 +90,7 @@ class GWMessageProcessorTest {
   @DisplayName("Should put gateway exception on the transient queue ")
   @Test()
   public void shouldProcessGatewayException() throws GatewayException {
-    FwmtActionInstruction instruction = new FwmtActionInstruction();
+    ActionInstruction instruction = new ActionInstruction();
     instruction.setActionInstruction(ActionInstructionType.CREATE);
     PubsubMessage message = createPubsubMessage();
     Instant now = Instant.now();
@@ -98,14 +98,14 @@ class GWMessageProcessorTest {
     doThrow(RestClientException.class).when(jobService).processCreate(any(), any());
 
     gwMessageProcessor.processCreateInstruction(instruction, now, message);
-    verify(messageExceptionHandler).handleTransientMessage(eq(message), any(FwmtCommonInstruction.class));
+    verify(messageExceptionHandler).handleTransientMessage(eq(message), any(CommonInstruction.class));
   }
 
   @DisplayName("Should process Process Cancel Message ")
   @Test
   public void shouldProcessCancelMessage() throws GatewayException {
 
-    FwmtCancelActionInstruction instruction = new FwmtCancelActionInstruction();
+    CancelActionInstruction instruction = new CancelActionInstruction();
     instruction.setActionInstruction(ActionInstructionType.CANCEL);
     PubsubMessage message = createPubsubMessage();
     Instant now = Instant.now();
@@ -118,7 +118,7 @@ class GWMessageProcessorTest {
   @Test
   public void shouldProcessExceptionForCancelMessage() throws GatewayException {
 
-    FwmtCancelActionInstruction instruction = new FwmtCancelActionInstruction();
+    CancelActionInstruction instruction = new CancelActionInstruction();
     instruction.setActionInstruction(ActionInstructionType.CANCEL);
     PubsubMessage message = createPubsubMessage();
     Instant now = Instant.now();

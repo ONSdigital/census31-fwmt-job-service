@@ -11,7 +11,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.client.RestClientException;
 import uk.gov.ons.census.fwmt.common.error.GatewayException;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
+import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstruction;
 import uk.gov.ons.census.fwmt.common.events.component.GatewayEventManager;
 import uk.gov.ons.census.fwmt.jobservice.data.GatewayCaseRecord;
 import uk.gov.ons.census.fwmt.jobservice.helper.FwmtUpdateJobRequestBuilder;
@@ -47,7 +47,7 @@ public class SpgUpdateUnitProcessorTest {
   @Test
   @DisplayName("Should ignore a SPG Update on a closed case in TM")
   public void shouldIgnoreASpgUpdateOnAClosedCaseinTm() throws GatewayException {
-    final FwmtActionInstruction instruction = new FwmtUpdateJobRequestBuilder().createSpgUpdateUnit();
+    final ActionInstruction instruction = new FwmtUpdateJobRequestBuilder().createSpgUpdateUnit();
     GatewayCaseRecord gatewayCache = GatewayCaseRecord.builder()
         .caseId("ac623e62-4f4b-11eb-ae93-0242ac130002").lastActionInstruction("CREATE").build();
     when(cometRestClient.sendClose(any())).thenThrow(new RestClientException("(400 BAD_REQUEST) {“id”:[“Case State must be Open”]}"));

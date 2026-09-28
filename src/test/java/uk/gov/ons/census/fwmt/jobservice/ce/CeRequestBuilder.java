@@ -1,12 +1,12 @@
 package uk.gov.ons.census.fwmt.jobservice.ce;
 
 import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstructionType;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
+import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstruction;
 
 public final class CeRequestBuilder {
 
-    public static FwmtActionInstruction makeUnitDeliver() {
-        FwmtActionInstruction fieldworkFollowup = makeBase();
+    public static ActionInstruction makeUnitDeliver() {
+        ActionInstruction fieldworkFollowup = makeBase();
 
         fieldworkFollowup.setAddressLevel("U");
         fieldworkFollowup.setHandDeliver(true);
@@ -14,8 +14,8 @@ public final class CeRequestBuilder {
         return fieldworkFollowup;
     }
 
-    public static FwmtActionInstruction makeUnitFollowup() {
-        FwmtActionInstruction fieldworkFollowup = makeBase();
+    public static ActionInstruction makeUnitFollowup() {
+        ActionInstruction fieldworkFollowup = makeBase();
 
         fieldworkFollowup.setAddressLevel("U");
         fieldworkFollowup.setHandDeliver(false);
@@ -23,8 +23,8 @@ public final class CeRequestBuilder {
         return fieldworkFollowup;
     }
 
-    public static FwmtActionInstruction makeSite() {
-        FwmtActionInstruction fieldworkFollowup = makeBase();
+    public static ActionInstruction makeSite() {
+        ActionInstruction fieldworkFollowup = makeBase();
 
         fieldworkFollowup.setAddressLevel("E");
         fieldworkFollowup.setSecureEstablishment(false);
@@ -32,8 +32,8 @@ public final class CeRequestBuilder {
         return fieldworkFollowup;
     }
 
-    public static FwmtActionInstruction makeSecureSite() {
-        FwmtActionInstruction fieldworkFollowup = makeBase();
+    public static ActionInstruction makeSecureSite() {
+        ActionInstruction fieldworkFollowup = makeBase();
 
         fieldworkFollowup.setAddressLevel("E");
         fieldworkFollowup.setSecureEstablishment(true);
@@ -41,8 +41,8 @@ public final class CeRequestBuilder {
         return fieldworkFollowup;
     }
 
-    public static FwmtActionInstruction makeBase() {
-        return FwmtActionInstruction.builder()
+    public static ActionInstruction makeBase() {
+        return ActionInstruction.builder()
                 .actionInstruction(ActionInstructionType.CREATE)
                 // TODO: Are you sure this can be re-enabled?
                 .surveyName("CENSUS") // Not needed, but still in formal diagrams
@@ -71,8 +71,8 @@ public final class CeRequestBuilder {
                 .build();
     }
 
-    public static FwmtActionInstruction ceUpdateInstruction(){
-        FwmtActionInstruction fwmtActionInstruction = makeBase();
+    public static ActionInstruction ceUpdateInstruction(){
+        ActionInstruction fwmtActionInstruction = makeBase();
         fwmtActionInstruction.setActionInstruction(ActionInstructionType.UPDATE);
         fwmtActionInstruction.setCaseId("ac623e62-4f4b-11eb-ae93-0242ac130002");
         fwmtActionInstruction.setAddressLevel("E");

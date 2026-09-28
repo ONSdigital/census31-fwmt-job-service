@@ -12,7 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.client.RestClientException;
 import uk.gov.ons.census.fwmt.common.data.tm.CasePauseRequest;
 import uk.gov.ons.census.fwmt.common.error.GatewayException;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtCancelActionInstruction;
+import uk.gov.ons.census.fwmt.common.rm.dto.CancelActionInstruction;
 import uk.gov.ons.census.fwmt.common.events.component.GatewayEventManager;
 import uk.gov.ons.census.fwmt.jobservice.data.GatewayCaseRecord;
 import uk.gov.ons.census.fwmt.jobservice.hh.HhRequestBuilder;
@@ -49,7 +49,7 @@ class HHCancelProcessorTest {
   @Test
   @DisplayName("Should ignore a HH cancel on a closed case in TM")
   public void shouldIgnoreAHhCancelOnAClosedCaseinTm() throws GatewayException {
-    final FwmtCancelActionInstruction instruction = HhRequestBuilder.cancelActionInstruction();
+    final CancelActionInstruction instruction = HhRequestBuilder.cancelActionInstruction();
     GatewayCaseRecord gatewayCache = GatewayCaseRecord.builder()
         .caseId("ac623e62-4f4b-11eb-ae93-0242ac130002").lastActionInstruction("CREATE").build();
     when(cometRestClient.sendPause(any(CasePauseRequest.class), eq(instruction.getCaseId())))

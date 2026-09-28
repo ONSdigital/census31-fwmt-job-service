@@ -6,7 +6,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstructionType;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
+import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstruction;
 import uk.gov.ons.census.fwmt.jobservice.data.GatewayCaseRecord;
 import uk.gov.ons.census.fwmt.jobservice.data.MessageCache;
 import uk.gov.ons.census.fwmt.jobservice.enums.TransitionAction;
@@ -34,7 +34,7 @@ class TransitionRequestActionExecutorTest {
 
   @Test
   void shouldCacheMessageOnSaveRequestAction() {
-    FwmtActionInstruction request = new FwmtActionInstruction();
+    ActionInstruction request = new ActionInstruction();
     request.setActionInstruction(ActionInstructionType.UPDATE);
     request.setCaseId("ac623e62-4f4b-11eb-ae93-0242ac130002");
     request.setAddressType("CE");
@@ -44,7 +44,7 @@ class TransitionRequestActionExecutorTest {
     MessageCache messageCache = MessageCache.builder().caseId(request.getCaseId()).build();
     Instant messageTime = Instant.now();
 
-    TransitionContext<FwmtActionInstruction> context = TransitionContext.<FwmtActionInstruction>builder()
+    TransitionContext<ActionInstruction> context = TransitionContext.<ActionInstruction>builder()
         .caseId(request.getCaseId())
         .caseRef("10000000001")
         .actionInstruction("UPDATE")

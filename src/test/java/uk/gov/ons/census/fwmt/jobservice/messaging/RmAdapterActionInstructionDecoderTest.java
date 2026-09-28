@@ -9,8 +9,8 @@ import com.google.pubsub.v1.PubsubMessage;
 import java.time.Instant;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtCancelActionInstruction;
+import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstruction;
+import uk.gov.ons.census.fwmt.common.rm.dto.CancelActionInstruction;
 
 class RmAdapterActionInstructionDecoderTest {
 
@@ -32,8 +32,8 @@ class RmAdapterActionInstructionDecoderTest {
       RmAdapterActionInstructionDecoder.DecodedMessage decoded = decoder.decode(
         message, ActionInstructionContract.EXTERNAL_RM_ADAPTER);
 
-    assertThat(decoded.getInstruction()).isInstanceOf(FwmtActionInstruction.class);
-    FwmtActionInstruction instruction = (FwmtActionInstruction) decoded.getInstruction();
+    assertThat(decoded.getInstruction()).isInstanceOf(ActionInstruction.class);
+    ActionInstruction instruction = (ActionInstruction) decoded.getInstruction();
     assertThat(instruction.getCaseId()).isEqualTo("case-123");
     assertThat(instruction.getCaseRef()).isEqualTo("ref-123");
     assertThat(decoded.getMessageTime()).isEqualTo(Instant.parse("2026-09-21T10:15:30Z"));
@@ -48,7 +48,7 @@ class RmAdapterActionInstructionDecoderTest {
       RmAdapterActionInstructionDecoder.DecodedMessage decoded = decoder.decode(
         message, ActionInstructionContract.EXTERNAL_RM_ADAPTER);
 
-    assertThat(decoded.getInstruction()).isInstanceOf(FwmtCancelActionInstruction.class);
+    assertThat(decoded.getInstruction()).isInstanceOf(CancelActionInstruction.class);
     assertThat(decoded.getMessageTime()).isEqualTo(Instant.parse("2026-09-21T09:15:30Z"));
   }
 
@@ -104,7 +104,7 @@ class RmAdapterActionInstructionDecoderTest {
         "case-123", "2026-09-21T10:15:30Z");
 
       assertThat(decoder.decode(message, ActionInstructionContract.INTERNAL_FWMT)
-        .getInstruction()).isInstanceOf(FwmtCancelActionInstruction.class);
+        .getInstruction()).isInstanceOf(CancelActionInstruction.class);
       assertThatThrownBy(() -> decoder.decode(message, ActionInstructionContract.EXTERNAL_RM_ADAPTER))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessageContaining("surveyName");

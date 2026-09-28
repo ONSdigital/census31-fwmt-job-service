@@ -7,8 +7,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.ons.census.fwmt.common.error.GatewayException;
 import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstructionType;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtCancelActionInstruction;
+import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstruction;
+import uk.gov.ons.census.fwmt.common.rm.dto.CancelActionInstruction;
 import uk.gov.ons.census.fwmt.jobservice.service.processor.InboundProcessor;
 import uk.gov.ons.census.fwmt.jobservice.service.processor.ProcessorRouter;
 
@@ -34,12 +34,12 @@ class JobServiceTransitionBaselineTest {
   @Mock private GatewayCaseRecordService cacheService;
   @Mock private TmDispatchService tmDispatchService;
 
-  @Mock private ProcessorRouter<FwmtActionInstruction> updateRouter;
-  @Mock private ProcessorRouter<FwmtCancelActionInstruction> cancelRouter;
+  @Mock private ProcessorRouter<ActionInstruction> updateRouter;
+  @Mock private ProcessorRouter<CancelActionInstruction> cancelRouter;
 
   @Test
   void shouldDispatchWithNullHandlerForUpdateWhenNoCache() throws GatewayException {
-    FwmtActionInstruction request = buildUpdateRequest();
+    ActionInstruction request = buildUpdateRequest();
     Instant messageTime = Instant.now();
 
     when(cacheService.getById(request.getCaseId())).thenReturn(null);
@@ -47,13 +47,13 @@ class JobServiceTransitionBaselineTest {
 
     updateActionOrchestrator.process(request, messageTime);
 
-    verify(tmDispatchService).dispatch(any(FwmtActionInstruction.class),
-        ArgumentMatchers.<InboundProcessor<FwmtActionInstruction>>isNull(), isNull(), eq(messageTime));
+    verify(tmDispatchService).dispatch(any(ActionInstruction.class),
+        ArgumentMatchers.<InboundProcessor<ActionInstruction>>isNull(), isNull(), eq(messageTime));
   }
 
   @Test
   void shouldDispatchWithNullHandlerForCancelWhenNoCache() throws GatewayException {
-    FwmtCancelActionInstruction request = buildCancelRequest();
+    CancelActionInstruction request = buildCancelRequest();
     Instant messageTime = Instant.now();
 
     when(cacheService.getByOriginalCaseId(request.getCaseId())).thenReturn(null);
@@ -62,12 +62,12 @@ class JobServiceTransitionBaselineTest {
 
     cancelActionOrchestrator.process(request, messageTime);
 
-    verify(tmDispatchService).dispatch(any(FwmtCancelActionInstruction.class),
-        ArgumentMatchers.<InboundProcessor<FwmtCancelActionInstruction>>isNull(), isNull(), eq(messageTime));
+    verify(tmDispatchService).dispatch(any(CancelActionInstruction.class),
+        ArgumentMatchers.<InboundProcessor<CancelActionInstruction>>isNull(), isNull(), eq(messageTime));
   }
 
-  private FwmtActionInstruction buildUpdateRequest() {
-    FwmtActionInstruction request = new FwmtActionInstruction();
+  private ActionInstruction buildUpdateRequest() {
+    ActionInstruction request = new ActionInstruction();
     request.setActionInstruction(ActionInstructionType.UPDATE);
     request.setCaseId("ac623e62-4f4b-11eb-ae93-0242ac130002");
     request.setAddressType("CE");
@@ -76,8 +76,8 @@ class JobServiceTransitionBaselineTest {
     return request;
   }
 
-  private FwmtCancelActionInstruction buildCancelRequest() {
-    FwmtCancelActionInstruction request = new FwmtCancelActionInstruction();
+  private CancelActionInstruction buildCancelRequest() {
+    CancelActionInstruction request = new CancelActionInstruction();
     request.setActionInstruction(ActionInstructionType.CANCEL);
     request.setCaseId("ac623e62-4f4b-11eb-ae93-0242ac130002");
     request.setAddressType("CE");

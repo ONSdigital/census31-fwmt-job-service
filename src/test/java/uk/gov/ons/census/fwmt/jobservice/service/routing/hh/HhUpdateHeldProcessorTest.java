@@ -10,7 +10,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.ons.census.fwmt.common.error.GatewayException;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
+import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstruction;
 import uk.gov.ons.census.fwmt.common.events.component.GatewayEventManager;
 import uk.gov.ons.census.fwmt.jobservice.data.GatewayCaseRecord;
 import uk.gov.ons.census.fwmt.jobservice.hh.HhRequestBuilder;
@@ -50,7 +50,7 @@ public class HhUpdateHeldProcessorTest {
   @Test
   @DisplayName("Should hold a HH update that does not exists in FWMT")
   public void shouldHoldAHhUpdateThatDoesNotExistInFwmt() throws GatewayException {
-    final FwmtActionInstruction instruction = HhRequestBuilder.updateActionInstruction();
+    final ActionInstruction instruction = HhRequestBuilder.updateActionInstruction();
     GatewayCaseRecord gatewayCache = GatewayCaseRecord.builder()
         .caseId("ac623e62-4f4b-11eb-ae93-0242ac130002").existsInFwmt(false).build();
     hhUpdateHeld.process(instruction, gatewayCache,  Instant.now());
@@ -62,7 +62,7 @@ public class HhUpdateHeldProcessorTest {
   @Test
   @DisplayName("Should hold a HH update that does not exists in cache")
   public void shouldHoldAHhUpdateThatDoesNotExistInCache() throws GatewayException {
-    final FwmtActionInstruction instruction = HhRequestBuilder.updateActionInstruction();
+    final ActionInstruction instruction = HhRequestBuilder.updateActionInstruction();
     hhUpdateHeld.process(instruction, null,  Instant.now());
     verify(eventManager, atLeast(1)).triggerEvent(any(), spiedEvent.capture(), any(String[].class));
     String checkEvent = spiedEvent.getValue();
@@ -72,7 +72,7 @@ public class HhUpdateHeldProcessorTest {
   @Test
   @DisplayName("Should hold a HH update that does not exists in FWMT for a NISRA case")
   public void shouldHoldAHhUpdateThatDoesNotExistInFwmtForANisraCase() throws GatewayException {
-    final FwmtActionInstruction instruction = HhRequestBuilder.updateActionInstruction();
+    final ActionInstruction instruction = HhRequestBuilder.updateActionInstruction();
     instruction.setOa("N1234");
     GatewayCaseRecord gatewayCache = GatewayCaseRecord.builder()
         .caseId("ac623e62-4f4b-11eb-ae93-0242ac130002").existsInFwmt(false).build();
@@ -85,7 +85,7 @@ public class HhUpdateHeldProcessorTest {
   @Test
   @DisplayName("Should hold a HH update that does not exists in cache for a NISRA case")
   public void shouldHoldAHhUpdateThatDoesNotExistInCacheANisraCase() throws GatewayException {
-    final FwmtActionInstruction instruction = HhRequestBuilder.updateActionInstruction();
+    final ActionInstruction instruction = HhRequestBuilder.updateActionInstruction();
     instruction.setOa("N1234");
     hhUpdateHeld.process(instruction, null,  Instant.now());
     verify(eventManager, atLeast(1)).triggerEvent(any(), spiedEvent.capture(), any(String[].class));

@@ -7,8 +7,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.ons.census.fwmt.common.error.GatewayException;
 import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstructionType;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtCancelActionInstruction;
+import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstruction;
+import uk.gov.ons.census.fwmt.common.rm.dto.CancelActionInstruction;
 import uk.gov.ons.census.fwmt.common.events.component.GatewayEventManager;
 import uk.gov.ons.census.fwmt.jobservice.config.FeatureFlagConfig;
 
@@ -39,7 +39,7 @@ class JobServiceRoutingTest {
 
   @Test
   void processCreate_featureFlagDisabled_doesNotDelegateAndTriggersIgnoredEvent() throws GatewayException {
-    FwmtActionInstruction request = buildCreateRequest();
+    ActionInstruction request = buildCreateRequest();
     when(featureFlagConfig.isInstructionEnabled(anyString(), anyString())).thenReturn(false);
 
     jobService.processCreate(request, Instant.now());
@@ -50,7 +50,7 @@ class JobServiceRoutingTest {
 
   @Test
   void processCreate_featureFlagEnabled_delegatesToCreateOrchestrator() throws GatewayException {
-    FwmtActionInstruction request = buildCreateRequest();
+    ActionInstruction request = buildCreateRequest();
     Instant messageTime = Instant.now();
     when(featureFlagConfig.isInstructionEnabled(anyString(), anyString())).thenReturn(true);
 
@@ -61,7 +61,7 @@ class JobServiceRoutingTest {
 
   @Test
   void processUpdate_featureFlagEnabled_delegatesToUpdateOrchestrator() throws GatewayException {
-    FwmtActionInstruction request = buildUpdateRequest("HH", false);
+    ActionInstruction request = buildUpdateRequest("HH", false);
     Instant messageTime = Instant.now();
     when(featureFlagConfig.isInstructionEnabled(anyString(), anyString())).thenReturn(true);
 
@@ -72,7 +72,7 @@ class JobServiceRoutingTest {
 
   @Test
   void processCancel_featureFlagEnabled_delegatesToCancelOrchestrator() throws GatewayException {
-    FwmtCancelActionInstruction request = buildCancelRequest();
+    CancelActionInstruction request = buildCancelRequest();
     Instant messageTime = Instant.now();
     when(featureFlagConfig.isInstructionEnabled(anyString(), anyString())).thenReturn(true);
 
@@ -83,7 +83,7 @@ class JobServiceRoutingTest {
 
   @Test
   void processPause_featureFlagEnabled_delegatesToPauseOrchestrator() throws GatewayException {
-    FwmtActionInstruction request = buildPauseRequest();
+    ActionInstruction request = buildPauseRequest();
     Instant messageTime = Instant.now();
     when(featureFlagConfig.isInstructionEnabled(anyString(), anyString())).thenReturn(true);
 
@@ -92,8 +92,8 @@ class JobServiceRoutingTest {
     verify(pauseActionOrchestrator).process(request, messageTime);
   }
 
-  private FwmtActionInstruction buildCreateRequest() {
-    FwmtActionInstruction request = new FwmtActionInstruction();
+  private ActionInstruction buildCreateRequest() {
+    ActionInstruction request = new ActionInstruction();
     request.setActionInstruction(ActionInstructionType.CREATE);
     request.setCaseId(CASE_ID);
     request.setAddressType("HH");
@@ -101,8 +101,8 @@ class JobServiceRoutingTest {
     return request;
   }
 
-  private FwmtActionInstruction buildUpdateRequest(String addressType, boolean undeliveredAsAddress) {
-    FwmtActionInstruction request = new FwmtActionInstruction();
+  private ActionInstruction buildUpdateRequest(String addressType, boolean undeliveredAsAddress) {
+    ActionInstruction request = new ActionInstruction();
     request.setActionInstruction(ActionInstructionType.UPDATE);
     request.setCaseId(CASE_ID);
     request.setAddressType(addressType);
@@ -112,8 +112,8 @@ class JobServiceRoutingTest {
     return request;
   }
 
-  private FwmtActionInstruction buildPauseRequest() {
-    FwmtActionInstruction request = new FwmtActionInstruction();
+  private ActionInstruction buildPauseRequest() {
+    ActionInstruction request = new ActionInstruction();
     request.setActionInstruction(ActionInstructionType.PAUSE);
     request.setCaseId(CASE_ID);
     request.setAddressType("HH");
@@ -122,8 +122,8 @@ class JobServiceRoutingTest {
     return request;
   }
 
-  private FwmtCancelActionInstruction buildCancelRequest() {
-    FwmtCancelActionInstruction request = new FwmtCancelActionInstruction();
+  private CancelActionInstruction buildCancelRequest() {
+    CancelActionInstruction request = new CancelActionInstruction();
     request.setActionInstruction(ActionInstructionType.CANCEL);
     request.setCaseId(CASE_ID);
     request.setAddressType("HH");

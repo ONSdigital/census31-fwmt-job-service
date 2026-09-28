@@ -5,7 +5,7 @@ import uk.gov.ons.census.fwmt.common.data.tm.CaseRequest;
 import uk.gov.ons.census.fwmt.common.data.tm.CeCaseExtension;
 import uk.gov.ons.census.fwmt.common.data.tm.Geography;
 import uk.gov.ons.census.fwmt.common.data.tm.SurveyType;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
+import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstruction;
 import uk.gov.ons.census.fwmt.jobservice.data.GatewayCaseRecord;
 import uk.gov.ons.census.fwmt.jobservice.service.converter.common.CommonCreateConverter;
 
@@ -20,7 +20,7 @@ public final class SpgCreateConverter {
   }
 
   public static CaseRequest.CaseRequestBuilder convertSPG(
-      FwmtActionInstruction ffu, GatewayCaseRecord cache, CaseRequest.CaseRequestBuilder builder) {
+      ActionInstruction ffu, GatewayCaseRecord cache, CaseRequest.CaseRequestBuilder builder) {
 
     CaseRequest.CaseRequestBuilder commonBuilder = CommonCreateConverter.convertCommon(ffu, cache, builder);
     commonBuilder.requiredOfficer(ffu.getFieldOfficerId());
@@ -50,7 +50,7 @@ public final class SpgCreateConverter {
     return commonBuilder;
   }
 
-  public static CaseRequest convertSecureSite(FwmtActionInstruction ffu, GatewayCaseRecord cache) {
+  public static CaseRequest convertSecureSite(ActionInstruction ffu, GatewayCaseRecord cache) {
     return SpgCreateConverter.convertSPG(ffu, cache, CaseRequest.builder())
         .surveyType(SurveyType.SPG_Site)
         .reference("SECSS_" + ffu.getCaseRef())
@@ -58,7 +58,7 @@ public final class SpgCreateConverter {
         .specialInstructions(getSpecialInstructions(cache))
         .build();
   }
-  public static CaseRequest convertSecureUnitFollowup(FwmtActionInstruction ffu, GatewayCaseRecord cache) {
+  public static CaseRequest convertSecureUnitFollowup(ActionInstruction ffu, GatewayCaseRecord cache) {
     return SpgCreateConverter.convertSPG(ffu, cache, CaseRequest.builder())
         .surveyType(SurveyType.SPG_Unit_F)    
         .reference("SECSU_" + ffu.getCaseRef())
@@ -67,7 +67,7 @@ public final class SpgCreateConverter {
         .build();
   }
 
-  public static CaseRequest convertSite(FwmtActionInstruction ffu, GatewayCaseRecord cache) {
+  public static CaseRequest convertSite(ActionInstruction ffu, GatewayCaseRecord cache) {
     return SpgCreateConverter.convertSPG(ffu, cache, CaseRequest.builder())
         .surveyType(SurveyType.SPG_Site)
         .description(getCareCodes(cache))
@@ -75,7 +75,7 @@ public final class SpgCreateConverter {
         .build();
   }
 
-  public static CaseRequest convertUnitDeliver(FwmtActionInstruction ffu, GatewayCaseRecord cache) {
+  public static CaseRequest convertUnitDeliver(ActionInstruction ffu, GatewayCaseRecord cache) {
     return SpgCreateConverter.convertSPG(ffu, cache, CaseRequest.builder())
         .surveyType(SurveyType.SPG_Unit_D)
         .description(getCareCodes(cache))
@@ -83,7 +83,7 @@ public final class SpgCreateConverter {
         .build();
   }
 
-  public static CaseRequest convertUnitFollowup(FwmtActionInstruction ffu, GatewayCaseRecord cache) {
+  public static CaseRequest convertUnitFollowup(ActionInstruction ffu, GatewayCaseRecord cache) {
     return SpgCreateConverter.convertSPG(ffu, cache, CaseRequest.builder())
         .surveyType(SurveyType.SPG_Unit_F)
         .description(getCareCodes(cache))

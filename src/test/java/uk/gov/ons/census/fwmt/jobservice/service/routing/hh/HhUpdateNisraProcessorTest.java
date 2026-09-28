@@ -12,7 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
 import uk.gov.ons.census.fwmt.common.data.tm.CaseRequest;
 import uk.gov.ons.census.fwmt.common.error.GatewayException;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
+import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstruction;
 import uk.gov.ons.census.fwmt.common.events.component.GatewayEventManager;
 import uk.gov.ons.census.fwmt.jobservice.data.GatewayCaseRecord;
 import uk.gov.ons.census.fwmt.jobservice.hh.HhRequestBuilder;
@@ -58,7 +58,7 @@ public class HhUpdateNisraProcessorTest {
   @Test
   @DisplayName("Should send NISRA required officer to TM as update ")
   public void shouldSendNisraRequiredOfficerToTmAsUpdate() throws GatewayException {
-    final FwmtActionInstruction instruction = HhRequestBuilder.updateActionInstruction();
+    final ActionInstruction instruction = HhRequestBuilder.updateActionInstruction();
     GatewayCaseRecord gatewayCache = GatewayCaseRecord.builder()
         .caseId("ac623e62-4f4b-11eb-ae93-0242ac130002").build();
     when(cacheService.getById(anyString())).thenReturn(gatewayCache);

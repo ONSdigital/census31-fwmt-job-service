@@ -8,7 +8,7 @@ import uk.gov.ons.census.fwmt.common.data.tm.CaseRequest;
 import uk.gov.ons.census.fwmt.common.data.tm.SurveyType;
 import uk.gov.ons.census.fwmt.common.error.GatewayException;
 import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstructionType;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
+import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstruction;
 import uk.gov.ons.census.fwmt.common.events.component.GatewayEventManager;
 import uk.gov.ons.census.fwmt.jobservice.data.GatewayCaseRecord;
 import uk.gov.ons.census.fwmt.jobservice.http.comet.CometRestClient;
@@ -27,7 +27,7 @@ import static uk.gov.ons.census.fwmt.jobservice.config.GatewayEventsConfig.FAILE
 
 @Qualifier("Create")
 @Service
-public class CeCreateUnitDeliverProcessor implements InboundProcessor<FwmtActionInstruction> {
+public class CeCreateUnitDeliverProcessor implements InboundProcessor<ActionInstruction> {
 
   @Autowired
   private CometRestClient cometRestClient;
@@ -57,7 +57,7 @@ public class CeCreateUnitDeliverProcessor implements InboundProcessor<FwmtAction
   }
 
   @Override
-  public boolean isValid(FwmtActionInstruction rmRequest, GatewayCaseRecord cache) {
+  public boolean isValid(ActionInstruction rmRequest, GatewayCaseRecord cache) {
     try {
       return rmRequest.getActionInstruction() == ActionInstructionType.CREATE
           && rmRequest.getSurveyName().equals("CENSUS")
@@ -74,11 +74,11 @@ public class CeCreateUnitDeliverProcessor implements InboundProcessor<FwmtAction
   }
 
   @Override
-  public void process(FwmtActionInstruction rmRequest, GatewayCaseRecord cache, Instant messageReceivedTime) throws GatewayException {
+  public void process(ActionInstruction rmRequest, GatewayCaseRecord cache, Instant messageReceivedTime) throws GatewayException {
     CaseRequest tmRequest;
 
     if (cacheService.doesUprnAndTypeExist(rmRequest.getEstabUprn(), 1)) {
-      FwmtActionInstruction ceSwitch = new FwmtActionInstruction();
+      ActionInstruction ceSwitch = new ActionInstruction();
 
       ceSwitch.setActionInstruction(ActionInstructionType.SWITCH_CE_TYPE);
       ceSwitch.setSurveyName("CENSUS");

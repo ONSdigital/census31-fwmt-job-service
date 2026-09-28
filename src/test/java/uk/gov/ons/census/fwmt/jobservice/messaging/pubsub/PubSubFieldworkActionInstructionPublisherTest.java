@@ -20,8 +20,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstructionType;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtCancelActionInstruction;
+import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstruction;
+import uk.gov.ons.census.fwmt.common.rm.dto.CancelActionInstruction;
 
 @ExtendWith(MockitoExtension.class)
 class PubSubFieldworkActionInstructionPublisherTest {
@@ -91,8 +91,8 @@ class PubSubFieldworkActionInstructionPublisherTest {
     assertThat(Instant.parse(message.getAttributesOrDefault("occurredAt", ""))).isNotNull();
   }
 
-  private static FwmtActionInstruction createInstruction() {
-    FwmtActionInstruction instruction = new FwmtActionInstruction();
+  private static ActionInstruction createInstruction() {
+    ActionInstruction instruction = new ActionInstruction();
     instruction.setActionInstruction(ActionInstructionType.CREATE);
     instruction.setSurveyName("CENSUS");
     instruction.setCaseId("case-123");
@@ -102,8 +102,8 @@ class PubSubFieldworkActionInstructionPublisherTest {
     return instruction;
   }
 
-  private static FwmtCancelActionInstruction cancelInstruction() {
-    FwmtCancelActionInstruction instruction = new FwmtCancelActionInstruction();
+  private static CancelActionInstruction cancelInstruction() {
+    CancelActionInstruction instruction = new CancelActionInstruction();
     instruction.setActionInstruction(ActionInstructionType.CANCEL);
     instruction.setSurveyName("CENSUS");
     instruction.setCaseId("case-456");

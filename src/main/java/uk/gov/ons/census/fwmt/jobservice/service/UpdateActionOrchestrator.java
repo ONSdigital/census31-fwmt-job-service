@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import uk.gov.ons.census.fwmt.common.error.GatewayException;
 import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstructionType;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
+import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstruction;
 import uk.gov.ons.census.fwmt.common.events.component.GatewayEventManager;
 import uk.gov.ons.census.fwmt.jobservice.data.GatewayCaseRecord;
 import uk.gov.ons.census.fwmt.jobservice.messaging.FieldworkActionInstructionPublisher;
@@ -39,9 +39,9 @@ public class UpdateActionOrchestrator {
 
   @Autowired
   @Qualifier("UpdateProcessorRouter")
-  private ProcessorRouter<FwmtActionInstruction> updateRouter;
+  private ProcessorRouter<ActionInstruction> updateRouter;
 
-  public void process(FwmtActionInstruction actionInstruction, Instant messageReceivedTime)
+  public void process(ActionInstruction actionInstruction, Instant messageReceivedTime)
       throws GatewayException {
     GatewayCaseRecord cache = cacheService.getById(actionInstruction.getCaseId());
     if (shouldRepublishUpdateAsCreate(actionInstruction, cache)) {
@@ -49,7 +49,7 @@ public class UpdateActionOrchestrator {
       return;
     }
 
-    Optional<InboundProcessor<FwmtActionInstruction>> actionTypeHandler =
+    Optional<InboundProcessor<ActionInstruction>> actionTypeHandler =
         updateRouter.resolveOptional(ProcessorKey.buildKey(actionInstruction), actionInstruction, cache);
 
     if (actionTypeHandler.isPresent()) {
@@ -63,7 +63,7 @@ public class UpdateActionOrchestrator {
     }
   }
 
-  private boolean shouldRepublishUpdateAsCreate(FwmtActionInstruction actionInstruction,
+  private boolean shouldRepublishUpdateAsCreate(ActionInstruction actionInstruction,
       GatewayCaseRecord cache) {
     return cache == null
         && actionInstruction.isUndeliveredAsAddress()
@@ -71,7 +71,7 @@ public class UpdateActionOrchestrator {
         || "SPG".equals(actionInstruction.getAddressType()));
   }
 
-  private void republishUpdateAsCreate(FwmtActionInstruction actionInstruction) {
+  private void republishUpdateAsCreate(ActionInstruction actionInstruction) {
     actionInstruction.setActionInstruction(ActionInstructionType.CREATE);
     eventManager.triggerEvent(String.valueOf(actionInstruction.getCaseId()),
         CONVERT_SPG_UNIT_UPDATE_TO_CREATE,
@@ -84,7 +84,7 @@ public class UpdateActionOrchestrator {
         || "CANCEL(HELD)".equals(cache.getLastActionInstruction());
   }
 
-  private boolean isCeUpdate(FwmtActionInstruction actionInstruction) {
+  private boolean isCeUpdate(ActionInstruction actionInstruction) {
     return "UPDATE".equals(actionInstruction.getActionInstruction().toString())
         && "CE".equals(actionInstruction.getAddressType());
   }

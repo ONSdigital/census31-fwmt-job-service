@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import uk.gov.ons.census.fwmt.common.error.GatewayException;
 import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstructionType;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtCancelActionInstruction;
+import uk.gov.ons.census.fwmt.common.rm.dto.CancelActionInstruction;
 import uk.gov.ons.census.fwmt.common.events.component.GatewayEventManager;
 import uk.gov.ons.census.fwmt.jobservice.data.GatewayCaseRecord;
 import uk.gov.ons.census.fwmt.jobservice.http.comet.CometRestClient;
@@ -25,7 +25,7 @@ import static uk.gov.ons.census.fwmt.jobservice.config.GatewayEventsConfig.FAILE
 
 @Qualifier("Cancel")
 @Component
-public class CeCancelUnitProcessor implements InboundProcessor<FwmtCancelActionInstruction> {
+public class CeCancelUnitProcessor implements InboundProcessor<CancelActionInstruction> {
 
   @Autowired
   private CometRestClient cometRestClient;
@@ -52,7 +52,7 @@ public class CeCancelUnitProcessor implements InboundProcessor<FwmtCancelActionI
   }
 
   @Override
-  public boolean isValid(FwmtCancelActionInstruction rmRequest, GatewayCaseRecord cache) {
+  public boolean isValid(CancelActionInstruction rmRequest, GatewayCaseRecord cache) {
     try {
       return rmRequest.getActionInstruction() == ActionInstructionType.CANCEL
           && rmRequest.getSurveyName().equals("CENSUS")
@@ -65,7 +65,7 @@ public class CeCancelUnitProcessor implements InboundProcessor<FwmtCancelActionI
   }
 
   @Override
-  public void process(FwmtCancelActionInstruction rmRequest, GatewayCaseRecord cache, Instant messageReceivedTime) throws GatewayException {
+  public void process(CancelActionInstruction rmRequest, GatewayCaseRecord cache, Instant messageReceivedTime) throws GatewayException {
     boolean alreadyCancelled = false;
     ResponseEntity<Void> response = null;
     eventManager.triggerEvent(String.valueOf(rmRequest.getCaseId()), COMET_CANCEL_PRE_SENDING,

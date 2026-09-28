@@ -1,14 +1,14 @@
 package uk.gov.ons.census.fwmt.jobservice.service.converter.ce;
 
 import uk.gov.ons.census.fwmt.common.data.tm.CeCasePatchRequest;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
+import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstruction;
 
 public final class CeUpdateConverter {
 
   private CeUpdateConverter() {
   }
 
-  private static CeCasePatchRequest.CeCasePatchRequestBuilder convertCommon(FwmtActionInstruction ffu,
+  private static CeCasePatchRequest.CeCasePatchRequestBuilder convertCommon(ActionInstruction ffu,
       CeCasePatchRequest.CeCasePatchRequestBuilder builder, String surveyType) {
 
     int actualResponse = 0;
@@ -26,17 +26,17 @@ public final class CeUpdateConverter {
     return builder;
   }
 
-  public static CeCasePatchRequest convertEstab(FwmtActionInstruction ffu) {
+  public static CeCasePatchRequest convertEstab(ActionInstruction ffu) {
     return CeUpdateConverter.convertCommon(ffu, CeCasePatchRequest.builder(), "estab")
         .build();
   }
 
-  public static CeCasePatchRequest convertSite(FwmtActionInstruction ffu) {
+  public static CeCasePatchRequest convertSite(ActionInstruction ffu) {
     return CeUpdateConverter.convertCommon(ffu, CeCasePatchRequest.builder(), "site")
         .build();
   }
 
-  public static CeCasePatchRequest convertUnit(FwmtActionInstruction ffu) {
+  public static CeCasePatchRequest convertUnit(ActionInstruction ffu) {
     return CeUpdateConverter.convertCommon(ffu, CeCasePatchRequest.builder(), "unit")
         .build();
   }

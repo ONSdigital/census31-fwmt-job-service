@@ -1,14 +1,14 @@
 package uk.gov.ons.census.fwmt.jobservice.service.converter.hh;
 
 import uk.gov.ons.census.fwmt.common.data.tm.CasePauseRequest;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
+import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstruction;
 
 public final class HhPauseConverter {
 
   private HhPauseConverter() {
   }
 
-  public static CasePauseRequest buildPause(FwmtActionInstruction ffu) {
+  public static CasePauseRequest buildPause(ActionInstruction ffu) {
     return CasePauseRequest.builder()
         .code(ffu.getPauseCode())
         .effectiveFrom(ffu.getPauseFrom().toString())

@@ -1,7 +1,7 @@
 package uk.gov.ons.census.fwmt.jobservice.service.converter.nc;
 
 import uk.gov.ons.census.fwmt.common.data.tm.*;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
+import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstruction;
 import uk.gov.ons.census.fwmt.jobservice.data.GatewayCaseRecord;
 import uk.gov.ons.census.fwmt.jobservice.service.converter.common.CommonCreateConverter;
 
@@ -14,7 +14,7 @@ public class NcCreateConverter {
   }
 
   public static CaseRequest.CaseRequestBuilder convertNC(
-      FwmtActionInstruction ffu, GatewayCaseRecord cache, CaseRequest.CaseRequestBuilder builder) {
+      ActionInstruction ffu, GatewayCaseRecord cache, CaseRequest.CaseRequestBuilder builder) {
     CaseRequest.CaseRequestBuilder commonBuilder = CommonCreateConverter.convertCommon(ffu, cache, builder);
 
     commonBuilder.reference(ffu.getCaseRef());
@@ -55,7 +55,7 @@ public class NcCreateConverter {
     return commonBuilder;
   }
 
-  public static CaseRequest convertHhNcEnglandAndWales(FwmtActionInstruction ffu, GatewayCaseRecord cache, String householder,
+  public static CaseRequest convertHhNcEnglandAndWales(ActionInstruction ffu, GatewayCaseRecord cache, String householder,
       GatewayCaseRecord previousDetails) {
     return NcCreateConverter
         .convertNC(ffu, cache, CaseRequest.builder())
@@ -66,7 +66,7 @@ public class NcCreateConverter {
         .build();
   }
 
-  public static CaseRequest convertCeNcEnglandAndWales(FwmtActionInstruction ffu, GatewayCaseRecord cache, String householder,
+  public static CaseRequest convertCeNcEnglandAndWales(ActionInstruction ffu, GatewayCaseRecord cache, String householder,
       GatewayCaseRecord previousDetails) {
     return NcCreateConverter
         .convertNC(ffu, cache, CaseRequest.builder())
@@ -77,7 +77,7 @@ public class NcCreateConverter {
         .build();
   }
 
-  private static String getDescription(FwmtActionInstruction ffu, GatewayCaseRecord cache, String householder) {
+  private static String getDescription(ActionInstruction ffu, GatewayCaseRecord cache, String householder) {
     StringBuilder description = new StringBuilder();
     if (cache != null && cache.getCareCodes() != null && !cache.getCareCodes().isEmpty()) {
       description.append(cache.getCareCodes());

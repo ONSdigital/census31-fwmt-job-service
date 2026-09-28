@@ -5,8 +5,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.ons.census.fwmt.common.messaging.FieldWorkerInstructionJsonCodec;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtCancelActionInstruction;
+import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstruction;
+import uk.gov.ons.census.fwmt.common.rm.dto.CancelActionInstruction;
 import java.time.Instant;
 
 @Component
@@ -25,9 +25,9 @@ public class FieldWorkerInstructionMessageDispatcher {
         String.valueOf(System.currentTimeMillis()));
     Instant receivedMessageTime = Instant.ofEpochMilli(Long.parseLong(timestamp));
 
-    if (payload instanceof FwmtActionInstruction instruction) {
+    if (payload instanceof ActionInstruction instruction) {
       gwMessageProcessor.processCreateInstruction(instruction, receivedMessageTime, pubsubMessage);
-    } else if (payload instanceof FwmtCancelActionInstruction instruction) {
+    } else if (payload instanceof CancelActionInstruction instruction) {
       gwMessageProcessor.processCancelInstruction(instruction, receivedMessageTime, pubsubMessage);
     } else {
       throw new IllegalArgumentException("Unsupported field worker instruction payload: " + payload.getClass());
@@ -54,9 +54,9 @@ public class FieldWorkerInstructionMessageDispatcher {
         decoded.getMetadata().getCorrelationId(), decoded.getMetadata().getEventType(),
         decoded.getMetadata().getSchemaVersion(), contract, actionInstruction(decoded.getInstruction()));
 
-    if (decoded.getInstruction() instanceof FwmtActionInstruction instruction) {
+    if (decoded.getInstruction() instanceof ActionInstruction instruction) {
       gwMessageProcessor.processCreateInstructionAndPropagate(instruction, decoded.getMessageTime(), pubsubMessage);
-    } else if (decoded.getInstruction() instanceof FwmtCancelActionInstruction instruction) {
+    } else if (decoded.getInstruction() instanceof CancelActionInstruction instruction) {
       gwMessageProcessor.processCancelInstructionAndPropagate(instruction, decoded.getMessageTime(), pubsubMessage);
     } else {
       throw new IllegalArgumentException("Unsupported action instruction payload");
@@ -64,10 +64,10 @@ public class FieldWorkerInstructionMessageDispatcher {
   }
 
   private static String actionInstruction(Object instruction) {
-    if (instruction instanceof FwmtActionInstruction action) {
+    if (instruction instanceof ActionInstruction action) {
       return String.valueOf(action.getActionInstruction());
     }
-    if (instruction instanceof FwmtCancelActionInstruction cancel) {
+    if (instruction instanceof CancelActionInstruction cancel) {
       return String.valueOf(cancel.getActionInstruction());
     }
     return "UNKNOWN";

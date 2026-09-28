@@ -13,8 +13,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtCancelActionInstruction;
+import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstruction;
+import uk.gov.ons.census.fwmt.common.rm.dto.CancelActionInstruction;
 import uk.gov.ons.census.fwmt.jobservice.messaging.FieldworkActionInstructionPublisher;
 
 @Service
@@ -32,12 +32,12 @@ public class PubSubFieldworkActionInstructionPublisher implements FieldworkActio
   private String fieldworkActionInstructionInternalTopic;
 
   @Override
-  public void publish(FwmtActionInstruction actionInstruction) {
+  public void publish(ActionInstruction actionInstruction) {
     publishPayload(actionInstruction);
   }
 
   @Override
-  public void publish(FwmtCancelActionInstruction cancelActionInstruction) {
+  public void publish(CancelActionInstruction cancelActionInstruction) {
     publishPayload(cancelActionInstruction);
   }
 
@@ -70,10 +70,10 @@ public class PubSubFieldworkActionInstructionPublisher implements FieldworkActio
   }
 
   private String caseIdOf(Object payload) {
-    if (payload instanceof FwmtActionInstruction actionInstruction) {
+    if (payload instanceof ActionInstruction actionInstruction) {
       return actionInstruction.getCaseId();
     }
-    if (payload instanceof FwmtCancelActionInstruction cancelActionInstruction) {
+    if (payload instanceof CancelActionInstruction cancelActionInstruction) {
       return cancelActionInstruction.getCaseId();
     }
     throw new IllegalArgumentException("Unsupported fieldwork action instruction payload: " + payload.getClass());

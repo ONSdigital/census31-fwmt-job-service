@@ -1,7 +1,7 @@
 package uk.gov.ons.census.fwmt.jobservice.service.processor;
 
 import uk.gov.ons.census.fwmt.common.error.GatewayException;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtCommonInstruction;
+import uk.gov.ons.census.fwmt.common.rm.dto.CommonInstruction;
 import uk.gov.ons.census.fwmt.common.events.component.GatewayEventManager;
 import uk.gov.ons.census.fwmt.jobservice.data.GatewayCaseRecord;
 
@@ -14,7 +14,7 @@ import java.util.Optional;
 
 import static uk.gov.ons.census.fwmt.jobservice.config.GatewayEventsConfig.ROUTING_FAILED;
 
-public class ProcessorRouter<T extends FwmtCommonInstruction> {
+public class ProcessorRouter<T extends CommonInstruction> {
 
   private final Map<ProcessorKey, List<InboundProcessor<T>>> processorMap;
   private final GatewayEventManager eventManager;
@@ -32,7 +32,7 @@ public class ProcessorRouter<T extends FwmtCommonInstruction> {
     this.sourceClass = sourceClass;
   }
 
-  public static <T extends FwmtCommonInstruction> ProcessorRouter<T> fromProcessors(
+  public static <T extends CommonInstruction> ProcessorRouter<T> fromProcessors(
       List<InboundProcessor<T>> processors,
       GatewayEventManager eventManager,
       String verb,
@@ -82,7 +82,7 @@ public class ProcessorRouter<T extends FwmtCommonInstruction> {
     eventManager.triggerErrorEvent(sourceClass,
         message,
         String.valueOf(request.getCaseId()), ROUTING_FAILED,
-        "FwmtActionInstruction", request.toString(), "cache", cacheStr);
+        "ActionInstruction", request.toString(), "cache", cacheStr);
     throw new GatewayException(GatewayException.Fault.VALIDATION_FAILED,
         message, request.toString(), cacheStr);
   }
@@ -93,7 +93,7 @@ public class ProcessorRouter<T extends FwmtCommonInstruction> {
     eventManager.triggerErrorEvent(sourceClass,
         message,
         String.valueOf(request.getCaseId()), ROUTING_FAILED,
-        "FwmtActionInstruction", request.toString(), cacheStr);
+        "ActionInstruction", request.toString(), cacheStr);
     throw new GatewayException(GatewayException.Fault.VALIDATION_FAILED,
         message, request.toString(), cacheStr);
   }

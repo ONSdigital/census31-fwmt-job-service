@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import uk.gov.ons.census.fwmt.common.error.GatewayException;
 import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstructionType;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtCancelActionInstruction;
+import uk.gov.ons.census.fwmt.common.rm.dto.CancelActionInstruction;
 import uk.gov.ons.census.fwmt.common.events.component.GatewayEventManager;
 import uk.gov.ons.census.fwmt.jobservice.data.GatewayCaseRecord;
 import uk.gov.ons.census.fwmt.jobservice.service.processor.InboundProcessor;
@@ -15,7 +15,7 @@ import java.time.Instant;
 
 @Qualifier("Cancel")
 @Service
-public class HhCancelHeld implements InboundProcessor<FwmtCancelActionInstruction> {
+public class HhCancelHeld implements InboundProcessor<CancelActionInstruction> {
 
   private static final String HH_CANCEL_HELD = "HH_CANCEL_HELD";
 
@@ -38,7 +38,7 @@ public class HhCancelHeld implements InboundProcessor<FwmtCancelActionInstructio
     return key;
   }
 
-  @Override public boolean isValid(FwmtCancelActionInstruction rmRequest, GatewayCaseRecord cache) {
+  @Override public boolean isValid(CancelActionInstruction rmRequest, GatewayCaseRecord cache) {
     try {
       return rmRequest.getActionInstruction() == ActionInstructionType.CANCEL
           && rmRequest.getSurveyName().equals("CENSUS")
@@ -52,7 +52,7 @@ public class HhCancelHeld implements InboundProcessor<FwmtCancelActionInstructio
     }
   }
 
-  @Override public void process(FwmtCancelActionInstruction rmRequest, GatewayCaseRecord cache, Instant messageReceivedTime)
+  @Override public void process(CancelActionInstruction rmRequest, GatewayCaseRecord cache, Instant messageReceivedTime)
       throws GatewayException {
 
     eventManager.triggerEvent(String.valueOf(rmRequest.getCaseId()), HH_CANCEL_HELD,

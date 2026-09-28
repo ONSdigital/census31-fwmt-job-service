@@ -1,12 +1,12 @@
 package uk.gov.ons.census.fwmt.jobservice.helper;
 
 import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstructionType;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtCancelActionInstruction;
+import uk.gov.ons.census.fwmt.common.rm.dto.CancelActionInstruction;
 
 public class FwmtCancelJobRequestBuilder {
 
-  public FwmtCancelActionInstruction cancelActionInstruction() {
-    FwmtCancelActionInstruction fwmtCancelActionInstruction = new FwmtCancelActionInstruction();
+  public CancelActionInstruction cancelActionInstruction() {
+    CancelActionInstruction fwmtCancelActionInstruction = new CancelActionInstruction();
     fwmtCancelActionInstruction.setActionInstruction(ActionInstructionType.CANCEL);
     fwmtCancelActionInstruction.setNc(false);
     fwmtCancelActionInstruction.setCaseId("ac623e62-4f4b-11eb-ae93-0242ac130002");
@@ -15,8 +15,8 @@ public class FwmtCancelJobRequestBuilder {
     return fwmtCancelActionInstruction;
   }
 
-  public FwmtCancelActionInstruction cancelCeUnitActionInstruction() {
-    FwmtCancelActionInstruction fwmtCancelActionInstruction = new FwmtCancelActionInstruction();
+  public CancelActionInstruction cancelCeUnitActionInstruction() {
+    CancelActionInstruction fwmtCancelActionInstruction = new CancelActionInstruction();
     fwmtCancelActionInstruction.setActionInstruction(ActionInstructionType.CANCEL);
     fwmtCancelActionInstruction.setNc(false);
     fwmtCancelActionInstruction.setCaseId("ac623e62-4f4b-11eb-ae93-0242ac130002");
@@ -25,8 +25,8 @@ public class FwmtCancelJobRequestBuilder {
     return fwmtCancelActionInstruction;
   }
 
-  public FwmtCancelActionInstruction cancelSpgSiteActionInstruction() {
-    FwmtCancelActionInstruction fwmtCancelActionInstruction = new FwmtCancelActionInstruction();
+  public CancelActionInstruction cancelSpgSiteActionInstruction() {
+    CancelActionInstruction fwmtCancelActionInstruction = new CancelActionInstruction();
     fwmtCancelActionInstruction.setActionInstruction(ActionInstructionType.CANCEL);
     fwmtCancelActionInstruction.setNc(false);
     fwmtCancelActionInstruction.setCaseId("ac623e62-4f4b-11eb-ae93-0242ac130002");
@@ -35,8 +35,8 @@ public class FwmtCancelJobRequestBuilder {
     return fwmtCancelActionInstruction;
   }
 
-  public FwmtCancelActionInstruction cancelSpgUnitActionInstruction() {
-    FwmtCancelActionInstruction fwmtCancelActionInstruction = new FwmtCancelActionInstruction();
+  public CancelActionInstruction cancelSpgUnitActionInstruction() {
+    CancelActionInstruction fwmtCancelActionInstruction = new CancelActionInstruction();
     fwmtCancelActionInstruction.setActionInstruction(ActionInstructionType.CANCEL);
     fwmtCancelActionInstruction.setNc(false);
     fwmtCancelActionInstruction.setCaseId("ac623e62-4f4b-11eb-ae93-0242ac130002");
@@ -45,8 +45,8 @@ public class FwmtCancelJobRequestBuilder {
     return fwmtCancelActionInstruction;
   }
 
-  public FwmtCancelActionInstruction cancelFeedbackActionInstruction() {
-    FwmtCancelActionInstruction fwmtCancelActionInstruction = new FwmtCancelActionInstruction();
+  public CancelActionInstruction cancelFeedbackActionInstruction() {
+    CancelActionInstruction fwmtCancelActionInstruction = new CancelActionInstruction();
     fwmtCancelActionInstruction.setActionInstruction(ActionInstructionType.CANCEL);
     fwmtCancelActionInstruction.setNc(false);
     fwmtCancelActionInstruction.setCaseId("ac623e62-4f4b-11eb-ae93-0242ac130002");
@@ -56,8 +56,8 @@ public class FwmtCancelJobRequestBuilder {
     return fwmtCancelActionInstruction;
   }
 
-  public FwmtCancelActionInstruction cancelCcsCeActionInstruction() {
-    FwmtCancelActionInstruction fwmtCancelActionInstruction = new FwmtCancelActionInstruction();
+  public CancelActionInstruction cancelCcsCeActionInstruction() {
+    CancelActionInstruction fwmtCancelActionInstruction = new CancelActionInstruction();
     fwmtCancelActionInstruction.setActionInstruction(ActionInstructionType.CANCEL);
     fwmtCancelActionInstruction.setNc(false);
     fwmtCancelActionInstruction.setCaseId("ac623e62-4f4b-11eb-ae93-0242ac130002");
@@ -66,8 +66,8 @@ public class FwmtCancelJobRequestBuilder {
     fwmtCancelActionInstruction.setSurveyName("CCS");
     return fwmtCancelActionInstruction;
   }
-  public FwmtCancelActionInstruction cancelCcsHhActionInstruction() {
-    FwmtCancelActionInstruction fwmtCancelActionInstruction = new FwmtCancelActionInstruction();
+  public CancelActionInstruction cancelCcsHhActionInstruction() {
+    CancelActionInstruction fwmtCancelActionInstruction = new CancelActionInstruction();
     fwmtCancelActionInstruction.setActionInstruction(ActionInstructionType.CANCEL);
     fwmtCancelActionInstruction.setNc(false);
     fwmtCancelActionInstruction.setCaseId("ac623e62-4f4b-11eb-ae93-0242ac130002");

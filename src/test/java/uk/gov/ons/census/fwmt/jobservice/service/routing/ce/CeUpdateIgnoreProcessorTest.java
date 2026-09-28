@@ -9,7 +9,7 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
+import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstruction;
 import uk.gov.ons.census.fwmt.common.events.component.GatewayEventManager;
 import uk.gov.ons.census.fwmt.jobservice.ce.CeRequestBuilder;
 import uk.gov.ons.census.fwmt.jobservice.service.routing.ignore.CeUpdateIgnoreProcessor;
@@ -33,7 +33,7 @@ public class CeUpdateIgnoreProcessorTest {
   @Test
   @DisplayName("Should log CE Update and ignore it")
   public void shouldLogCCeUpdateAndIgnoreIt() {
-    final FwmtActionInstruction instruction = CeRequestBuilder.ceUpdateInstruction();
+    final ActionInstruction instruction = CeRequestBuilder.ceUpdateInstruction();
     ceUpdateIgnoreProcessor.process(instruction);
     verify(eventManager).triggerEvent(any(), spiedEvent.capture(), any(String[].class));
     String checkEvent = spiedEvent.getValue();

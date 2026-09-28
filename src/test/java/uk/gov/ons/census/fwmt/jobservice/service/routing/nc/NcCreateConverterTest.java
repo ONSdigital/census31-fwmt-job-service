@@ -9,7 +9,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.ons.census.fwmt.common.data.tm.CaseRequest;
 import uk.gov.ons.census.fwmt.common.error.GatewayException;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
+import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstruction;
 import uk.gov.ons.census.fwmt.jobservice.data.GatewayCaseRecord;
 import uk.gov.ons.census.fwmt.jobservice.helper.NcActionInstructionBuilder;
 import uk.gov.ons.census.fwmt.jobservice.http.comet.CometRestClient;
@@ -31,7 +31,7 @@ public class NcCreateConverterTest {
   @Test
   @DisplayName("Should retrieve care codes and special instructions from old record")
   public void shouldRetrieveOldCareCodesAndSpecialInstructions() throws GatewayException {
-    final FwmtActionInstruction ncInstruction = new NcActionInstructionBuilder().createNcActionInstruction();
+    final ActionInstruction ncInstruction = new NcActionInstructionBuilder().createNcActionInstruction();
     GatewayCaseRecord gatewayCache = GatewayCaseRecord.builder()
         .caseId("ac623e62-4f4b-11eb-ae93-0242ac130002").careCodes("Mind dog").accessInfo("1234").build();
     CaseRequest caseRequest = NcCreateConverter.convertHhNcEnglandAndWales(ncInstruction, null, "", gatewayCache);
@@ -43,7 +43,7 @@ public class NcCreateConverterTest {
   @Test
   @DisplayName("Should send estabType, coordCode, location, uaa and blankFormReturned")
   public void shouldSendEstabTypeCoordCodeLoaction() throws GatewayException {
-    final FwmtActionInstruction ncInstruction = new NcActionInstructionBuilder().createNcActionInstruction();
+    final ActionInstruction ncInstruction = new NcActionInstructionBuilder().createNcActionInstruction();
     CaseRequest caseRequest = NcCreateConverter.convertHhNcEnglandAndWales(ncInstruction, null, "", gatewayCache);
     Assertions.assertEquals(ncInstruction.getEstabType(), caseRequest.getEstabType());
     Assertions.assertEquals(ncInstruction.getFieldCoordinatorId(), caseRequest.getCoordCode());

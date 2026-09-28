@@ -10,7 +10,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.ons.census.fwmt.common.error.GatewayException;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtCancelActionInstruction;
+import uk.gov.ons.census.fwmt.common.rm.dto.CancelActionInstruction;
 import uk.gov.ons.census.fwmt.common.events.component.GatewayEventManager;
 import uk.gov.ons.census.fwmt.jobservice.data.GatewayCaseRecord;
 import uk.gov.ons.census.fwmt.jobservice.hh.HhRequestBuilder;
@@ -46,7 +46,7 @@ class HHCancelHeldProcessorTest {
   @Test
   @DisplayName("Should hold a HH cancel that does not exists in FWMT")
   public void shouldHoldAHhCancelThatDoesNotExistInFwmt() throws GatewayException {
-    final FwmtCancelActionInstruction instruction = HhRequestBuilder.cancelActionInstruction();
+    final CancelActionInstruction instruction = HhRequestBuilder.cancelActionInstruction();
     GatewayCaseRecord gatewayCache = GatewayCaseRecord.builder()
         .caseId("ac623e62-4f4b-11eb-ae93-0242ac130002").existsInFwmt(false).build();
     hhCancelHeld.process(instruction, gatewayCache,  Instant.now());
@@ -58,7 +58,7 @@ class HHCancelHeldProcessorTest {
   @Test
   @DisplayName("Should hold a HH cancel that does not exists in cache")
   public void shouldHoldAHhCancelThatDoesNotExistInCache() throws GatewayException {
-    final FwmtCancelActionInstruction instruction = HhRequestBuilder.cancelActionInstruction();
+    final CancelActionInstruction instruction = HhRequestBuilder.cancelActionInstruction();
     hhCancelHeld.process(instruction, null,  Instant.now());
     verify(eventManager, atLeast(1)).triggerEvent(any(), spiedEvent.capture(), any(String[].class));
     String checkEvent = spiedEvent.getValue();

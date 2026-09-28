@@ -12,7 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClientException;
 import uk.gov.ons.census.fwmt.common.error.GatewayException;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtCancelActionInstruction;
+import uk.gov.ons.census.fwmt.common.rm.dto.CancelActionInstruction;
 import uk.gov.ons.census.fwmt.common.events.component.GatewayEventManager;
 import uk.gov.ons.census.fwmt.jobservice.data.GatewayCaseRecord;
 import uk.gov.ons.census.fwmt.jobservice.helper.NcActionInstructionBuilder;
@@ -69,7 +69,7 @@ public class NcCancelProcessorTest {
   @Test
   @DisplayName("Should send cancel NC HH caseId to TM")
   public void shouldHandleNCHHCancel() throws GatewayException {
-    final FwmtCancelActionInstruction instruction = new NcActionInstructionBuilder().createNcHhCancelInstruction();
+    final CancelActionInstruction instruction = new NcActionInstructionBuilder().createNcHhCancelInstruction();
     GatewayCaseRecord gatewayCache = GatewayCaseRecord.builder()
         .caseId("c66c995e-571d-11eb-ae93-0242ac130002").careCodes("Mind dog").accessInfo("1234")
         .originalCaseId("ac623e62-4f4b-11eb-ae93-0242ac130002").lastActionInstruction("CREATED").build();
@@ -89,7 +89,7 @@ public class NcCancelProcessorTest {
   @Test
   @DisplayName("Should send cancel NC CE caseId to TM")
   public void shouldHandleNCCECancel() throws GatewayException {
-    final FwmtCancelActionInstruction instruction = new NcActionInstructionBuilder().createNcCeCancelInstruction();
+    final CancelActionInstruction instruction = new NcActionInstructionBuilder().createNcCeCancelInstruction();
     GatewayCaseRecord gatewayCache = GatewayCaseRecord.builder()
         .caseId("c66c995e-571d-11eb-ae93-0242ac130002").careCodes("Mind dog").accessInfo("1234")
         .originalCaseId("ac623e62-4f4b-11eb-ae93-0242ac130002").lastActionInstruction("CREATED").build();
@@ -109,7 +109,7 @@ public class NcCancelProcessorTest {
   @Test
   @DisplayName("Should ignore a NC HH cancel on a cancel")
   public void shouldIgnoreANcHHCancelOnCancel() throws GatewayException {
-    final FwmtCancelActionInstruction instruction = new NcActionInstructionBuilder().createNcHhCancelInstruction();
+    final CancelActionInstruction instruction = new NcActionInstructionBuilder().createNcHhCancelInstruction();
     GatewayCaseRecord gatewayCache = GatewayCaseRecord.builder()
         .caseId("ac623e62-4f4b-11eb-ae93-0242ac130002").lastActionInstruction("CREATE").build();
     when(cometRestClient.sendClose(any())).thenThrow(new RestClientException("(400 BAD_REQUEST) {“id”:[“Case State must be Open”]}"));
@@ -125,7 +125,7 @@ public class NcCancelProcessorTest {
   @Test
   @DisplayName("Should ignore a NC CE cancel on a cancel")
   public void shouldIgnoreANcCeCancelOnCancel() throws GatewayException {
-    final FwmtCancelActionInstruction instruction = new NcActionInstructionBuilder().createNcCeCancelInstruction();
+    final CancelActionInstruction instruction = new NcActionInstructionBuilder().createNcCeCancelInstruction();
     GatewayCaseRecord gatewayCache = GatewayCaseRecord.builder()
         .caseId("ac623e62-4f4b-11eb-ae93-0242ac130002").lastActionInstruction("CREATE").build();
     when(cometRestClient.sendClose(any())).thenThrow(new RestClientException("(400 BAD_REQUEST) {“id”:[“Case State must be Open”]}"));
