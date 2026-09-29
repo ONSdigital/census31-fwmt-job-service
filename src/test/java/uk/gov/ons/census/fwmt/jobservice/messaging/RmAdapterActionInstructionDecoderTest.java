@@ -10,6 +10,7 @@ import java.time.Instant;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.gov.ons.census.fwmt.common.dto.rm.ActionInstruction;
+import uk.gov.ons.census.fwmt.common.dto.rm.ActionInstructionType;
 import uk.gov.ons.census.fwmt.common.dto.rm.CancelActionInstruction;
 
 class RmAdapterActionInstructionDecoderTest {
@@ -37,6 +38,27 @@ class RmAdapterActionInstructionDecoderTest {
     assertThat(instruction.getCaseId()).isEqualTo("case-123");
     assertThat(instruction.getCaseRef()).isEqualTo("ref-123");
     assertThat(decoded.getMessageTime()).isEqualTo(Instant.parse("2026-09-21T10:15:30Z"));
+  }
+
+  @Test
+  void decodesInternalPausePayloadAsActionInstruction() {
+    PubsubMessage message = message(
+        "{\"actionInstruction\":\"PAUSE\",\"surveyName\":\"CENSUS\",\"caseId\":\"case-456\","
+            + "\"addressType\":\"HH\",\"addressLevel\":\"U\",\"pauseCode\":\"HOLD\","
+            + "\"pauseFrom\":\"2026-09-29T12:00:00Z\"}",
+        "case-456", "2026-09-29T12:00:00Z");
+
+    RmAdapterActionInstructionDecoder.DecodedMessage decoded = decoder.decode(
+        message, ActionInstructionContract.INTERNAL_FWMT);
+
+    assertThat(decoded.getInstruction()).isInstanceOf(ActionInstruction.class);
+    ActionInstruction instruction = (ActionInstruction) decoded.getInstruction();
+    assertThat(instruction.getActionInstruction()).isEqualTo(ActionInstructionType.PAUSE);
+    assertThat(instruction.getCaseId()).isEqualTo("case-456");
+    assertThat(instruction.getAddressType()).isEqualTo("HH");
+    assertThat(instruction.getAddressLevel()).isEqualTo("U");
+    assertThat(instruction.getPauseCode()).isEqualTo("HOLD");
+    assertThat(instruction.getPauseFrom()).isEqualTo("2026-09-29T12:00:00Z");
   }
 
   @Test
