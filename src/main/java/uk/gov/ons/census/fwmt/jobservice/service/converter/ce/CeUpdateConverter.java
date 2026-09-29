@@ -1,7 +1,7 @@
 package uk.gov.ons.census.fwmt.jobservice.service.converter.ce;
 
 import uk.gov.ons.census.fwmt.common.data.tm.CeCasePatchRequest;
-import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstruction;
+import uk.gov.ons.census.fwmt.common.dto.rm.ActionInstruction;
 
 public final class CeUpdateConverter {
 

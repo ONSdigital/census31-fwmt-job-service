@@ -2,8 +2,8 @@ package uk.gov.ons.census.fwmt.jobservice.service.processor;
 
 import lombok.Builder;
 import lombok.Getter;
-import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstruction;
-import uk.gov.ons.census.fwmt.common.rm.dto.CancelActionInstruction;
+import uk.gov.ons.census.fwmt.common.dto.rm.ActionInstruction;
+import uk.gov.ons.census.fwmt.common.dto.rm.CancelActionInstruction;
 
 @Getter
 @Builder

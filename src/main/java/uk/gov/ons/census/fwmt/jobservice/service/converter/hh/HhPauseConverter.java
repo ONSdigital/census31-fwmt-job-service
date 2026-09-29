@@ -1,7 +1,7 @@
 package uk.gov.ons.census.fwmt.jobservice.service.converter.hh;
 
 import uk.gov.ons.census.fwmt.common.data.tm.CasePauseRequest;
-import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstruction;
+import uk.gov.ons.census.fwmt.common.dto.rm.ActionInstruction;
 
 public final class HhPauseConverter {
 

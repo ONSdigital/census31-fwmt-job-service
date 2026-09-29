@@ -2,7 +2,7 @@ package uk.gov.ons.census.fwmt.jobservice.service.converter.common;
 
 import uk.gov.ons.census.fwmt.common.data.tm.ReopenCaseRequest;
 import uk.gov.ons.census.fwmt.common.data.tm.SurveyType;
-import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstruction;
+import uk.gov.ons.census.fwmt.common.dto.rm.ActionInstruction;
 
 public final class CommonSwitchConverter {
 

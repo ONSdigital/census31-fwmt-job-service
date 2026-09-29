@@ -1,7 +1,7 @@
 package uk.gov.ons.census.fwmt.jobservice.ce;
 
-import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstructionType;
-import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstruction;
+import uk.gov.ons.census.fwmt.common.dto.rm.ActionInstructionType;
+import uk.gov.ons.census.fwmt.common.dto.rm.ActionInstruction;
 
 public final class CeRequestBuilder {
 
