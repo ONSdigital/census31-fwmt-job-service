@@ -33,7 +33,8 @@ public class RmAdapterActionInstructionDecoder {
       ActionInstructionType action = payload.path("actionInstruction").isTextual()
           ? ActionInstructionType.valueOf(payload.path("actionInstruction").textValue())
           : null;
-      if (action == null) {OutcomeServiceImplhrow new IllegalArgumentException("Missing actionInstruction in RM adapter payload");
+      if (action == null) {
+        throw new IllegalArgumentException("Missing actionInstruction in RM adapter payload");
       }
       String surveyName = payload.path("surveyName").textValue();
       boolean validSurvey = SURVEY_CENSUS.equals(surveyName)
