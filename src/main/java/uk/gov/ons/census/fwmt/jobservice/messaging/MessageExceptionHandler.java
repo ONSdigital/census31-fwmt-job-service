@@ -69,7 +69,6 @@ public class MessageExceptionHandler {
         .addressType(instruction.getAddressType())
         .nc(instruction.isNc())
         .surveyName(instruction.getSurveyName())
-        // .queue(gwFieldQueue)
         .headers(message.getAttributesMap().entrySet().stream()
             .collect(java.util.stream.Collectors.toMap(
                 java.util.Map.Entry::getKey,
