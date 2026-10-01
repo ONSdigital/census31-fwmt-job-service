@@ -1,12 +1,12 @@
 package uk.gov.ons.census.fwmt.jobservice.helper;
 
-import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstructionType;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
+import uk.gov.ons.census.fwmt.common.dto.rm.ActionInstructionType;
+import uk.gov.ons.census.fwmt.common.dto.rm.ActionInstruction;
 
 public class FwmtCreateJobRequestBuilder {
 
-  public FwmtActionInstruction createCeEstabDeliver() {
-    FwmtActionInstruction fwmtActionInstruction = new FwmtActionInstruction();
+  public ActionInstruction createCeEstabDeliver() {
+    ActionInstruction fwmtActionInstruction = new ActionInstruction();
     fwmtActionInstruction.setActionInstruction(ActionInstructionType.CREATE);
     fwmtActionInstruction.setCaseId("ac623e62-4f4b-11eb-ae93-0242ac130002");
     fwmtActionInstruction.setSurveyName("CENSUS");
@@ -18,8 +18,8 @@ public class FwmtCreateJobRequestBuilder {
     return fwmtActionInstruction;
   }
 
-  public FwmtActionInstruction createCeEstabFollowup() {
-    FwmtActionInstruction fwmtActionInstruction = new FwmtActionInstruction();
+  public ActionInstruction createCeEstabFollowup() {
+    ActionInstruction fwmtActionInstruction = new ActionInstruction();
     fwmtActionInstruction.setActionInstruction(ActionInstructionType.CREATE);
     fwmtActionInstruction.setCaseId("ac623e62-4f4b-11eb-ae93-0242ac130002");
     fwmtActionInstruction.setSurveyName("CENSUS");
@@ -31,8 +31,8 @@ public class FwmtCreateJobRequestBuilder {
     return fwmtActionInstruction;
   }
 
-  public FwmtActionInstruction createCeSite() {
-    FwmtActionInstruction fwmtActionInstruction = new FwmtActionInstruction();
+  public ActionInstruction createCeSite() {
+    ActionInstruction fwmtActionInstruction = new ActionInstruction();
     fwmtActionInstruction.setActionInstruction(ActionInstructionType.CREATE);
     fwmtActionInstruction.setCaseId("ac623e62-4f4b-11eb-ae93-0242ac130002");
     fwmtActionInstruction.setSurveyName("CENSUS");

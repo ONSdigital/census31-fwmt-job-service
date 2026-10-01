@@ -4,8 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.ons.census.fwmt.common.error.GatewayException;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtCancelActionInstruction;
+import uk.gov.ons.census.fwmt.common.dto.rm.ActionInstruction;
+import uk.gov.ons.census.fwmt.common.dto.rm.CancelActionInstruction;
 import uk.gov.ons.census.fwmt.common.events.component.GatewayEventManager;
 import uk.gov.ons.census.fwmt.jobservice.config.FeatureFlagConfig;
 
@@ -40,7 +40,7 @@ public class JobService {
   private FeatureFlagConfig featureFlagConfig;
 
   @Transactional
-  public void processCreate(FwmtActionInstruction actionInstruction, Instant messageReceivedTime) throws GatewayException {
+  public void processCreate(ActionInstruction actionInstruction, Instant messageReceivedTime) throws GatewayException {
     if (!isActionAllowedByFeatureFlag(actionInstruction.getCaseId(), actionInstruction.getAddressType(), actionInstruction.getActionInstruction().name())) {
       return;
     }
@@ -48,7 +48,7 @@ public class JobService {
   }
 
   @Transactional
-  public void processUpdate(FwmtActionInstruction actionInstruction, Instant messageReceivedTime) throws GatewayException {
+  public void processUpdate(ActionInstruction actionInstruction, Instant messageReceivedTime) throws GatewayException {
     if (!isActionAllowedByFeatureFlag(actionInstruction.getCaseId(), actionInstruction.getAddressType(), actionInstruction.getActionInstruction().name())) {
       return;
     }
@@ -56,7 +56,7 @@ public class JobService {
   }
 
   @Transactional
-  public void processCancel(FwmtCancelActionInstruction actionInstruction, Instant messageReceivedTime) throws GatewayException {
+  public void processCancel(CancelActionInstruction actionInstruction, Instant messageReceivedTime) throws GatewayException {
     if (!isActionAllowedByFeatureFlag(actionInstruction.getCaseId(), actionInstruction.getAddressType(), actionInstruction.getActionInstruction().name())) {
       return;
     }
@@ -64,7 +64,7 @@ public class JobService {
   }
 
   @Transactional
-  public void processPause(FwmtActionInstruction actionInstruction, Instant messageReceivedTime) throws GatewayException {
+  public void processPause(ActionInstruction actionInstruction, Instant messageReceivedTime) throws GatewayException {
     if (!isActionAllowedByFeatureFlag(actionInstruction.getCaseId(), actionInstruction.getAddressType(), actionInstruction.getActionInstruction().name())) {
       return;
     }

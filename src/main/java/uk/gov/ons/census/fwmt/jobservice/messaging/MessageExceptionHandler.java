@@ -9,7 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtCommonInstruction;
+import uk.gov.ons.census.fwmt.common.dto.rm.CommonInstruction;
 import uk.gov.ons.census.fwmt.jobservice.data.QuarantinedMessage;
 import uk.gov.ons.census.fwmt.jobservice.repository.QuarantinedMessageRepository;
 
@@ -31,9 +31,6 @@ public class MessageExceptionHandler {
   @Value("${app.messaging.maxRetryCount:5}")
   private int maxRetryCount;
 
-  @Value("${app.messaging.destinations.gwField:GW.Field}")
-  private String gwFieldQueue;
-
   @Value("${app.messaging.destinations.gwTransientError:GW.Transient.ErrorQ}")
   private String gwTransientErrorTopic;
 
@@ -47,7 +44,7 @@ public class MessageExceptionHandler {
     log.info("TransientExceptionHandler gwPermanentErrorTopic :{}", gwPermanentErrorTopic);
   }
 
-  public void handleTransientMessage(PubsubMessage message, FwmtCommonInstruction instruction) {
+  public void handleTransientMessage(PubsubMessage message, CommonInstruction instruction) {
     Integer retryCount = parseRetryCount(message);
     if (retryCount < maxRetryCount) {
       int nextRetryCount = retryCount + 1;
@@ -59,7 +56,7 @@ public class MessageExceptionHandler {
     }
   }
 
-  public void handlePermMessage(PubsubMessage message, FwmtCommonInstruction instruction) {
+  public void handlePermMessage(PubsubMessage message, CommonInstruction instruction) {
     publishPubSub(gwPermanentErrorTopic, message, Map.of());
     log.warn("Republished permanent error to Pub/Sub topic={}", gwPermanentErrorTopic);
 
@@ -72,7 +69,6 @@ public class MessageExceptionHandler {
         .addressType(instruction.getAddressType())
         .nc(instruction.isNc())
         .surveyName(instruction.getSurveyName())
-        .queue(gwFieldQueue)
         .headers(message.getAttributesMap().entrySet().stream()
             .collect(java.util.stream.Collectors.toMap(
                 java.util.Map.Entry::getKey,
@@ -92,7 +88,7 @@ public class MessageExceptionHandler {
       builder.putAllAttributes(extraAttributes);
     }
 
-    pubSubTemplate.publish(topic, builder.build());
+    pubSubTemplate.publish(topic, builder.build()).join();
   }
 
   private Integer parseRetryCount(PubsubMessage message) {
@@ -103,7 +99,7 @@ public class MessageExceptionHandler {
     }
   }
 
-  private byte[] messagePayload(PubsubMessage message, FwmtCommonInstruction instruction) {
+  private byte[] messagePayload(PubsubMessage message, CommonInstruction instruction) {
     if (message != null) {
       return message.getData().toByteArray();
     }

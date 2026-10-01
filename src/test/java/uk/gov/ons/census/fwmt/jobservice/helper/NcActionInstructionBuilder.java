@@ -1,15 +1,15 @@
 package uk.gov.ons.census.fwmt.jobservice.helper;
 
-import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstructionType;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtCancelActionInstruction;
+import uk.gov.ons.census.fwmt.common.dto.rm.ActionInstructionType;
+import uk.gov.ons.census.fwmt.common.dto.rm.ActionInstruction;
+import uk.gov.ons.census.fwmt.common.dto.rm.CancelActionInstruction;
 
 import java.util.UUID;
 
 public class NcActionInstructionBuilder {
 
-  public FwmtActionInstruction createNcActionInstruction() {
-    FwmtActionInstruction actionInstruction = new FwmtActionInstruction();
+  public ActionInstruction createNcActionInstruction() {
+    ActionInstruction actionInstruction = new ActionInstruction();
     String oldCaseId = "ac623e62-4f4b-11eb-ae93-0242ac130002";
     actionInstruction.setActionInstruction(ActionInstructionType.CREATE);
     actionInstruction.setSurveyName("CENSUS");
@@ -32,8 +32,8 @@ public class NcActionInstructionBuilder {
     return actionInstruction;
   }
 
-  public FwmtCancelActionInstruction createNcHhCancelInstruction() {
-    FwmtCancelActionInstruction cancelActionInstruction = new FwmtCancelActionInstruction();
+  public CancelActionInstruction createNcHhCancelInstruction() {
+    CancelActionInstruction cancelActionInstruction = new CancelActionInstruction();
     cancelActionInstruction.setActionInstruction(ActionInstructionType.CANCEL);
     cancelActionInstruction.setCaseId("ac623e62-4f4b-11eb-ae93-0242ac130002");
     cancelActionInstruction.setSurveyName("CENSUS");
@@ -43,8 +43,8 @@ public class NcActionInstructionBuilder {
     return cancelActionInstruction;
   }
 
-  public FwmtCancelActionInstruction createNcCeCancelInstruction() {
-    FwmtCancelActionInstruction cancelActionInstruction = new FwmtCancelActionInstruction();
+  public CancelActionInstruction createNcCeCancelInstruction() {
+    CancelActionInstruction cancelActionInstruction = new CancelActionInstruction();
     cancelActionInstruction.setActionInstruction(ActionInstructionType.CANCEL);
     cancelActionInstruction.setCaseId("ac623e62-4f4b-11eb-ae93-0242ac130002");
     cancelActionInstruction.setSurveyName("CENSUS");

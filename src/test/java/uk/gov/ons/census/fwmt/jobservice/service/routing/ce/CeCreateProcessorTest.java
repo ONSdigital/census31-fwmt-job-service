@@ -7,7 +7,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
+import uk.gov.ons.census.fwmt.common.dto.rm.ActionInstruction;
 import uk.gov.ons.census.fwmt.jobservice.data.GatewayCaseRecord;
 import uk.gov.ons.census.fwmt.jobservice.helper.FwmtCreateJobRequestBuilder;
 import uk.gov.ons.census.fwmt.jobservice.service.GatewayCaseRecordService;
@@ -32,7 +32,7 @@ public class CeCreateProcessorTest {
   @Test
   @DisplayName("Should not select CE Estab Deliver Create processor")
   public void shouldNotSelectCeEstabDeliverCreateProcessor() {
-    final FwmtActionInstruction instruction = new FwmtCreateJobRequestBuilder().createCeEstabDeliver();
+    final ActionInstruction instruction = new FwmtCreateJobRequestBuilder().createCeEstabDeliver();
     GatewayCaseRecord gatewayCache = GatewayCaseRecord.builder()
         .caseId("ac623e62-4f4b-11eb-ae93-0242ac130002").estabUprn("4321").existsInFwmt(false).type(3).lastActionInstruction("CREATE").build();
     when(cacheService.doesEstabUprnAndTypeExist(instruction.getUprn(), 3)).thenReturn(true);
@@ -42,7 +42,7 @@ public class CeCreateProcessorTest {
   @Test
   @DisplayName("Should select CE Estab Deliver Create processor")
   public void shouldSelectCeEstabDeliverCreateProcessor() {
-    final FwmtActionInstruction instruction = new FwmtCreateJobRequestBuilder().createCeEstabDeliver();
+    final ActionInstruction instruction = new FwmtCreateJobRequestBuilder().createCeEstabDeliver();
     GatewayCaseRecord gatewayCache = GatewayCaseRecord.builder()
         .caseId("ac623e62-4f4b-11eb-ae93-0242ac130002").estabUprn("4321").existsInFwmt(false).type(1).lastActionInstruction("CREATE").build();
     Assertions.assertTrue(ceCreateEstabDeliverProcessor.isValid(instruction, gatewayCache));
@@ -51,7 +51,7 @@ public class CeCreateProcessorTest {
   @Test
   @DisplayName("Should not select CE Estab Followup Create processor")
   public void shouldNotSelectCeEstabFollowupCreateProcessor() {
-    final FwmtActionInstruction instruction = new FwmtCreateJobRequestBuilder().createCeEstabFollowup();
+    final ActionInstruction instruction = new FwmtCreateJobRequestBuilder().createCeEstabFollowup();
     GatewayCaseRecord gatewayCache = GatewayCaseRecord.builder()
         .caseId("ac623e62-4f4b-11eb-ae93-0242ac130002").estabUprn("4321").existsInFwmt(true).type(3).lastActionInstruction("CREATE").build();
     when(cacheService.doesUprnAndTypeExist(instruction.getUprn(), 3)).thenReturn(true);
@@ -61,7 +61,7 @@ public class CeCreateProcessorTest {
   @Test
   @DisplayName("Should select CE Estab Followup Create processor")
   public void shouldSelectCeEstabFollowupCreateProcessor() {
-    final FwmtActionInstruction instruction = new FwmtCreateJobRequestBuilder().createCeEstabFollowup();
+    final ActionInstruction instruction = new FwmtCreateJobRequestBuilder().createCeEstabFollowup();
     GatewayCaseRecord gatewayCache = GatewayCaseRecord.builder()
         .caseId("ac623e62-4f4b-11eb-ae93-0242ac130002").estabUprn("4321").existsInFwmt(true).type(1).lastActionInstruction("CREATE").build();
     Assertions.assertTrue(ceCreateEstabFollowupProcessor.isValid(instruction, gatewayCache));
@@ -70,7 +70,7 @@ public class CeCreateProcessorTest {
   @Test
   @DisplayName("Should not select CE Site Create processor")
   public void shouldNotSelectCeSiteCreateProcessor() {
-    final FwmtActionInstruction instruction = new FwmtCreateJobRequestBuilder().createCeSite();
+    final ActionInstruction instruction = new FwmtCreateJobRequestBuilder().createCeSite();
     GatewayCaseRecord gatewayCache = GatewayCaseRecord.builder()
         .caseId("ac623e62-4f4b-11eb-ae93-0242ac130002").estabUprn("1234").existsInFwmt(false).type(10).lastActionInstruction("CREATE").build();
     Assertions.assertFalse(ceCreateSiteProcessor.isValid(instruction, gatewayCache));
@@ -79,7 +79,7 @@ public class CeCreateProcessorTest {
   @Test
   @DisplayName("Should select CE Site Create processor")
   public void shouldSelectCeSiteCreateProcessor() {
-    final FwmtActionInstruction instruction = new FwmtCreateJobRequestBuilder().createCeSite();
+    final ActionInstruction instruction = new FwmtCreateJobRequestBuilder().createCeSite();
     GatewayCaseRecord gatewayCache = GatewayCaseRecord.builder()
         .caseId("ac623e62-4f4b-11eb-ae93-0242ac130002").estabUprn("1234").existsInFwmt(false).type(3).lastActionInstruction("CREATE").build();
     when(cacheService.doesEstabUprnAndTypeExist(instruction.getUprn(), 3)).thenReturn(true);

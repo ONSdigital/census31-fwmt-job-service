@@ -5,8 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtCancelActionInstruction;
+import uk.gov.ons.census.fwmt.common.dto.rm.ActionInstruction;
+import uk.gov.ons.census.fwmt.common.dto.rm.CancelActionInstruction;
 import uk.gov.ons.census.fwmt.common.events.component.GatewayEventManager;
 import uk.gov.ons.census.fwmt.jobservice.data.GatewayCaseRecord;
 import uk.gov.ons.census.fwmt.jobservice.data.MessageCache;
@@ -39,13 +39,13 @@ public class CacheHeldMessages {
     String message;
     ObjectMapper rmRequestMapper = new ObjectMapper();
 
-    if (rmRequest instanceof FwmtActionInstruction) {
-      FwmtActionInstruction requestReceived = (FwmtActionInstruction) rmRequest;
+    if (rmRequest instanceof ActionInstruction) {
+      ActionInstruction requestReceived = (ActionInstruction) rmRequest;
       caseId = requestReceived.getCaseId();
       actionInstruction = "UPDATE(HELD)";
       addressLevel = requestReceived.getAddressLevel();
     } else {
-      FwmtCancelActionInstruction requestReceived = (FwmtCancelActionInstruction) rmRequest;
+      CancelActionInstruction requestReceived = (CancelActionInstruction) rmRequest;
       caseId = requestReceived.getCaseId();
       actionInstruction = "CANCEL(HELD)";
       addressLevel = requestReceived.getAddressLevel();

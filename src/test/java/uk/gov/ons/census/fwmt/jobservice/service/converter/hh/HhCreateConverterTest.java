@@ -7,8 +7,8 @@ import uk.gov.ons.census.fwmt.common.data.tm.CaseRequest;
 import uk.gov.ons.census.fwmt.common.data.tm.CaseType;
 import uk.gov.ons.census.fwmt.common.data.tm.Geography;
 import uk.gov.ons.census.fwmt.common.data.tm.SurveyType;
-import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstructionType;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
+import uk.gov.ons.census.fwmt.common.dto.rm.ActionInstructionType;
+import uk.gov.ons.census.fwmt.common.dto.rm.ActionInstruction;
 import uk.gov.ons.census.fwmt.jobservice.data.GatewayCaseRecord;
 
 import java.util.List;
@@ -31,10 +31,10 @@ class HhCreateConverterTest {
   private static final Double LONGITUDE = -2.9977;
 
   /**
-   * Creates a standard HH CREATE FwmtActionInstruction with all required fields
+   * Creates a standard HH CREATE ActionInstruction with all required fields
    */
-  private FwmtActionInstruction createStandardHhInstruction() {
-    return FwmtActionInstruction.builder()
+  private ActionInstruction createStandardHhInstruction() {
+    return ActionInstruction.builder()
         .actionInstruction(ActionInstructionType.CREATE)
         .surveyName("CENSUS")
         .addressType("HH")
@@ -58,7 +58,7 @@ class HhCreateConverterTest {
   @Test
   @DisplayName("convertHhEnglandAndWales - converts basic HH instruction to CaseRequest")
   void test_convertHhEnglandAndWales_basicConversion() {
-    FwmtActionInstruction instruction = createStandardHhInstruction();
+    ActionInstruction instruction = createStandardHhInstruction();
 
     CaseRequest result = HhCreateConverter.convertHhEnglandAndWales(instruction, null);
 
@@ -71,7 +71,7 @@ class HhCreateConverterTest {
   @Test
   @DisplayName("convertHhEnglandAndWales - populates case reference correctly")
   void test_convertHhEnglandAndWales_caseReference() {
-    FwmtActionInstruction instruction = createStandardHhInstruction();
+    ActionInstruction instruction = createStandardHhInstruction();
 
     CaseRequest result = HhCreateConverter.convertHhEnglandAndWales(instruction, null);
 
@@ -81,7 +81,7 @@ class HhCreateConverterTest {
   @Test
   @DisplayName("convertHhEnglandAndWales - sets estabType correctly")
   void test_convertHhEnglandAndWales_estabType() {
-    FwmtActionInstruction instruction = createStandardHhInstruction();
+    ActionInstruction instruction = createStandardHhInstruction();
 
     CaseRequest result = HhCreateConverter.convertHhEnglandAndWales(instruction, null);
 
@@ -91,7 +91,7 @@ class HhCreateConverterTest {
   @Test
   @DisplayName("convertHhEnglandAndWales - builds address with all lines")
   void test_convertHhEnglandAndWales_addressLines() {
-    FwmtActionInstruction instruction = createStandardHhInstruction();
+    ActionInstruction instruction = createStandardHhInstruction();
 
     CaseRequest result = HhCreateConverter.convertHhEnglandAndWales(instruction, null);
 
@@ -106,7 +106,7 @@ class HhCreateConverterTest {
   @Test
   @DisplayName("convertHhEnglandAndWales - builds address with town and postcode")
   void test_convertHhEnglandAndWales_addressTownPostcode() {
-    FwmtActionInstruction instruction = createStandardHhInstruction();
+    ActionInstruction instruction = createStandardHhInstruction();
 
     CaseRequest result = HhCreateConverter.convertHhEnglandAndWales(instruction, null);
 
@@ -119,7 +119,7 @@ class HhCreateConverterTest {
   @Test
   @DisplayName("convertHhEnglandAndWales - sets geography OA")
   void test_convertHhEnglandAndWales_geographyOa() {
-    FwmtActionInstruction instruction = createStandardHhInstruction();
+    ActionInstruction instruction = createStandardHhInstruction();
 
     CaseRequest result = HhCreateConverter.convertHhEnglandAndWales(instruction, null);
 
@@ -133,7 +133,7 @@ class HhCreateConverterTest {
   @Test
   @DisplayName("convertHhEnglandAndWales - sets location latitude and longitude")
   void test_convertHhEnglandAndWales_location() {
-    FwmtActionInstruction instruction = createStandardHhInstruction();
+    ActionInstruction instruction = createStandardHhInstruction();
 
     CaseRequest result = HhCreateConverter.convertHhEnglandAndWales(instruction, null);
 
@@ -145,7 +145,7 @@ class HhCreateConverterTest {
   @Test
   @DisplayName("convertHhEnglandAndWales - sets blankFormReturned flag")
   void test_convertHhEnglandAndWales_blankFormReturned() {
-    FwmtActionInstruction instruction = createStandardHhInstruction();
+    ActionInstruction instruction = createStandardHhInstruction();
     instruction.setBlankFormReturned(true);
 
     CaseRequest result = HhCreateConverter.convertHhEnglandAndWales(instruction, null);
@@ -156,7 +156,7 @@ class HhCreateConverterTest {
   @Test
   @DisplayName("convertHhEnglandAndWales - sets undeliveredAsAddress (UAA) flag")
   void test_convertHhEnglandAndWales_uaa() {
-    FwmtActionInstruction instruction = createStandardHhInstruction();
+    ActionInstruction instruction = createStandardHhInstruction();
     instruction.setUndeliveredAsAddress(true);
 
     CaseRequest result = HhCreateConverter.convertHhEnglandAndWales(instruction, null);
@@ -167,7 +167,7 @@ class HhCreateConverterTest {
   @Test
   @DisplayName("convertHhEnglandAndWales - SAI is false for non-Sheltered Accommodation")
   void test_convertHhEnglandAndWales_saiNotSheltered() {
-    FwmtActionInstruction instruction = createStandardHhInstruction();
+    ActionInstruction instruction = createStandardHhInstruction();
     instruction.setEstabType("Residential Property");
 
     CaseRequest result = HhCreateConverter.convertHhEnglandAndWales(instruction, null);
@@ -178,7 +178,7 @@ class HhCreateConverterTest {
   @Test
   @DisplayName("convertHhEnglandAndWales - SAI is true for Sheltered Accommodation")
   void test_convertHhEnglandAndWales_saiShelteredAccommodation() {
-    FwmtActionInstruction instruction = createStandardHhInstruction();
+    ActionInstruction instruction = createStandardHhInstruction();
     instruction.setEstabType("Sheltered Accommodation");
 
     CaseRequest result = HhCreateConverter.convertHhEnglandAndWales(instruction, null);
@@ -189,7 +189,7 @@ class HhCreateConverterTest {
   @Test
   @DisplayName("convertHhEnglandAndWales - handles null addressLine2")
   void test_convertHhEnglandAndWales_nullAddressLine2() {
-    FwmtActionInstruction instruction = createStandardHhInstruction();
+    ActionInstruction instruction = createStandardHhInstruction();
     instruction.setAddressLine2(null);
 
     CaseRequest result = HhCreateConverter.convertHhEnglandAndWales(instruction, null);
@@ -203,7 +203,7 @@ class HhCreateConverterTest {
   @Test
   @DisplayName("convertHhEnglandAndWales - handles null addressLine3")
   void test_convertHhEnglandAndWales_nullAddressLine3() {
-    FwmtActionInstruction instruction = createStandardHhInstruction();
+    ActionInstruction instruction = createStandardHhInstruction();
     instruction.setAddressLine3(null);
 
     CaseRequest result = HhCreateConverter.convertHhEnglandAndWales(instruction, null);
@@ -217,7 +217,7 @@ class HhCreateConverterTest {
   @Test
   @DisplayName("convertHhNisra - converts NISRA HH instruction to CaseRequest")
   void test_convertHhNisra_basicConversion() {
-    FwmtActionInstruction instruction = createStandardHhInstruction();
+    ActionInstruction instruction = createStandardHhInstruction();
     GatewayCaseRecord cache = null;
 
     CaseRequest result = HhCreateConverter.convertHhNisra(instruction, cache);
@@ -231,7 +231,7 @@ class HhCreateConverterTest {
   @Test
   @DisplayName("convertHhNisra - sets requiredOfficer field")
   void test_convertHhNisra_requiredOfficer() {
-    FwmtActionInstruction instruction = createStandardHhInstruction();
+    ActionInstruction instruction = createStandardHhInstruction();
 
     CaseRequest result = HhCreateConverter.convertHhNisra(instruction, null);
 
@@ -241,7 +241,7 @@ class HhCreateConverterTest {
   @Test
   @DisplayName("convertHhNisra - sets SAI flag for Sheltered Accommodation")
   void test_convertHhNisra_saiShelteredAccommodation() {
-    FwmtActionInstruction instruction = createStandardHhInstruction();
+    ActionInstruction instruction = createStandardHhInstruction();
     instruction.setEstabType("Sheltered Accommodation");
 
     CaseRequest result = HhCreateConverter.convertHhNisra(instruction, null);
@@ -252,7 +252,7 @@ class HhCreateConverterTest {
   @Test
   @DisplayName("convertHhNisra - sets blankFormReturned flag")
   void test_convertHhNisra_blankFormReturned() {
-    FwmtActionInstruction instruction = createStandardHhInstruction();
+    ActionInstruction instruction = createStandardHhInstruction();
     instruction.setBlankFormReturned(true);
 
     CaseRequest result = HhCreateConverter.convertHhNisra(instruction, null);
@@ -263,7 +263,7 @@ class HhCreateConverterTest {
   @Test
   @DisplayName("convertHhNisra - handles undeliveredAsAddress flag")
   void test_convertHhNisra_uaa() {
-    FwmtActionInstruction instruction = createStandardHhInstruction();
+    ActionInstruction instruction = createStandardHhInstruction();
     instruction.setUndeliveredAsAddress(true);
 
     CaseRequest result = HhCreateConverter.convertHhNisra(instruction, null);
@@ -274,7 +274,7 @@ class HhCreateConverterTest {
   @Test
   @DisplayName("convertHhEnglandAndWales - builds complete address structure")
   void test_convertHhEnglandAndWales_completeAddressStructure() {
-    FwmtActionInstruction instruction = createStandardHhInstruction();
+    ActionInstruction instruction = createStandardHhInstruction();
 
     CaseRequest result = HhCreateConverter.convertHhEnglandAndWales(instruction, null);
 
@@ -291,7 +291,7 @@ class HhCreateConverterTest {
   @Test
   @DisplayName("convertHhEnglandAndWales - with cache includes description from cache")
   void test_convertHhEnglandAndWales_withCacheDescription() {
-    FwmtActionInstruction instruction = createStandardHhInstruction();
+    ActionInstruction instruction = createStandardHhInstruction();
     GatewayCaseRecord cache = GatewayCaseRecord.builder()
         .careCodes("careCode1")
         .accessInfo("access info")
@@ -305,7 +305,7 @@ class HhCreateConverterTest {
   @Test
   @DisplayName("convertHhEnglandAndWales - coordinates field population from instruction")
   void test_convertHhEnglandAndWales_coordCode() {
-    FwmtActionInstruction instruction = createStandardHhInstruction();
+    ActionInstruction instruction = createStandardHhInstruction();
     instruction.setFieldCoordinatorId("COORD123");
 
     CaseRequest result = HhCreateConverter.convertHhEnglandAndWales(instruction, null);
@@ -316,7 +316,7 @@ class HhCreateConverterTest {
   @Test
   @DisplayName("convertHhEnglandAndWales - handles both false boolean flags correctly")
   void test_convertHhEnglandAndWales_bothFlagsTrue() {
-    FwmtActionInstruction instruction = createStandardHhInstruction();
+    ActionInstruction instruction = createStandardHhInstruction();
     instruction.setBlankFormReturned(true);
     instruction.setUndeliveredAsAddress(true);
 
@@ -329,7 +329,7 @@ class HhCreateConverterTest {
   @Test
   @DisplayName("convertHhNisra - builds complete HH structure for NISRA")
   void test_convertHhNisra_completeStructure() {
-    FwmtActionInstruction instruction = createStandardHhInstruction();
+    ActionInstruction instruction = createStandardHhInstruction();
     instruction.setFieldCoordinatorId("NISRA_COORD");
 
     CaseRequest result = HhCreateConverter.convertHhNisra(instruction, null);

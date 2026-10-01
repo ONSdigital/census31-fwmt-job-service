@@ -5,7 +5,7 @@ import uk.gov.ons.census.fwmt.common.data.tm.CaseRequest;
 import uk.gov.ons.census.fwmt.common.data.tm.CeCaseExtension;
 import uk.gov.ons.census.fwmt.common.data.tm.Geography;
 import uk.gov.ons.census.fwmt.common.data.tm.SurveyType;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
+import uk.gov.ons.census.fwmt.common.dto.rm.ActionInstruction;
 import uk.gov.ons.census.fwmt.jobservice.data.GatewayCaseRecord;
 import uk.gov.ons.census.fwmt.jobservice.service.converter.common.CommonCreateConverter;
 
@@ -20,21 +20,21 @@ public final class SpgCreateConverter {
   }
 
   public static CaseRequest.CaseRequestBuilder convertSPG(
-      FwmtActionInstruction ffu, GatewayCaseRecord cache, CaseRequest.CaseRequestBuilder builder) {
+      ActionInstruction actionInstruction, GatewayCaseRecord cache, CaseRequest.CaseRequestBuilder builder) {
 
-    CaseRequest.CaseRequestBuilder commonBuilder = CommonCreateConverter.convertCommon(ffu, cache, builder);
-    commonBuilder.requiredOfficer(ffu.getFieldOfficerId());
+    CaseRequest.CaseRequestBuilder commonBuilder = CommonCreateConverter.convertCommon(actionInstruction, cache, builder);
+    commonBuilder.requiredOfficer(actionInstruction.getFieldOfficerId());
 
-    Geography outGeography = Geography.builder().oa(ffu.getOa()).build();
+    Geography outGeography = Geography.builder().oa(actionInstruction.getOa()).build();
 
     Address outAddress = Address.builder()
         .lines(List.of(
-            ffu.getAddressLine1(),
-            Objects.toString(ffu.getAddressLine2(), ""),
-            Objects.toString(ffu.getAddressLine3(), "")
+            actionInstruction.getAddressLine1(),
+            Objects.toString(actionInstruction.getAddressLine2(), ""),
+            Objects.toString(actionInstruction.getAddressLine3(), "")
         ))
-        .town(ffu.getTownName())
-        .postcode(ffu.getPostcode())
+        .town(actionInstruction.getTownName())
+        .postcode(actionInstruction.getPostcode())
         .geography(outGeography)
         .build();
     commonBuilder.address(outAddress);
@@ -50,41 +50,41 @@ public final class SpgCreateConverter {
     return commonBuilder;
   }
 
-  public static CaseRequest convertSecureSite(FwmtActionInstruction ffu, GatewayCaseRecord cache) {
-    return SpgCreateConverter.convertSPG(ffu, cache, CaseRequest.builder())
+  public static CaseRequest convertSecureSite(ActionInstruction actionInstruction, GatewayCaseRecord cache) {
+    return SpgCreateConverter.convertSPG(actionInstruction, cache, CaseRequest.builder())
         .surveyType(SurveyType.SPG_Site)
-        .reference("SECSS_" + ffu.getCaseRef())
+        .reference("SECSS_" + actionInstruction.getCaseRef())
         .description(getCareCodes(cache).concat(SECURE_SITE))
         .specialInstructions(getSpecialInstructions(cache))
         .build();
   }
-  public static CaseRequest convertSecureUnitFollowup(FwmtActionInstruction ffu, GatewayCaseRecord cache) {
-    return SpgCreateConverter.convertSPG(ffu, cache, CaseRequest.builder())
+  public static CaseRequest convertSecureUnitFollowup(ActionInstruction actionInstruction, GatewayCaseRecord cache) {
+    return SpgCreateConverter.convertSPG(actionInstruction, cache, CaseRequest.builder())
         .surveyType(SurveyType.SPG_Unit_F)    
-        .reference("SECSU_" + ffu.getCaseRef())
+        .reference("SECSU_" + actionInstruction.getCaseRef())
         .description(getCareCodes(cache).concat(SECURE_SITE))
         .specialInstructions(getSpecialInstructions(cache))
         .build();
   }
 
-  public static CaseRequest convertSite(FwmtActionInstruction ffu, GatewayCaseRecord cache) {
-    return SpgCreateConverter.convertSPG(ffu, cache, CaseRequest.builder())
+  public static CaseRequest convertSite(ActionInstruction actionInstruction, GatewayCaseRecord cache) {
+    return SpgCreateConverter.convertSPG(actionInstruction, cache, CaseRequest.builder())
         .surveyType(SurveyType.SPG_Site)
         .description(getCareCodes(cache))
         .specialInstructions(getSpecialInstructions(cache))
         .build();
   }
 
-  public static CaseRequest convertUnitDeliver(FwmtActionInstruction ffu, GatewayCaseRecord cache) {
-    return SpgCreateConverter.convertSPG(ffu, cache, CaseRequest.builder())
+  public static CaseRequest convertUnitDeliver(ActionInstruction actionInstruction, GatewayCaseRecord cache) {
+    return SpgCreateConverter.convertSPG(actionInstruction, cache, CaseRequest.builder())
         .surveyType(SurveyType.SPG_Unit_D)
         .description(getCareCodes(cache))
         .specialInstructions(getSpecialInstructions(cache))
         .build();
   }
 
-  public static CaseRequest convertUnitFollowup(FwmtActionInstruction ffu, GatewayCaseRecord cache) {
-    return SpgCreateConverter.convertSPG(ffu, cache, CaseRequest.builder())
+  public static CaseRequest convertUnitFollowup(ActionInstruction actionInstruction, GatewayCaseRecord cache) {
+    return SpgCreateConverter.convertSPG(actionInstruction, cache, CaseRequest.builder())
         .surveyType(SurveyType.SPG_Unit_F)
         .description(getCareCodes(cache))
         .specialInstructions(getSpecialInstructions(cache))

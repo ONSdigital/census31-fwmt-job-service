@@ -5,8 +5,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.ons.census.fwmt.common.error.GatewayException;
-import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstructionType;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
+import uk.gov.ons.census.fwmt.common.dto.rm.ActionInstructionType;
+import uk.gov.ons.census.fwmt.common.dto.rm.ActionInstruction;
 import uk.gov.ons.census.fwmt.common.events.component.GatewayEventManager;
 import uk.gov.ons.census.fwmt.jobservice.data.GatewayCaseRecord;
 import uk.gov.ons.census.fwmt.jobservice.service.JobService;
@@ -43,42 +43,42 @@ class ProcessorRouterTest {
   private GatewayEventManager eventManager;
 
   @Mock
-  private InboundProcessor<FwmtActionInstruction> processorA;
+  private InboundProcessor<ActionInstruction> processorA;
 
   @Mock
-  private InboundProcessor<FwmtActionInstruction> processorB;
+  private InboundProcessor<ActionInstruction> processorB;
 
   @Test
   void resolveExactlyOne_returnsSingleValidProcessor() throws GatewayException {
-    FwmtActionInstruction request = buildRequest();
-    ProcessorRouter<FwmtActionInstruction> router = new ProcessorRouter<>(
+    ActionInstruction request = buildRequest();
+    ProcessorRouter<ActionInstruction> router = new ProcessorRouter<>(
         Map.of(KEY, List.of(processorA)), eventManager, "CREATE", JobService.class);
 
     when(processorA.isValid(request, null)).thenReturn(true);
 
-    InboundProcessor<FwmtActionInstruction> result = router.resolveExactlyOne(KEY, request, null);
+    InboundProcessor<ActionInstruction> result = router.resolveExactlyOne(KEY, request, null);
 
     assertSame(processorA, result);
   }
 
   @Test
   void resolveExactlyOne_filtersOutInvalidProcessors() throws GatewayException {
-    FwmtActionInstruction request = buildRequest();
-    ProcessorRouter<FwmtActionInstruction> router = new ProcessorRouter<>(
+    ActionInstruction request = buildRequest();
+    ProcessorRouter<ActionInstruction> router = new ProcessorRouter<>(
         Map.of(KEY, List.of(processorA, processorB)), eventManager, "CREATE", JobService.class);
 
     when(processorA.isValid(request, null)).thenReturn(false);
     when(processorB.isValid(request, null)).thenReturn(true);
 
-    InboundProcessor<FwmtActionInstruction> result = router.resolveExactlyOne(KEY, request, null);
+    InboundProcessor<ActionInstruction> result = router.resolveExactlyOne(KEY, request, null);
 
     assertSame(processorB, result);
   }
 
   @Test
   void resolveExactlyOne_noMatchingProcessors_throwsAndTriggersEvent() {
-    FwmtActionInstruction request = buildRequest();
-    ProcessorRouter<FwmtActionInstruction> router = new ProcessorRouter<>(
+    ActionInstruction request = buildRequest();
+    ProcessorRouter<ActionInstruction> router = new ProcessorRouter<>(
         Map.of(KEY, List.of(processorA)), eventManager, "CREATE", JobService.class);
     GatewayCaseRecord cache = GatewayCaseRecord.builder().caseId(CASE_ID).existsInFwmt(true).build();
 
@@ -95,8 +95,8 @@ class ProcessorRouterTest {
 
   @Test
   void resolveExactlyOne_multipleMatchingProcessors_throwsAndTriggersEvent() {
-    FwmtActionInstruction request = buildRequest();
-    ProcessorRouter<FwmtActionInstruction> router = new ProcessorRouter<>(
+    ActionInstruction request = buildRequest();
+    ProcessorRouter<ActionInstruction> router = new ProcessorRouter<>(
         Map.of(KEY, List.of(processorA, processorB)), eventManager, "CREATE", JobService.class);
     GatewayCaseRecord cache = GatewayCaseRecord.builder().caseId(CASE_ID).delivered(true).build();
 
@@ -114,26 +114,26 @@ class ProcessorRouterTest {
 
   @Test
   void resolveOptional_returnsEmptyWhenNoMatchingProcessors() throws GatewayException {
-    FwmtActionInstruction request = buildRequest();
-    ProcessorRouter<FwmtActionInstruction> router = new ProcessorRouter<>(
+    ActionInstruction request = buildRequest();
+    ProcessorRouter<ActionInstruction> router = new ProcessorRouter<>(
         Map.of(KEY, List.of(processorA)), eventManager, "UPDATE", JobService.class);
 
     when(processorA.isValid(request, null)).thenReturn(false);
 
-    Optional<InboundProcessor<FwmtActionInstruction>> result = router.resolveOptional(KEY, request, null);
+    Optional<InboundProcessor<ActionInstruction>> result = router.resolveOptional(KEY, request, null);
 
     assertTrue(result.isEmpty());
   }
 
   @Test
   void resolveOptional_returnsSingleProcessorWhenFound() throws GatewayException {
-    FwmtActionInstruction request = buildRequest();
-    ProcessorRouter<FwmtActionInstruction> router = new ProcessorRouter<>(
+    ActionInstruction request = buildRequest();
+    ProcessorRouter<ActionInstruction> router = new ProcessorRouter<>(
         Map.of(KEY, List.of(processorA)), eventManager, "UPDATE", JobService.class);
 
     when(processorA.isValid(request, null)).thenReturn(true);
 
-    Optional<InboundProcessor<FwmtActionInstruction>> result = router.resolveOptional(KEY, request, null);
+    Optional<InboundProcessor<ActionInstruction>> result = router.resolveOptional(KEY, request, null);
 
     assertTrue(result.isPresent());
     assertSame(processorA, result.get());
@@ -141,8 +141,8 @@ class ProcessorRouterTest {
 
   @Test
   void resolveOptional_multipleMatchingProcessors_throwsAndTriggersEvent() {
-    FwmtActionInstruction request = buildRequest();
-    ProcessorRouter<FwmtActionInstruction> router = new ProcessorRouter<>(
+    ActionInstruction request = buildRequest();
+    ProcessorRouter<ActionInstruction> router = new ProcessorRouter<>(
         Map.of(KEY, List.of(processorA, processorB)), eventManager, "UPDATE", JobService.class);
 
     when(processorA.isValid(request, null)).thenReturn(true);
@@ -159,34 +159,34 @@ class ProcessorRouterTest {
 
   @Test
   void fromProcessors_groupsProcessorsByKey() throws GatewayException {
-    FwmtActionInstruction request = buildRequest();
+    ActionInstruction request = buildRequest();
     when(processorA.getKey()).thenReturn(KEY);
     when(processorB.getKey()).thenReturn(KEY);
     when(processorA.isValid(request, null)).thenReturn(false);
     when(processorB.isValid(request, null)).thenReturn(true);
 
-    ProcessorRouter<FwmtActionInstruction> router = ProcessorRouter.fromProcessors(
+    ProcessorRouter<ActionInstruction> router = ProcessorRouter.fromProcessors(
         List.of(processorA, processorB), eventManager, "CREATE", JobService.class);
 
-    InboundProcessor<FwmtActionInstruction> result = router.resolveExactlyOne(KEY, request, null);
+    InboundProcessor<ActionInstruction> result = router.resolveExactlyOne(KEY, request, null);
 
     assertSame(processorB, result);
   }
 
   @Test
   void fromProcessors_handlesEmptyProcessorList() throws GatewayException {
-    FwmtActionInstruction request = buildRequest();
-    ProcessorRouter<FwmtActionInstruction> router = ProcessorRouter.fromProcessors(
-        Collections.<InboundProcessor<FwmtActionInstruction>>emptyList(), eventManager, "PAUSE", JobService.class);
+    ActionInstruction request = buildRequest();
+    ProcessorRouter<ActionInstruction> router = ProcessorRouter.fromProcessors(
+        Collections.<InboundProcessor<ActionInstruction>>emptyList(), eventManager, "PAUSE", JobService.class);
 
-    Optional<InboundProcessor<FwmtActionInstruction>> result = router.resolveOptional(KEY, request, null);
+    Optional<InboundProcessor<ActionInstruction>> result = router.resolveOptional(KEY, request, null);
 
     assertTrue(result.isEmpty());
   }
 
   @Test
   void buildHHKey_withNoAddressLevel_appliesDefault() {
-    FwmtActionInstruction instruction = FwmtActionInstruction.builder()
+    ActionInstruction instruction = ActionInstruction.builder()
         .actionInstruction(ActionInstructionType.CREATE)
         .surveyName("CENSUS")
         .addressType("HH")
@@ -199,7 +199,7 @@ class ProcessorRouterTest {
 
   @Test
   void buildCEKey_withAddressLevel_keepsProvidedAddressLevel() {
-    FwmtActionInstruction instruction = FwmtActionInstruction.builder()
+    ActionInstruction instruction = ActionInstruction.builder()
         .actionInstruction(ActionInstructionType.CREATE)
         .surveyName("CENSUS")
         .addressType("CE")
@@ -213,7 +213,7 @@ class ProcessorRouterTest {
 
   @Test
   void buildNonCREATEKey_withNoAddressLevel_keepsNullAddressLevel() {
-    FwmtActionInstruction instruction = FwmtActionInstruction.builder()
+    ActionInstruction instruction = ActionInstruction.builder()
         .actionInstruction(ActionInstructionType.SWITCH_CE_TYPE)
         .surveyName("CENSUS")
         .addressType("CE")
@@ -224,8 +224,8 @@ class ProcessorRouterTest {
     assertNull(key.getAddressLevel());
   }
 
-  private FwmtActionInstruction buildRequest() {
-    FwmtActionInstruction request = new FwmtActionInstruction();
+  private ActionInstruction buildRequest() {
+    ActionInstruction request = new ActionInstruction();
     request.setActionInstruction(ActionInstructionType.CREATE);
     request.setSurveyName("CENSUS");
     request.setAddressType("HH");

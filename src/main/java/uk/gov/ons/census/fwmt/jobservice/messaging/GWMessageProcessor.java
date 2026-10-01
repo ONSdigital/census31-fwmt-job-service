@@ -5,10 +5,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
-import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstructionType;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtCancelActionInstruction;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtCommonInstruction;
+import uk.gov.ons.census.fwmt.common.dto.rm.ActionInstructionType;
+import uk.gov.ons.census.fwmt.common.dto.rm.ActionInstruction;
+import uk.gov.ons.census.fwmt.common.dto.rm.CancelActionInstruction;
+import uk.gov.ons.census.fwmt.common.dto.rm.CommonInstruction;
 import uk.gov.ons.census.fwmt.common.events.component.GatewayEventManager;
 import uk.gov.ons.census.fwmt.jobservice.service.JobService;
 
@@ -29,7 +29,12 @@ public class GWMessageProcessor {
   private final GatewayEventManager gatewayEventManager;
   private final MessageExceptionHandler messageExceptionHandler;
 
-  public void processCreateInstruction(FwmtActionInstruction instruction, Instant messageTime, PubsubMessage message) {
+  public void processCreateInstruction(ActionInstruction instruction, Instant messageTime, PubsubMessage message) {
+    processCreateInstructionInternal(instruction, messageTime, message);
+  }
+
+  private void processCreateInstructionInternal(
+      ActionInstruction instruction, Instant messageTime, PubsubMessage message) {
     try {
       switch (instruction.getActionInstruction()) {
       case CREATE: {
@@ -70,7 +75,12 @@ public class GWMessageProcessor {
   }
 
   public void processCancelInstruction(
-      FwmtCancelActionInstruction instruction, Instant messageTime, PubsubMessage message) {
+      CancelActionInstruction instruction, Instant messageTime, PubsubMessage message) {
+    processCancelInstructionInternal(instruction, messageTime, message);
+  }
+
+  private void processCancelInstructionInternal(
+      CancelActionInstruction instruction, Instant messageTime, PubsubMessage message) {
     try {
       if (instruction.getActionInstruction() == ActionInstructionType.CANCEL) {
         gatewayEventManager
@@ -90,13 +100,13 @@ public class GWMessageProcessor {
     }
   }
 
-  private void handlePermException(FwmtCommonInstruction instruction, PubsubMessage message, Exception e) {
+  private void handlePermException(CommonInstruction instruction, PubsubMessage message, Exception e) {
     log.error("- Error sending message - HARD Failure- {}  error - {} ", instruction, e.getMessage(), e);
     messageExceptionHandler.handlePermMessage(message, instruction);
   }
 
   private void handleTransientException(
-      FwmtCommonInstruction instruction, PubsubMessage message, RestClientException e) {
+      CommonInstruction instruction, PubsubMessage message, RestClientException e) {
     log.error(" Error sending message - SOFT Failure {}  error - {} ", instruction, e.getMessage(), e);
     messageExceptionHandler.handleTransientMessage(message, instruction);
   }

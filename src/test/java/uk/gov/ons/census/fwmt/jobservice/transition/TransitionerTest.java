@@ -6,9 +6,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.ons.census.fwmt.common.error.GatewayException;
-import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstructionType;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtCancelActionInstruction;
+import uk.gov.ons.census.fwmt.common.dto.rm.ActionInstructionType;
+import uk.gov.ons.census.fwmt.common.dto.rm.ActionInstruction;
+import uk.gov.ons.census.fwmt.common.dto.rm.CancelActionInstruction;
 import uk.gov.ons.census.fwmt.common.events.component.GatewayEventManager;
 import uk.gov.ons.census.fwmt.jobservice.data.GatewayCaseRecord;
 import uk.gov.ons.census.fwmt.jobservice.data.MessageCache;
@@ -56,17 +56,17 @@ class TransitionerTest {
   private MergeTransitionProcessor<?> mergeTransitionProcessor;
 
   @Mock
-  private InboundProcessor<FwmtActionInstruction> actionProcessor;
+  private InboundProcessor<ActionInstruction> actionProcessor;
 
   @Mock
-  private InboundProcessor<FwmtCancelActionInstruction> cancelProcessor;
+  private InboundProcessor<CancelActionInstruction> cancelProcessor;
 
   @Mock
   private TransitionRequestActionExecutor requestActionExecutor;
 
   @Test
   void shouldHandleNoActionAndSaveForActionInstruction() throws GatewayException {
-    FwmtActionInstruction request = buildActionInstruction();
+    ActionInstruction request = buildActionInstruction();
     GatewayCaseRecord cache = GatewayCaseRecord.builder().caseId(request.getCaseId()).lastActionInstruction("CREATE").build();
     MessageCache messageCache = MessageCache.builder().caseId(request.getCaseId()).build();
     Instant messageTime = Instant.now();
@@ -78,7 +78,7 @@ class TransitionerTest {
             .build());
     when(messageCacheService.getById(request.getCaseId())).thenReturn(messageCache);
 
-    TransitionAction<FwmtActionInstruction> resolution = transitioner.resolveTransitionAction(
+    TransitionAction<ActionInstruction> resolution = transitioner.resolveTransitionAction(
         request, null, cache, messageTime);
     transitioner.apply(resolution);
 
@@ -88,7 +88,7 @@ class TransitionerTest {
 
   @Test
   void shouldHandleRejectAndClearForCancelInstruction() throws GatewayException {
-    FwmtCancelActionInstruction request = buildCancelInstruction();
+    CancelActionInstruction request = buildCancelInstruction();
     GatewayCaseRecord cache = GatewayCaseRecord.builder().caseId(request.getCaseId()).lastActionInstruction("UPDATE").build();
     MessageCache messageCache = MessageCache.builder().caseId(request.getCaseId()).build();
     Instant messageTime = Instant.now();
@@ -100,7 +100,7 @@ class TransitionerTest {
             .build());
     when(messageCacheService.getById(request.getCaseId())).thenReturn(messageCache);
 
-    TransitionAction<FwmtCancelActionInstruction> resolution = transitioner.resolveTransitionAction(
+    TransitionAction<CancelActionInstruction> resolution = transitioner.resolveTransitionAction(
         request, null, cache, messageTime);
     transitioner.apply(resolution);
 
@@ -110,7 +110,7 @@ class TransitionerTest {
 
   @Test
   void shouldProcessForProcessAction() throws GatewayException {
-    FwmtActionInstruction request = buildActionInstruction();
+    ActionInstruction request = buildActionInstruction();
     GatewayCaseRecord cache = GatewayCaseRecord.builder().caseId(request.getCaseId()).build();
     Instant messageTime = Instant.now();
 
@@ -120,7 +120,7 @@ class TransitionerTest {
             .requestAction(TransitionRequestAction.NONE)
             .build());
 
-    TransitionAction<FwmtActionInstruction> resolution = transitioner.resolveTransitionAction(
+    TransitionAction<ActionInstruction> resolution = transitioner.resolveTransitionAction(
         request, actionProcessor, cache, messageTime);
     transitioner.apply(resolution);
 
@@ -130,7 +130,7 @@ class TransitionerTest {
 
   @Test
   void shouldNotProcessOnMergeWhenCancelInstruction() throws GatewayException {
-    FwmtCancelActionInstruction request = buildCancelInstruction();
+    CancelActionInstruction request = buildCancelInstruction();
     GatewayCaseRecord cache = GatewayCaseRecord.builder().caseId(request.getCaseId()).build();
     MessageCache messageCache = MessageCache.builder().caseId(request.getCaseId()).build();
     Instant messageTime = Instant.now();
@@ -142,7 +142,7 @@ class TransitionerTest {
             .build());
     when(messageCacheService.getById(request.getCaseId())).thenReturn(messageCache);
 
-    TransitionAction<FwmtCancelActionInstruction> resolution = transitioner.resolveTransitionAction(
+    TransitionAction<CancelActionInstruction> resolution = transitioner.resolveTransitionAction(
         request, cancelProcessor, cache, messageTime);
     transitioner.apply(resolution);
 
@@ -152,7 +152,7 @@ class TransitionerTest {
 
   @Test
   void shouldProcessAndMergeForMergeWhenActionInstruction() throws GatewayException {
-    FwmtActionInstruction request = buildActionInstruction();
+    ActionInstruction request = buildActionInstruction();
     GatewayCaseRecord cache = GatewayCaseRecord.builder().caseId(request.getCaseId()).build();
     MessageCache messageCache = MessageCache.builder().caseId(request.getCaseId()).build();
     Instant messageTime = Instant.now();
@@ -164,7 +164,7 @@ class TransitionerTest {
             .build());
     when(messageCacheService.getById(request.getCaseId())).thenReturn(messageCache);
 
-    TransitionAction<FwmtActionInstruction> resolution = transitioner.resolveTransitionAction(
+    TransitionAction<ActionInstruction> resolution = transitioner.resolveTransitionAction(
         request, actionProcessor, cache, messageTime);
     transitioner.apply(resolution);
 
@@ -174,7 +174,7 @@ class TransitionerTest {
 
   @Test
   void shouldThrowIfMessageTimestampMissing() {
-    FwmtActionInstruction request = buildActionInstruction();
+    ActionInstruction request = buildActionInstruction();
 
     assertThrows(GatewayException.class,
         () -> transitioner.resolveTransitionAction(request, actionProcessor, null, null));
@@ -182,7 +182,7 @@ class TransitionerTest {
 
   @Test
   void shouldThrowIfProcessActionHasNoProcessor() throws GatewayException {
-    FwmtActionInstruction request = buildActionInstruction();
+    ActionInstruction request = buildActionInstruction();
     GatewayCaseRecord cache = GatewayCaseRecord.builder().caseId(request.getCaseId()).build();
     Instant messageTime = Instant.now();
 
@@ -200,7 +200,7 @@ class TransitionerTest {
 
   @Test
   void shouldThrowIfNonCancelMergeHasNoProcessor() throws GatewayException {
-    FwmtActionInstruction request = buildActionInstruction();
+    ActionInstruction request = buildActionInstruction();
     GatewayCaseRecord cache = GatewayCaseRecord.builder().caseId(request.getCaseId()).build();
     Instant messageTime = Instant.now();
 
@@ -216,8 +216,8 @@ class TransitionerTest {
     verify(requestActionExecutor, never()).execute(any());
   }
 
-  private FwmtActionInstruction buildActionInstruction() {
-    FwmtActionInstruction request = new FwmtActionInstruction();
+  private ActionInstruction buildActionInstruction() {
+    ActionInstruction request = new ActionInstruction();
     request.setActionInstruction(ActionInstructionType.UPDATE);
     request.setCaseId("ac623e62-4f4b-11eb-ae93-0242ac130002");
     request.setCaseRef("10000000001");
@@ -226,8 +226,8 @@ class TransitionerTest {
     return request;
   }
 
-  private FwmtCancelActionInstruction buildCancelInstruction() {
-    FwmtCancelActionInstruction request = new FwmtCancelActionInstruction();
+  private CancelActionInstruction buildCancelInstruction() {
+    CancelActionInstruction request = new CancelActionInstruction();
     request.setActionInstruction(ActionInstructionType.CANCEL);
     request.setCaseId("ac623e62-4f4b-11eb-ae93-0242ac130002");
     request.setAddressType("CE");

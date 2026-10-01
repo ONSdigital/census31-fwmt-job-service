@@ -8,8 +8,8 @@ import org.springframework.web.client.RestClientException;
 import uk.gov.ons.census.fwmt.common.data.tm.ReopenCaseRequest;
 import uk.gov.ons.census.fwmt.common.data.tm.SurveyType;
 import uk.gov.ons.census.fwmt.common.error.GatewayException;
-import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstructionType;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
+import uk.gov.ons.census.fwmt.common.dto.rm.ActionInstructionType;
+import uk.gov.ons.census.fwmt.common.dto.rm.ActionInstruction;
 import uk.gov.ons.census.fwmt.common.events.component.GatewayEventManager;
 import uk.gov.ons.census.fwmt.jobservice.data.GatewayCaseRecord;
 import uk.gov.ons.census.fwmt.jobservice.http.comet.CometRestClient;
@@ -32,7 +32,7 @@ import static uk.gov.ons.census.fwmt.jobservice.config.GatewayEventsConfig.INCOR
 
 @Qualifier("Create")
 @Service
-public class CeSwitchCreateProcessor implements InboundProcessor<FwmtActionInstruction> {
+public class CeSwitchCreateProcessor implements InboundProcessor<ActionInstruction> {
 
   private static final ProcessorKey key = ProcessorKey.builder()
       .actionInstruction(ActionInstructionType.SWITCH_CE_TYPE.toString())
@@ -61,7 +61,7 @@ public class CeSwitchCreateProcessor implements InboundProcessor<FwmtActionInstr
   }
 
   @Override
-  public boolean isValid(FwmtActionInstruction rmRequest, GatewayCaseRecord cache) {
+  public boolean isValid(ActionInstruction rmRequest, GatewayCaseRecord cache) {
     try {
       return rmRequest.getActionInstruction() == ActionInstructionType.SWITCH_CE_TYPE
           && rmRequest.getSurveyName().equals("CENSUS")
@@ -73,7 +73,7 @@ public class CeSwitchCreateProcessor implements InboundProcessor<FwmtActionInstr
   }
 
   @Override
-  public void process(FwmtActionInstruction rmRequest, GatewayCaseRecord cache, Instant messageReceivedTime) throws GatewayException {
+  public void process(ActionInstruction rmRequest, GatewayCaseRecord cache, Instant messageReceivedTime) throws GatewayException {
     ReopenCaseRequest tmRequest;
 
     eventManager.triggerEvent(String.valueOf(rmRequest.getCaseId()), PROCESSING_CE_SWITCH_CREATE);
@@ -108,7 +108,7 @@ public class CeSwitchCreateProcessor implements InboundProcessor<FwmtActionInstr
     }
   }
 
-  private void processSwitch(GatewayCaseRecord cache, FwmtActionInstruction rmRequest, ReopenCaseRequest tmRequest)
+  private void processSwitch(GatewayCaseRecord cache, ActionInstruction rmRequest, ReopenCaseRequest tmRequest)
       throws GatewayException {
 
     boolean alreadyCancelled = false;

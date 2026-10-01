@@ -6,8 +6,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import uk.gov.ons.census.fwmt.common.data.tm.CeCasePatchRequest;
 import uk.gov.ons.census.fwmt.common.error.GatewayException;
-import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstructionType;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
+import uk.gov.ons.census.fwmt.common.dto.rm.ActionInstructionType;
+import uk.gov.ons.census.fwmt.common.dto.rm.ActionInstruction;
 import uk.gov.ons.census.fwmt.common.events.component.GatewayEventManager;
 import uk.gov.ons.census.fwmt.jobservice.data.GatewayCaseRecord;
 import uk.gov.ons.census.fwmt.jobservice.http.comet.CometRestClient;
@@ -25,7 +25,7 @@ import static uk.gov.ons.census.fwmt.jobservice.config.GatewayEventsConfig.FAILE
 
 @Qualifier("Update")
 @Service
-public class CeUpdateUnitProcessor implements InboundProcessor<FwmtActionInstruction> {
+public class CeUpdateUnitProcessor implements InboundProcessor<ActionInstruction> {
 
   @Autowired
   private CometRestClient cometRestClient;
@@ -52,7 +52,7 @@ public class CeUpdateUnitProcessor implements InboundProcessor<FwmtActionInstruc
   }
 
   @Override
-  public boolean isValid(FwmtActionInstruction rmRequest, GatewayCaseRecord cache) {
+  public boolean isValid(ActionInstruction rmRequest, GatewayCaseRecord cache) {
     try {
       return rmRequest.getActionInstruction() == ActionInstructionType.UPDATE
           && rmRequest.getSurveyName().equals("CENSUS")
@@ -67,7 +67,7 @@ public class CeUpdateUnitProcessor implements InboundProcessor<FwmtActionInstruc
   }
 
   @Override
-  public void process(FwmtActionInstruction rmRequest, GatewayCaseRecord cache, Instant messageReceivedTime) throws GatewayException {
+  public void process(ActionInstruction rmRequest, GatewayCaseRecord cache, Instant messageReceivedTime) throws GatewayException {
     CeCasePatchRequest tmRequest;
 
     tmRequest = CeUpdateConverter.convertUnit(rmRequest);

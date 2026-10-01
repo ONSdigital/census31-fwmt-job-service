@@ -6,12 +6,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.ons.census.fwmt.common.error.GatewayException;
-import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstructionType;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtCancelActionInstruction;
+import uk.gov.ons.census.fwmt.common.dto.rm.ActionInstructionType;
+import uk.gov.ons.census.fwmt.common.dto.rm.ActionInstruction;
+import uk.gov.ons.census.fwmt.common.dto.rm.CancelActionInstruction;
 import uk.gov.ons.census.fwmt.common.events.component.GatewayEventManager;
 import uk.gov.ons.census.fwmt.jobservice.data.GatewayCaseRecord;
-import uk.gov.ons.census.fwmt.jobservice.messaging.RmFieldMessagePublisher;
+import uk.gov.ons.census.fwmt.jobservice.messaging.FieldworkActionInstructionPublisher;
 import uk.gov.ons.census.fwmt.jobservice.service.processor.InboundProcessor;
 import uk.gov.ons.census.fwmt.jobservice.service.processor.ProcessorRouter;
 import uk.gov.ons.census.fwmt.jobservice.service.routing.ignore.CeUpdateIgnoreProcessor;
@@ -40,20 +40,20 @@ class ActionOrchestratorRoutingTest {
   @Mock private GatewayCaseRecordService cacheService;
   @Mock private TmDispatchService tmDispatchService;
   @Mock private GatewayEventManager eventManager;
-  @Mock private RmFieldMessagePublisher rmFieldPublisher;
+  @Mock private FieldworkActionInstructionPublisher fieldworkActionInstructionPublisher;
   @Mock private CeUpdateIgnoreProcessor ceUpdateIgnoreProcessor;
 
-  @Mock private ProcessorRouter<FwmtActionInstruction> createRouter;
-  @Mock private ProcessorRouter<FwmtActionInstruction> updateRouter;
-  @Mock private ProcessorRouter<FwmtCancelActionInstruction> cancelRouter;
-  @Mock private ProcessorRouter<FwmtActionInstruction> pauseRouter;
+  @Mock private ProcessorRouter<ActionInstruction> createRouter;
+  @Mock private ProcessorRouter<ActionInstruction> updateRouter;
+  @Mock private ProcessorRouter<CancelActionInstruction> cancelRouter;
+  @Mock private ProcessorRouter<ActionInstruction> pauseRouter;
 
-  @Mock private InboundProcessor<FwmtActionInstruction> actionHandler;
-  @Mock private InboundProcessor<FwmtCancelActionInstruction> cancelHandler;
+  @Mock private InboundProcessor<ActionInstruction> actionHandler;
+  @Mock private InboundProcessor<CancelActionInstruction> cancelHandler;
 
   @Test
   void create_singleHandler_dispatches() throws GatewayException {
-    FwmtActionInstruction request = buildActionRequest(ActionInstructionType.CREATE, "HH");
+    ActionInstruction request = buildActionRequest(ActionInstructionType.CREATE, "HH");
     Instant messageTime = Instant.now();
 
     when(cacheService.getById(CASE_ID)).thenReturn(null);
@@ -66,20 +66,20 @@ class ActionOrchestratorRoutingTest {
 
   @Test
   void update_undeliveredHhWithoutCache_republishesAsCreate() throws GatewayException {
-    FwmtActionInstruction request = buildActionRequest(ActionInstructionType.UPDATE, "HH");
+    ActionInstruction request = buildActionRequest(ActionInstructionType.UPDATE, "HH");
     request.setUndeliveredAsAddress(true);
 
     when(cacheService.getById(CASE_ID)).thenReturn(null);
 
     updateActionOrchestrator.process(request, Instant.now());
 
-    verify(rmFieldPublisher).publish(request);
+    verify(fieldworkActionInstructionPublisher).publish(request);
     verify(updateRouter, never()).resolveOptional(any(), any(), any());
   }
 
   @Test
   void update_withHandler_dispatches() throws GatewayException {
-    FwmtActionInstruction request = buildActionRequest(ActionInstructionType.UPDATE, "HH");
+    ActionInstruction request = buildActionRequest(ActionInstructionType.UPDATE, "HH");
     Instant messageTime = Instant.now();
     GatewayCaseRecord cache = GatewayCaseRecord.builder().caseId(CASE_ID).build();
 
@@ -93,7 +93,7 @@ class ActionOrchestratorRoutingTest {
 
   @Test
   void update_noHandlerHeld_dispatchesWithNullHandler() throws GatewayException {
-    FwmtActionInstruction request = buildActionRequest(ActionInstructionType.UPDATE, "HH");
+    ActionInstruction request = buildActionRequest(ActionInstructionType.UPDATE, "HH");
     Instant messageTime = Instant.now();
     GatewayCaseRecord cache = GatewayCaseRecord.builder().caseId(CASE_ID).lastActionInstruction("UPDATE(HELD)").build();
 
@@ -107,7 +107,7 @@ class ActionOrchestratorRoutingTest {
 
   @Test
   void update_noHandlerCeUpdate_invokesIgnoreProcessor() throws GatewayException {
-    FwmtActionInstruction request = buildActionRequest(ActionInstructionType.UPDATE, "CE");
+    ActionInstruction request = buildActionRequest(ActionInstructionType.UPDATE, "CE");
     GatewayCaseRecord cache = GatewayCaseRecord.builder().caseId(CASE_ID).lastActionInstruction("PROCESS").build();
 
     when(cacheService.getById(CASE_ID)).thenReturn(cache);
@@ -116,12 +116,12 @@ class ActionOrchestratorRoutingTest {
     updateActionOrchestrator.process(request, Instant.now());
 
     verify(ceUpdateIgnoreProcessor).process(request);
-    verify(tmDispatchService, never()).dispatch(any(FwmtActionInstruction.class), any(), any(), any());
+    verify(tmDispatchService, never()).dispatch(any(ActionInstruction.class), any(), any(), any());
   }
 
   @Test
   void update_noHandlerNonHeldNonCe_throwsRoutingError() throws GatewayException {
-    FwmtActionInstruction request = buildActionRequest(ActionInstructionType.UPDATE, "HH");
+    ActionInstruction request = buildActionRequest(ActionInstructionType.UPDATE, "HH");
     GatewayCaseRecord cache = GatewayCaseRecord.builder().caseId(CASE_ID).lastActionInstruction("PROCESS").build();
 
     when(cacheService.getById(CASE_ID)).thenReturn(cache);
@@ -135,7 +135,7 @@ class ActionOrchestratorRoutingTest {
 
   @Test
   void cancel_originalCaseMatch_setsNcAndDispatches() throws GatewayException {
-    FwmtCancelActionInstruction request = buildCancelRequest();
+    CancelActionInstruction request = buildCancelRequest();
     Instant messageTime = Instant.now();
     GatewayCaseRecord cache = GatewayCaseRecord.builder().caseId("original-id").build();
 
@@ -149,7 +149,7 @@ class ActionOrchestratorRoutingTest {
 
   @Test
   void cancel_noHandlerCancelHeld_dispatchesWithNullHandler() throws GatewayException {
-    FwmtCancelActionInstruction request = buildCancelRequest();
+    CancelActionInstruction request = buildCancelRequest();
     Instant messageTime = Instant.now();
     GatewayCaseRecord cache = GatewayCaseRecord.builder().caseId(CASE_ID).lastActionInstruction("CANCEL(HELD)").build();
 
@@ -164,7 +164,7 @@ class ActionOrchestratorRoutingTest {
 
   @Test
   void pause_singleHandler_processesDirectly() throws GatewayException {
-    FwmtActionInstruction request = buildActionRequest(ActionInstructionType.PAUSE, "HH");
+    ActionInstruction request = buildActionRequest(ActionInstructionType.PAUSE, "HH");
     Instant messageTime = Instant.now();
     GatewayCaseRecord cache = GatewayCaseRecord.builder().caseId(CASE_ID).build();
 
@@ -176,8 +176,8 @@ class ActionOrchestratorRoutingTest {
     verify(actionHandler).process(request, cache, messageTime);
   }
 
-  private FwmtActionInstruction buildActionRequest(ActionInstructionType action, String addressType) {
-    FwmtActionInstruction request = new FwmtActionInstruction();
+  private ActionInstruction buildActionRequest(ActionInstructionType action, String addressType) {
+    ActionInstruction request = new ActionInstruction();
     request.setActionInstruction(action);
     request.setCaseId(CASE_ID);
     request.setAddressType(addressType);
@@ -186,8 +186,8 @@ class ActionOrchestratorRoutingTest {
     return request;
   }
 
-  private FwmtCancelActionInstruction buildCancelRequest() {
-    FwmtCancelActionInstruction request = new FwmtCancelActionInstruction();
+  private CancelActionInstruction buildCancelRequest() {
+    CancelActionInstruction request = new CancelActionInstruction();
     request.setActionInstruction(ActionInstructionType.CANCEL);
     request.setCaseId(CASE_ID);
     request.setAddressType("HH");

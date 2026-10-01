@@ -1,7 +1,7 @@
 package uk.gov.ons.census.fwmt.jobservice.service.converter.nc;
 
 import uk.gov.ons.census.fwmt.common.data.tm.*;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
+import uk.gov.ons.census.fwmt.common.dto.rm.ActionInstruction;
 import uk.gov.ons.census.fwmt.jobservice.data.GatewayCaseRecord;
 import uk.gov.ons.census.fwmt.jobservice.service.converter.common.CommonCreateConverter;
 
@@ -14,76 +14,76 @@ public class NcCreateConverter {
   }
 
   public static CaseRequest.CaseRequestBuilder convertNC(
-      FwmtActionInstruction ffu, GatewayCaseRecord cache, CaseRequest.CaseRequestBuilder builder) {
-    CaseRequest.CaseRequestBuilder commonBuilder = CommonCreateConverter.convertCommon(ffu, cache, builder);
+      ActionInstruction actionInstruction, GatewayCaseRecord cache, CaseRequest.CaseRequestBuilder builder) {
+    CaseRequest.CaseRequestBuilder commonBuilder = CommonCreateConverter.convertCommon(actionInstruction, cache, builder);
 
-    commonBuilder.reference(ffu.getCaseRef());
+    commonBuilder.reference(actionInstruction.getCaseRef());
     commonBuilder.type(CaseType.NC);
     commonBuilder.surveyType(SurveyType.NC);
-    commonBuilder.estabType(ffu.getEstabType());
-    commonBuilder.coordCode(ffu.getFieldCoordinatorId());
-    commonBuilder.requiredOfficer(ffu.getFieldOfficerId());
+    commonBuilder.estabType(actionInstruction.getEstabType());
+    commonBuilder.coordCode(actionInstruction.getFieldCoordinatorId());
+    commonBuilder.requiredOfficer(actionInstruction.getFieldOfficerId());
 
     Location location = Location
         .builder()
-        .lat(ffu.getLatitude())
-        ._long(ffu.getLongitude())
+        .lat(actionInstruction.getLatitude())
+        ._long(actionInstruction.getLongitude())
         .build();
 
     commonBuilder.location(location);
 
     Geography outGeography = Geography
         .builder()
-        .oa(ffu.getOa())
+        .oa(actionInstruction.getOa())
         .build();
 
     Address outAddress = Address.builder()
         .lines(List.of(
-            ffu.getAddressLine1(),
-            Objects.toString(ffu.getAddressLine2(), ""),
-            Objects.toString(ffu.getAddressLine3(), "")
+            actionInstruction.getAddressLine1(),
+            Objects.toString(actionInstruction.getAddressLine2(), ""),
+            Objects.toString(actionInstruction.getAddressLine3(), "")
         ))
-        .town(ffu.getTownName())
-        .postcode(ffu.getPostcode())
+        .town(actionInstruction.getTownName())
+        .postcode(actionInstruction.getPostcode())
         .geography(outGeography)
         .build();
 
     commonBuilder.address(outAddress);
-    commonBuilder.uaa(ffu.isUndeliveredAsAddress());
-    commonBuilder.blankFormReturned(ffu.isBlankFormReturned());
+    commonBuilder.uaa(actionInstruction.isUndeliveredAsAddress());
+    commonBuilder.blankFormReturned(actionInstruction.isBlankFormReturned());
 
     return commonBuilder;
   }
 
-  public static CaseRequest convertHhNcEnglandAndWales(FwmtActionInstruction ffu, GatewayCaseRecord cache, String householder,
+  public static CaseRequest convertHhNcEnglandAndWales(ActionInstruction actionInstruction, GatewayCaseRecord cache, String householder,
       GatewayCaseRecord previousDetails) {
     return NcCreateConverter
-        .convertNC(ffu, cache, CaseRequest.builder())
+        .convertNC(actionInstruction, cache, CaseRequest.builder())
         .category("HH")
-        .sai("Sheltered Accommodation".equals(ffu.getEstabType()))
+        .sai("Sheltered Accommodation".equals(actionInstruction.getEstabType()))
         .specialInstructions(getSpecialInstructions(previousDetails))
-        .description(getDescription(ffu, previousDetails, householder))
+        .description(getDescription(actionInstruction, previousDetails, householder))
         .build();
   }
 
-  public static CaseRequest convertCeNcEnglandAndWales(FwmtActionInstruction ffu, GatewayCaseRecord cache, String householder,
+  public static CaseRequest convertCeNcEnglandAndWales(ActionInstruction actionInstruction, GatewayCaseRecord cache, String householder,
       GatewayCaseRecord previousDetails) {
     return NcCreateConverter
-        .convertNC(ffu, cache, CaseRequest.builder())
+        .convertNC(actionInstruction, cache, CaseRequest.builder())
         .category("CE")
-        .sai("Sheltered Accommodation".equals(ffu.getEstabType()))
+        .sai("Sheltered Accommodation".equals(actionInstruction.getEstabType()))
         .specialInstructions(getSpecialInstructions(previousDetails))
-        .description(getDescription(ffu, previousDetails, householder))
+        .description(getDescription(actionInstruction, previousDetails, householder))
         .build();
   }
 
-  private static String getDescription(FwmtActionInstruction ffu, GatewayCaseRecord cache, String householder) {
+  private static String getDescription(ActionInstruction actionInstruction, GatewayCaseRecord cache, String householder) {
     StringBuilder description = new StringBuilder();
     if (cache != null && cache.getCareCodes() != null && !cache.getCareCodes().isEmpty()) {
       description.append(cache.getCareCodes());
       description.append("\n");
     }
-    if (ffu.getAddressType().equals(CaseType.HH.toString()) && householder != null && !householder.equals("")) {
+    if (actionInstruction.getAddressType().equals(CaseType.HH.toString()) && householder != null && !householder.equals("")) {
       description.append(householder);
       description.append("\n");
     }

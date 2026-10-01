@@ -13,7 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClientException;
 import uk.gov.ons.census.fwmt.common.data.tm.CasePauseRequest;
 import uk.gov.ons.census.fwmt.common.error.GatewayException;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
+import uk.gov.ons.census.fwmt.common.dto.rm.ActionInstruction;
 import uk.gov.ons.census.fwmt.common.events.component.GatewayEventManager;
 import uk.gov.ons.census.fwmt.jobservice.data.GatewayCaseRecord;
 import uk.gov.ons.census.fwmt.jobservice.hh.HhRequestBuilder;
@@ -64,7 +64,7 @@ public class HhPauseProcessorTest {
   @Test
   @DisplayName("Should save HH Pause as cancel")
   public void shouldSaveHhPauseAsCancel() throws GatewayException {
-    final FwmtActionInstruction instruction = HhRequestBuilder.createPauseInstruction();
+    final ActionInstruction instruction = HhRequestBuilder.createPauseInstruction();
     GatewayCaseRecord gatewayCache = GatewayCaseRecord.builder()
         .caseId("ac623e62-4f4b-11eb-ae93-0242ac130002").build();
     when(cacheService.getById(anyString())).thenReturn(gatewayCache);
@@ -79,7 +79,7 @@ public class HhPauseProcessorTest {
   @Test
   @DisplayName("Should ignore a HH pause on a closed case in TM")
   public void shouldIgnoreAHhPauseOnAClosedCaseinTm() throws GatewayException {
-    final FwmtActionInstruction instruction = HhRequestBuilder.createPauseInstruction();
+    final ActionInstruction instruction = HhRequestBuilder.createPauseInstruction();
     GatewayCaseRecord gatewayCache = GatewayCaseRecord.builder()
         .caseId("ac623e62-4f4b-11eb-ae93-0242ac130002").lastActionInstruction("CREATE").build();
     when(cometRestClient.sendPause(any(CasePauseRequest.class), eq(instruction.getCaseId())))

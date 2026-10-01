@@ -7,12 +7,12 @@ import org.springframework.stereotype.Service;
 import uk.gov.ons.census.fwmt.common.data.tm.CaseRequest;
 import uk.gov.ons.census.fwmt.common.data.tm.SurveyType;
 import uk.gov.ons.census.fwmt.common.error.GatewayException;
-import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstructionType;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
+import uk.gov.ons.census.fwmt.common.dto.rm.ActionInstructionType;
+import uk.gov.ons.census.fwmt.common.dto.rm.ActionInstruction;
 import uk.gov.ons.census.fwmt.common.events.component.GatewayEventManager;
 import uk.gov.ons.census.fwmt.jobservice.data.GatewayCaseRecord;
 import uk.gov.ons.census.fwmt.jobservice.http.comet.CometRestClient;
-import uk.gov.ons.census.fwmt.jobservice.messaging.RmFieldMessagePublisher;
+import uk.gov.ons.census.fwmt.jobservice.messaging.FieldworkActionInstructionPublisher;
 import uk.gov.ons.census.fwmt.jobservice.service.GatewayCaseRecordService;
 import uk.gov.ons.census.fwmt.jobservice.service.converter.ce.CeCreateConverter;
 import uk.gov.ons.census.fwmt.jobservice.service.processor.InboundProcessor;
@@ -27,7 +27,7 @@ import static uk.gov.ons.census.fwmt.jobservice.config.GatewayEventsConfig.FAILE
 
 @Qualifier("Create")
 @Service
-public class CeCreateUnitFollowupProcessor implements InboundProcessor<FwmtActionInstruction> {
+public class CeCreateUnitFollowupProcessor implements InboundProcessor<ActionInstruction> {
   @Autowired
   private CometRestClient cometRestClient;
 
@@ -41,7 +41,7 @@ public class CeCreateUnitFollowupProcessor implements InboundProcessor<FwmtActio
   private GatewayCaseRecordService cacheService;
 
   @Autowired
-  private RmFieldMessagePublisher rmFieldPublisher;
+  private FieldworkActionInstructionPublisher fieldworkActionInstructionPublisher;
 
   private static ProcessorKey key = ProcessorKey.builder()
       .actionInstruction(ActionInstructionType.CREATE.toString())
@@ -56,7 +56,7 @@ public class CeCreateUnitFollowupProcessor implements InboundProcessor<FwmtActio
   }
 
   @Override
-  public boolean isValid(FwmtActionInstruction rmRequest, GatewayCaseRecord cache) {
+  public boolean isValid(ActionInstruction rmRequest, GatewayCaseRecord cache) {
     try {
       return rmRequest.getActionInstruction() == ActionInstructionType.CREATE
           && rmRequest.getSurveyName().equals("CENSUS")
@@ -75,11 +75,11 @@ public class CeCreateUnitFollowupProcessor implements InboundProcessor<FwmtActio
   // TODO what do we do with followUpService
   // TODO add test for secure
   @Override
-  public void process(FwmtActionInstruction rmRequest, GatewayCaseRecord cache, Instant messageReceivedTime) throws GatewayException {
+  public void process(ActionInstruction rmRequest, GatewayCaseRecord cache, Instant messageReceivedTime) throws GatewayException {
     CaseRequest tmRequest;
 
     if (cacheService.doesUprnAndTypeExist(rmRequest.getEstabUprn(), 1)) {
-      FwmtActionInstruction ceSwitch = new FwmtActionInstruction();
+      ActionInstruction ceSwitch = new ActionInstruction();
 
       ceSwitch.setActionInstruction(ActionInstructionType.SWITCH_CE_TYPE);
       ceSwitch.setSurveyName("CENSUS");
@@ -88,7 +88,7 @@ public class CeCreateUnitFollowupProcessor implements InboundProcessor<FwmtActio
       ceSwitch.setCaseId(cacheService.getEstabCaseId(rmRequest.getEstabUprn()));
       ceSwitch.setSurveyType(SurveyType.CE_SITE);
 
-      rmFieldPublisher.publish(ceSwitch);
+      fieldworkActionInstructionPublisher.publish(ceSwitch);
     }
 
     if (rmRequest.isSecureEstablishment()) {
