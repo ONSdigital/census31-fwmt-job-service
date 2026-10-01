@@ -13,6 +13,9 @@ import uk.gov.ons.census.fwmt.common.dto.rm.CancelActionInstruction;
 @Component
 public class RmAdapterActionInstructionDecoder {
 
+  private static final String SURVEY_CENSUS = "CENSUS";
+  private static final String SURVEY_FEEDBACK = "FEEDBACK";
+
   private final ObjectMapper objectMapper;
 
   public RmAdapterActionInstructionDecoder(ObjectMapper objectMapper) {
@@ -34,8 +37,8 @@ public class RmAdapterActionInstructionDecoder {
         throw new IllegalArgumentException("Missing actionInstruction in RM adapter payload");
       }
       String surveyName = payload.path("surveyName").textValue();
-      boolean validSurvey = "CENSUS".equals(surveyName)
-          || contract == ActionInstructionContract.INTERNAL_FWMT && "FEEDBACK".equals(surveyName);
+      boolean validSurvey = SURVEY_CENSUS.equals(surveyName)
+          || contract == ActionInstructionContract.INTERNAL_FWMT && SURVEY_FEEDBACK.equals(surveyName);
       if (!validSurvey) {
         throw new IllegalArgumentException("Action instruction payload has an invalid surveyName for " + contract);
       }
