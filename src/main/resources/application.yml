@@ -81,8 +81,8 @@ totalmobile:
   comet:
     clientID: ""
     clientSecret: ""
-    resource: "https://int-ons-comet-api-app-ukwest.azurewebsites.net"
-    authority: "https://login.microsoftonline.com/05057611-67c0-4390-85ef-2c623ff4104f/oauth2/v2.0/token"
+    resource: "https://int-comet-onscensus.totalmobile-cloud.com"
+    authority: "https://login.microsoftonline.com/71f09fa5-5d22-4c79-b4af-1d8d32b39a70/oauth2/v2.0/token"
   operation:
     case:
       create:
