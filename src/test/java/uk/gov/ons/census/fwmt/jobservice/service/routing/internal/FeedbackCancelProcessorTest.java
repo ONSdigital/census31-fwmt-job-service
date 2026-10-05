@@ -12,7 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClientException;
 import uk.gov.ons.census.fwmt.common.error.GatewayException;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtCancelActionInstruction;
+import uk.gov.ons.census.fwmt.common.dto.rm.CancelActionInstruction;
 import uk.gov.ons.census.fwmt.common.events.component.GatewayEventManager;
 import uk.gov.ons.census.fwmt.jobservice.data.GatewayCaseRecord;
 import uk.gov.ons.census.fwmt.jobservice.helper.FwmtCancelJobRequestBuilder;
@@ -57,7 +57,7 @@ public class FeedbackCancelProcessorTest {
   @Test
   @DisplayName("Should send a Feedback cancel")
   public void shouldSendAFeedbackCancel() throws GatewayException {
-    final FwmtCancelActionInstruction instruction = new FwmtCancelJobRequestBuilder().cancelFeedbackActionInstruction();
+    final CancelActionInstruction instruction = new FwmtCancelJobRequestBuilder().cancelFeedbackActionInstruction();
     GatewayCaseRecord gatewayCache = GatewayCaseRecord.builder()
         .caseId("ac623e62-4f4b-11eb-ae93-0242ac130002").lastActionInstruction("CREATE").build();
     ResponseEntity<Void> responseEntity = ResponseEntity.ok().build();
@@ -75,7 +75,7 @@ public class FeedbackCancelProcessorTest {
   @Test
   @DisplayName("Should ignore a Feedback cancel on a cancel")
   public void shouldIgnoreAFeedbackCancelOnCancel() throws GatewayException {
-    final FwmtCancelActionInstruction instruction = new FwmtCancelJobRequestBuilder().cancelFeedbackActionInstruction();
+    final CancelActionInstruction instruction = new FwmtCancelJobRequestBuilder().cancelFeedbackActionInstruction();
     GatewayCaseRecord gatewayCache = GatewayCaseRecord.builder()
         .caseId("ac623e62-4f4b-11eb-ae93-0242ac130002").lastActionInstruction("CREATE").build();
     when(cometRestClient.sendClose(any())).thenThrow(new RestClientException("(400 BAD_REQUEST) {“id”:[“Case State must be Open”]}"));

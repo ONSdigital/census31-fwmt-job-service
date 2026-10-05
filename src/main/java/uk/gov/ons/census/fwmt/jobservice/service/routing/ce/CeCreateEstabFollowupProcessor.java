@@ -6,8 +6,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import uk.gov.ons.census.fwmt.common.data.tm.CaseRequest;
 import uk.gov.ons.census.fwmt.common.error.GatewayException;
-import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstructionType;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
+import uk.gov.ons.census.fwmt.common.dto.rm.ActionInstructionType;
+import uk.gov.ons.census.fwmt.common.dto.rm.ActionInstruction;
 import uk.gov.ons.census.fwmt.common.events.component.GatewayEventManager;
 import uk.gov.ons.census.fwmt.jobservice.data.GatewayCaseRecord;
 import uk.gov.ons.census.fwmt.jobservice.http.comet.CometRestClient;
@@ -26,7 +26,7 @@ import static uk.gov.ons.census.fwmt.jobservice.config.GatewayEventsConfig.FAILE
 
 @Qualifier("Create")
 @Service
-public class CeCreateEstabFollowupProcessor implements InboundProcessor<FwmtActionInstruction> {
+public class CeCreateEstabFollowupProcessor implements InboundProcessor<ActionInstruction> {
 
   @Autowired
   private CometRestClient cometRestClient;
@@ -56,7 +56,7 @@ public class CeCreateEstabFollowupProcessor implements InboundProcessor<FwmtActi
   }
 
   @Override
-  public boolean isValid(FwmtActionInstruction rmRequest, GatewayCaseRecord cache) {
+  public boolean isValid(ActionInstruction rmRequest, GatewayCaseRecord cache) {
     try {
       boolean uprnAndTypeExists = cacheService.doesUprnAndTypeExist(rmRequest.getUprn(), 3);
       return rmRequest.getActionInstruction() == ActionInstructionType.CREATE
@@ -74,7 +74,7 @@ public class CeCreateEstabFollowupProcessor implements InboundProcessor<FwmtActi
   }
 
   @Override
-  public void process(FwmtActionInstruction rmRequest, GatewayCaseRecord cache, Instant messageReceivedTime) throws GatewayException {
+  public void process(ActionInstruction rmRequest, GatewayCaseRecord cache, Instant messageReceivedTime) throws GatewayException {
     CaseRequest tmRequest;
 
     if (rmRequest.isSecureEstablishment()){

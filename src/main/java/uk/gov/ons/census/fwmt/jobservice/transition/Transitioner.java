@@ -4,8 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.ons.census.fwmt.common.error.GatewayException;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtCancelActionInstruction;
+import uk.gov.ons.census.fwmt.common.dto.rm.ActionInstruction;
+import uk.gov.ons.census.fwmt.common.dto.rm.CancelActionInstruction;
 import uk.gov.ons.census.fwmt.common.events.component.GatewayEventManager;
 import uk.gov.ons.census.fwmt.jobservice.data.GatewayCaseRecord;
 import uk.gov.ons.census.fwmt.jobservice.data.MessageCache;
@@ -46,8 +46,8 @@ public class Transitioner {
   @Autowired
   private TransitionRequestActionExecutor requestActionExecutor;
 
-  public TransitionAction<FwmtActionInstruction> resolveTransitionAction(
-      FwmtActionInstruction rmRequest, InboundProcessor<FwmtActionInstruction> processor,
+  public TransitionAction<ActionInstruction> resolveTransitionAction(
+      ActionInstruction rmRequest, InboundProcessor<ActionInstruction> processor,
       GatewayCaseRecord cache, Instant messageQueueTime) throws GatewayException {
     return resolveTransitionInternal(
         rmRequest,
@@ -60,8 +60,8 @@ public class Transitioner {
         false);
   }
 
-  public TransitionAction<FwmtCancelActionInstruction> resolveTransitionAction(
-      FwmtCancelActionInstruction rmRequest, InboundProcessor<FwmtCancelActionInstruction> processor,
+  public TransitionAction<CancelActionInstruction> resolveTransitionAction(
+      CancelActionInstruction rmRequest, InboundProcessor<CancelActionInstruction> processor,
       GatewayCaseRecord cache, Instant messageQueueTime) throws GatewayException {
     return resolveTransitionInternal(
         rmRequest,

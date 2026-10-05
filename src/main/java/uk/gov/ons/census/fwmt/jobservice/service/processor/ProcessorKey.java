@@ -2,8 +2,8 @@ package uk.gov.ons.census.fwmt.jobservice.service.processor;
 
 import lombok.Builder;
 import lombok.Getter;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtCancelActionInstruction;
+import uk.gov.ons.census.fwmt.common.dto.rm.ActionInstruction;
+import uk.gov.ons.census.fwmt.common.dto.rm.CancelActionInstruction;
 
 @Getter
 @Builder
@@ -14,7 +14,7 @@ public class ProcessorKey {
   private String addressLevel;
   private static final String DEFAULT_HH_ADDRESS_LEVEL = "U";
 
-  public static ProcessorKey buildKey(FwmtCancelActionInstruction rmRequest) {
+  public static ProcessorKey buildKey(CancelActionInstruction rmRequest) {
     return ProcessorKey.builder()
         .actionInstruction(rmRequest.getActionInstruction().toString())
         .surveyName(rmRequest.getSurveyName())
@@ -22,7 +22,7 @@ public class ProcessorKey {
         .addressLevel(rmRequest.getAddressLevel()).build();
   }
 
-  public static ProcessorKey buildKey(FwmtActionInstruction rmRequest) {
+  public static ProcessorKey buildKey(ActionInstruction rmRequest) {
     return ProcessorKey.builder()
         .actionInstruction(rmRequest.getActionInstruction().toString())
         .surveyName(rmRequest.getSurveyName())

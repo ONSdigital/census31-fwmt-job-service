@@ -6,8 +6,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import uk.gov.ons.census.fwmt.common.data.tm.CaseRequest;
 import uk.gov.ons.census.fwmt.common.error.GatewayException;
-import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstructionType;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
+import uk.gov.ons.census.fwmt.common.dto.rm.ActionInstructionType;
+import uk.gov.ons.census.fwmt.common.dto.rm.ActionInstruction;
 import uk.gov.ons.census.fwmt.common.events.component.GatewayEventManager;
 import uk.gov.ons.census.fwmt.jobservice.data.GatewayCaseRecord;
 import uk.gov.ons.census.fwmt.jobservice.http.comet.CometRestClient;
@@ -25,7 +25,7 @@ import static uk.gov.ons.census.fwmt.jobservice.service.routing.nc.NcEventValues
 
 @Qualifier("Create")
 @Service
-public class NcCeCreateEnglandAndWales implements InboundProcessor<FwmtActionInstruction> {
+public class NcCeCreateEnglandAndWales implements InboundProcessor<ActionInstruction> {
 
   private static final ProcessorKey key = ProcessorKey.builder()
       .actionInstruction(ActionInstructionType.CREATE.toString())
@@ -52,7 +52,7 @@ public class NcCeCreateEnglandAndWales implements InboundProcessor<FwmtActionIns
   }
 
   @Override
-  public boolean isValid(FwmtActionInstruction rmRequest, GatewayCaseRecord cache) {
+  public boolean isValid(ActionInstruction rmRequest, GatewayCaseRecord cache) {
     try {
       return rmRequest.getActionInstruction() == ActionInstructionType.CREATE
           && rmRequest.getSurveyName().equals("CENSUS")
@@ -64,7 +64,7 @@ public class NcCeCreateEnglandAndWales implements InboundProcessor<FwmtActionIns
   }
 
   @Override
-  public void process(FwmtActionInstruction rmRequest, GatewayCaseRecord cache, Instant messageReceivedTime)
+  public void process(ActionInstruction rmRequest, GatewayCaseRecord cache, Instant messageReceivedTime)
       throws GatewayException {
     String ncCaseId = rmRequest.getCaseId();
     String originalCaseId = rmRequest.getOldCaseId();

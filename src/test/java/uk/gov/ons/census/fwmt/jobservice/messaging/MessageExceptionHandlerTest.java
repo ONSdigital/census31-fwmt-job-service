@@ -14,11 +14,13 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
-import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstructionType;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtCancelActionInstruction;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtCommonInstruction;
+import uk.gov.ons.census.fwmt.common.dto.rm.ActionInstructionType;
+import uk.gov.ons.census.fwmt.common.dto.rm.CancelActionInstruction;
+import uk.gov.ons.census.fwmt.common.dto.rm.CommonInstruction;
 import uk.gov.ons.census.fwmt.jobservice.data.QuarantinedMessage;
 import uk.gov.ons.census.fwmt.jobservice.repository.QuarantinedMessageRepository;
+
+import java.util.concurrent.CompletableFuture;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -36,7 +38,7 @@ class MessageExceptionHandlerTest {
   @Captor
   private ArgumentCaptor<PubsubMessage> pubsubMessageArgumentCaptor;
 
-  private FwmtCommonInstruction commonInstruction = Mockito.mock(FwmtCommonInstruction.class);
+  private CommonInstruction commonInstruction = Mockito.mock(CommonInstruction.class);
 
   @InjectMocks
   private MessageExceptionHandler messageExceptionHandler;
@@ -52,7 +54,8 @@ class MessageExceptionHandlerTest {
     ReflectionTestUtils.setField(messageExceptionHandler, "maxRetryCount", 5);
     ReflectionTestUtils.setField(messageExceptionHandler, "gwTransientErrorTopic", "GW.Transient.ErrorQ");
     ReflectionTestUtils.setField(messageExceptionHandler, "gwPermanentErrorTopic", "GW.Permanent.ErrorQ");
-    ReflectionTestUtils.setField(messageExceptionHandler, "gwFieldQueue", "GW.Field");
+    Mockito.when(pubSubTemplate.publish(anyString(), any(PubsubMessage.class)))
+      .thenReturn(CompletableFuture.completedFuture("message-id"));
   }
 
   @DisplayName("Should publish message to transient error topic")
@@ -96,7 +99,7 @@ class MessageExceptionHandlerTest {
   @Test
   void shouldPersistMessagesSentToPermQueue() {
     final PubsubMessage message = createPubsubMessage(null);
-    final FwmtCommonInstruction actionInstruction = createCanceActionInstruction();
+    final CommonInstruction actionInstruction = createCanceActionInstruction();
 
     messageExceptionHandler.handlePermMessage(message, actionInstruction);
     verify(quarantinedMessageRepository).save(commonInstructionArgumentCaptor.capture());
@@ -107,8 +110,8 @@ class MessageExceptionHandlerTest {
     assertEquals(actionInstruction.getSurveyName(), savedItem.getSurveyName());
   }
 
-  public FwmtCommonInstruction createCanceActionInstruction() {
-    FwmtCancelActionInstruction inst = new FwmtCancelActionInstruction();
+  public CommonInstruction createCanceActionInstruction() {
+    CancelActionInstruction inst = new CancelActionInstruction();
     inst.setNc(true);
     inst.setAddressLevel("level");
     inst.setAddressType("type");

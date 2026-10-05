@@ -13,7 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClientException;
 import uk.gov.ons.census.fwmt.common.data.tm.SurveyType;
 import uk.gov.ons.census.fwmt.common.error.GatewayException;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
+import uk.gov.ons.census.fwmt.common.dto.rm.ActionInstruction;
 import uk.gov.ons.census.fwmt.common.events.component.GatewayEventManager;
 import uk.gov.ons.census.fwmt.jobservice.data.GatewayCaseRecord;
 import uk.gov.ons.census.fwmt.jobservice.http.comet.CometRestClient;
@@ -52,8 +52,8 @@ public class CeSwitchCreateProcessorTest {
   @Captor
   private ArgumentCaptor<String> spiedEvent;
 
-  private FwmtActionInstruction createInstruction() {
-    return FwmtActionInstruction.builder().caseRef("345").build();
+  private ActionInstruction createInstruction() {
+    return ActionInstruction.builder().caseRef("345").build();
   }
 
   private GatewayCaseRecord createGatewayCache(String caseId, int type, int usualResidents) {
@@ -63,7 +63,7 @@ public class CeSwitchCreateProcessorTest {
   @Test
   @DisplayName("Should throw Gateway Exception and trigger event for invalid survey type")
   public void shouldHandleIncorrectSurveyTypeCE() {
-    final FwmtActionInstruction instruction = createInstruction();
+    final ActionInstruction instruction = createInstruction();
     instruction.setSurveyType(SurveyType.AC);
     instruction.setCaseId("1234");
     Assertions.assertThrows(GatewayException.class, () -> {
@@ -74,7 +74,7 @@ public class CeSwitchCreateProcessorTest {
   @Test
   @DisplayName("Should set usualResident count to 0 when a valid CE_SITE is received")
   public void shouldHandleCE() throws GatewayException {
-    final FwmtActionInstruction instruction = createInstruction();
+    final ActionInstruction instruction = createInstruction();
     instruction.setSurveyType(SurveyType.CE_SITE);
     instruction.setCaseId("1234");
     GatewayCaseRecord cache = createGatewayCache("1234", 1, 10);
@@ -89,7 +89,7 @@ public class CeSwitchCreateProcessorTest {
   @Test
   @DisplayName("Should ignore a CE Switch on a closed case in TM")
   public void shouldIgnoreACeSwitchOnAClosedCaseinTm() throws GatewayException {
-    final FwmtActionInstruction instruction = createInstruction();
+    final ActionInstruction instruction = createInstruction();
     instruction.setSurveyType(SurveyType.CE_SITE);
     instruction.setCaseId("1234");
     GatewayCaseRecord cache = createGatewayCache("1234", 1, 10);

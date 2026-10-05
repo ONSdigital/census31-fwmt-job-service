@@ -7,12 +7,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import uk.gov.ons.census.fwmt.common.data.tm.ReopenCaseRequest;
 import uk.gov.ons.census.fwmt.common.error.GatewayException;
-import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstructionType;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
+import uk.gov.ons.census.fwmt.common.dto.rm.ActionInstructionType;
+import uk.gov.ons.census.fwmt.common.dto.rm.ActionInstruction;
 import uk.gov.ons.census.fwmt.common.events.component.GatewayEventManager;
 import uk.gov.ons.census.fwmt.jobservice.data.GatewayCaseRecord;
 import uk.gov.ons.census.fwmt.jobservice.http.comet.CometRestClient;
-import uk.gov.ons.census.fwmt.jobservice.messaging.RmFieldMessagePublisher;
+import uk.gov.ons.census.fwmt.jobservice.messaging.FieldworkActionInstructionPublisher;
 import uk.gov.ons.census.fwmt.jobservice.service.GatewayCaseRecordService;
 import uk.gov.ons.census.fwmt.jobservice.service.converter.spg.SpgUpdateConverter;
 import uk.gov.ons.census.fwmt.jobservice.service.processor.InboundProcessor;
@@ -33,7 +33,7 @@ import static uk.gov.ons.census.fwmt.jobservice.config.GatewayEventsConfig.UPDAT
 
 @Qualifier("Update")
 @Service
-public class SpgUpdateUnitProcessor implements InboundProcessor<FwmtActionInstruction> {
+public class SpgUpdateUnitProcessor implements InboundProcessor<ActionInstruction> {
 
   private static final ProcessorKey key = ProcessorKey.builder()
       .actionInstruction(ActionInstructionType.UPDATE.toString())
@@ -59,7 +59,7 @@ public class SpgUpdateUnitProcessor implements InboundProcessor<FwmtActionInstru
   // private SpgCreateRouter createRouter;
 
   @Autowired
-  private RmFieldMessagePublisher rmFieldPublisher;
+  private FieldworkActionInstructionPublisher fieldworkActionInstructionPublisher;
 
   @Override
   public ProcessorKey getKey() {
@@ -67,7 +67,7 @@ public class SpgUpdateUnitProcessor implements InboundProcessor<FwmtActionInstru
   }
 
   @Override
-  public boolean isValid(FwmtActionInstruction rmRequest, GatewayCaseRecord cache) {
+  public boolean isValid(ActionInstruction rmRequest, GatewayCaseRecord cache) {
     try {
       return rmRequest.getActionInstruction() == ActionInstructionType.UPDATE
           && rmRequest.getSurveyName().equals("CENSUS")
@@ -80,7 +80,7 @@ public class SpgUpdateUnitProcessor implements InboundProcessor<FwmtActionInstru
   }
 
   @Override
-  public void process(FwmtActionInstruction rmRequest, GatewayCaseRecord cache, Instant messageReceivedTime) throws GatewayException {
+  public void process(ActionInstruction rmRequest, GatewayCaseRecord cache, Instant messageReceivedTime) throws GatewayException {
     boolean alreadyCancelled = false;
     ResponseEntity<Void> response = null;
 
@@ -145,11 +145,11 @@ public class SpgUpdateUnitProcessor implements InboundProcessor<FwmtActionInstru
     }
   }
 
-  private void rerouteAsCreate (FwmtActionInstruction rmRequest) {
+  private void rerouteAsCreate (ActionInstruction rmRequest) {
     eventManager.triggerEvent(String.valueOf(rmRequest.getCaseId()), CONVERT_SPG_UNIT_UPDATE_TO_CREATE,
         "Case Ref", rmRequest.getCaseRef());
 
     rmRequest.setActionInstruction(ActionInstructionType.CREATE);
-    rmFieldPublisher.publish(rmRequest);
+    fieldworkActionInstructionPublisher.publish(rmRequest);
   }
 }

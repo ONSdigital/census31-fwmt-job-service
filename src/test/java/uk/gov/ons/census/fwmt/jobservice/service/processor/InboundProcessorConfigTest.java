@@ -5,9 +5,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.ons.census.fwmt.common.error.GatewayException;
-import uk.gov.ons.census.fwmt.common.rm.dto.ActionInstructionType;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtActionInstruction;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtCancelActionInstruction;
+import uk.gov.ons.census.fwmt.common.dto.rm.ActionInstructionType;
+import uk.gov.ons.census.fwmt.common.dto.rm.ActionInstruction;
+import uk.gov.ons.census.fwmt.common.dto.rm.CancelActionInstruction;
 import uk.gov.ons.census.fwmt.common.events.component.GatewayEventManager;
 
 import java.util.List;
@@ -39,73 +39,73 @@ class InboundProcessorConfigTest {
   private GatewayEventManager eventManager;
 
   @Mock
-  private InboundProcessor<FwmtActionInstruction> actionProcessorA;
+  private InboundProcessor<ActionInstruction> actionProcessorA;
 
   @Mock
-  private InboundProcessor<FwmtActionInstruction> actionProcessorB;
+  private InboundProcessor<ActionInstruction> actionProcessorB;
 
   @Mock
-  private InboundProcessor<FwmtCancelActionInstruction> cancelProcessor;
+  private InboundProcessor<CancelActionInstruction> cancelProcessor;
 
   @Test
   void buildCreateProcessorRouter_groupsProcessorsByKey() throws GatewayException {
-    FwmtActionInstruction request = buildCreateRequest();
+    ActionInstruction request = buildCreateRequest();
     when(actionProcessorA.getKey()).thenReturn(ACTION_KEY);
     when(actionProcessorB.getKey()).thenReturn(ACTION_KEY);
     when(actionProcessorA.isValid(request, null)).thenReturn(false);
     when(actionProcessorB.isValid(request, null)).thenReturn(true);
 
-    ProcessorRouter<FwmtActionInstruction> router = config.buildCreateProcessorRouter(
+    ProcessorRouter<ActionInstruction> router = config.buildCreateProcessorRouter(
         List.of(actionProcessorA, actionProcessorB), eventManager);
 
-    InboundProcessor<FwmtActionInstruction> resolved = router.resolveExactlyOne(ACTION_KEY, request, null);
+    InboundProcessor<ActionInstruction> resolved = router.resolveExactlyOne(ACTION_KEY, request, null);
 
     assertSame(actionProcessorB, resolved);
   }
 
   @Test
   void buildCancelProcessorRouter_supportsCancelProcessorType() throws GatewayException {
-    FwmtCancelActionInstruction request = buildCancelRequest();
+    CancelActionInstruction request = buildCancelRequest();
     when(cancelProcessor.getKey()).thenReturn(CANCEL_KEY);
     when(cancelProcessor.isValid(request, null)).thenReturn(true);
 
-    ProcessorRouter<FwmtCancelActionInstruction> router = config.buildCancelProcessorRouter(
+    ProcessorRouter<CancelActionInstruction> router = config.buildCancelProcessorRouter(
         List.of(cancelProcessor), eventManager);
 
-    InboundProcessor<FwmtCancelActionInstruction> resolved = router.resolveExactlyOne(CANCEL_KEY, request, null);
+    InboundProcessor<CancelActionInstruction> resolved = router.resolveExactlyOne(CANCEL_KEY, request, null);
 
     assertSame(cancelProcessor, resolved);
   }
 
   @Test
   void buildCreateProcessorRouter_groupsBothProcessorsUnderSameKey() throws GatewayException {
-    FwmtActionInstruction request = buildCreateRequest();
+    ActionInstruction request = buildCreateRequest();
     when(actionProcessorA.getKey()).thenReturn(ACTION_KEY);
     when(actionProcessorB.getKey()).thenReturn(ACTION_KEY);
     // First processor invalid, second valid — router must see both and return the valid one
     when(actionProcessorA.isValid(request, null)).thenReturn(false);
     when(actionProcessorB.isValid(request, null)).thenReturn(true);
 
-    ProcessorRouter<FwmtActionInstruction> router = config.buildCreateProcessorRouter(
+    ProcessorRouter<ActionInstruction> router = config.buildCreateProcessorRouter(
         List.of(actionProcessorA, actionProcessorB), eventManager);
 
-    InboundProcessor<FwmtActionInstruction> resolved = router.resolveExactlyOne(ACTION_KEY, request, null);
+    InboundProcessor<ActionInstruction> resolved = router.resolveExactlyOne(ACTION_KEY, request, null);
 
     assertSame(actionProcessorB, resolved);
   }
 
   @Test
   void buildPauseProcessorRouter_emptyProcessors_resolveOptionalReturnsEmpty() throws GatewayException {
-    FwmtActionInstruction request = buildCreateRequest();
-    ProcessorRouter<FwmtActionInstruction> router = config.buildPauseProcessorRouter(List.of(), eventManager);
+    ActionInstruction request = buildCreateRequest();
+    ProcessorRouter<ActionInstruction> router = config.buildPauseProcessorRouter(List.of(), eventManager);
 
-    Optional<InboundProcessor<FwmtActionInstruction>> result = router.resolveOptional(ACTION_KEY, request, null);
+    Optional<InboundProcessor<ActionInstruction>> result = router.resolveOptional(ACTION_KEY, request, null);
 
     assertTrue(result.isEmpty());
   }
 
-  private FwmtActionInstruction buildCreateRequest() {
-    FwmtActionInstruction request = new FwmtActionInstruction();
+  private ActionInstruction buildCreateRequest() {
+    ActionInstruction request = new ActionInstruction();
     request.setActionInstruction(ActionInstructionType.CREATE);
     request.setSurveyName("CENSUS");
     request.setAddressType("HH");
@@ -113,8 +113,8 @@ class InboundProcessorConfigTest {
     return request;
   }
 
-  private FwmtCancelActionInstruction buildCancelRequest() {
-    FwmtCancelActionInstruction request = new FwmtCancelActionInstruction();
+  private CancelActionInstruction buildCancelRequest() {
+    CancelActionInstruction request = new CancelActionInstruction();
     request.setActionInstruction(ActionInstructionType.CANCEL);
     request.setSurveyName("CENSUS");
     request.setAddressType("HH");

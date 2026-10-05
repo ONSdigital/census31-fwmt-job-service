@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import uk.gov.ons.census.fwmt.common.error.GatewayException;
-import uk.gov.ons.census.fwmt.common.rm.dto.FwmtCancelActionInstruction;
+import uk.gov.ons.census.fwmt.common.dto.rm.CancelActionInstruction;
 import uk.gov.ons.census.fwmt.jobservice.data.GatewayCaseRecord;
 import uk.gov.ons.census.fwmt.jobservice.service.processor.InboundProcessor;
 import uk.gov.ons.census.fwmt.jobservice.service.processor.ProcessorKey;
@@ -24,13 +24,13 @@ public class CancelActionOrchestrator {
 
   @Autowired
   @Qualifier("CancelProcessorRouter")
-  private ProcessorRouter<FwmtCancelActionInstruction> cancelRouter;
+  private ProcessorRouter<CancelActionInstruction> cancelRouter;
 
-  public void process(FwmtCancelActionInstruction actionInstruction, Instant messageReceivedTime)
+  public void process(CancelActionInstruction actionInstruction, Instant messageReceivedTime)
       throws GatewayException {
     GatewayCaseRecord cache = resolveCancelCache(actionInstruction);
 
-    Optional<InboundProcessor<FwmtCancelActionInstruction>> actionTypeHandler = cancelRouter.resolveOptional(
+    Optional<InboundProcessor<CancelActionInstruction>> actionTypeHandler = cancelRouter.resolveOptional(
         ProcessorKey.buildKey(actionInstruction), actionInstruction, cache);
 
     if (actionTypeHandler.isPresent()) {
@@ -46,7 +46,7 @@ public class CancelActionOrchestrator {
     return "CANCEL(HELD)".equals(cache.getLastActionInstruction());
   }
 
-  private GatewayCaseRecord resolveCancelCache(FwmtCancelActionInstruction actionInstruction) {
+  private GatewayCaseRecord resolveCancelCache(CancelActionInstruction actionInstruction) {
     GatewayCaseRecord cache = cacheService.getByOriginalCaseId(actionInstruction.getCaseId());
     if (cache != null) {
       actionInstruction.setNc(true);
