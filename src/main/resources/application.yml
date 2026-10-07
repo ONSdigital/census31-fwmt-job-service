@@ -179,7 +179,8 @@ app:
       gwTransientError: "GW.Transient.ErrorQ"
       gwPermanentError: "GW.Permanent.ErrorQ"
     pubsub:
-      fieldwork-action-instruction-subscription: job-service-fieldwork-action-instruction
-      fieldwork-action-instruction-internal-subscription: job-service-fieldwork-action-instruction-internal
+      rm-project-id: ${RM_PUBSUB_PROJECT:}
+      fieldwork-action-instruction-subscription: event_action-instruction_fwmtg
+      fieldwork-action-instruction-internal-subscription: event_action-instruction_fwmtg-internal
       fieldwork-action-instruction-topic: event_fieldwork_action-instruction
       message-time-attribute: occurredAt

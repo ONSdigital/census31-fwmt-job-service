@@ -1,6 +1,7 @@
 package uk.gov.ons.census.fwmt.jobservice.messaging.pubsub;
 
 import com.google.cloud.spring.pubsub.core.PubSubTemplate;
+import com.google.cloud.spring.pubsub.core.subscriber.PubSubSubscriberOperations;
 import com.google.cloud.spring.pubsub.integration.AckMode;
 import com.google.cloud.spring.pubsub.integration.inbound.PubSubInboundChannelAdapter;
 import com.google.cloud.spring.pubsub.support.BasicAcknowledgeablePubsubMessage;
@@ -19,10 +20,10 @@ import uk.gov.ons.census.fwmt.jobservice.messaging.ActionInstructionContract;
 @Configuration
 public class JobServicePubSubConfig {
 
-  @Value("${app.messaging.pubsub.fieldwork-action-instruction-subscription:job-service-fieldwork-action-instruction}")
+  @Value("${app.messaging.pubsub.fieldwork-action-instruction-subscription:event_action-instruction_fwmtg}")
   private String fieldworkActionInstructionSubscription;
 
-  @Value("${app.messaging.pubsub.fieldwork-action-instruction-internal-subscription:job-service-fieldwork-action-instruction-internal}")
+  @Value("${app.messaging.pubsub.fieldwork-action-instruction-internal-subscription:event_action-instruction_fwmtg-internal}")
   private String fieldworkActionInstructionInternalSubscription;
 
   @Bean(name = "fieldworkActionInstructionPubSubInputChannel")
@@ -38,9 +39,9 @@ public class JobServicePubSubConfig {
   @Bean
   public PubSubInboundChannelAdapter fieldworkActionInstructionPubSubInbound(
       @Qualifier("fieldworkActionInstructionPubSubInputChannel") MessageChannel inputChannel,
-      PubSubTemplate pubSubTemplate) {
-    PubSubInboundChannelAdapter adapter =
-        new PubSubInboundChannelAdapter(pubSubTemplate, fieldworkActionInstructionSubscription);
+      @Qualifier("rmPubSubTemplate") PubSubSubscriberOperations rmPubSubTemplate) {
+    PubSubInboundChannelAdapter adapter = new PubSubInboundChannelAdapter(
+        rmPubSubTemplate, fieldworkActionInstructionSubscription);
     adapter.setOutputChannel(inputChannel);
     adapter.setAckMode(AckMode.AUTO);
     return adapter;
