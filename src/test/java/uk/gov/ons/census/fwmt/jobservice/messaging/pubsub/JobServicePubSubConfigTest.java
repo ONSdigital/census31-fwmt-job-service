@@ -1,18 +1,23 @@
 package uk.gov.ons.census.fwmt.jobservice.messaging.pubsub;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.google.cloud.spring.pubsub.support.GcpPubSubHeaders;
 import com.google.cloud.spring.pubsub.support.BasicAcknowledgeablePubsubMessage;
+import com.google.cloud.spring.pubsub.core.subscriber.PubSubSubscriberOperations;
 import com.google.protobuf.ByteString;
 import com.google.pubsub.v1.PubsubMessage;
+import java.lang.reflect.Method;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.integration.support.MessageBuilder;
+import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.MessageHandler;
 import uk.gov.ons.census.fwmt.jobservice.messaging.FieldWorkerInstructionMessageDispatcher;
 
@@ -26,6 +31,24 @@ class JobServicePubSubConfigTest {
 
   @Mock
   private BasicAcknowledgeablePubsubMessage originalMessage;
+
+  @Test
+  void externalSubscriberUsesRmTemplateWhileInternalSubscriberUsesDefaultTemplate()
+      throws NoSuchMethodException {
+    Method externalMethod = JobServicePubSubConfig.class.getDeclaredMethod(
+        "fieldworkActionInstructionPubSubInbound", MessageChannel.class,
+      PubSubSubscriberOperations.class);
+    Method internalMethod = JobServicePubSubConfig.class.getDeclaredMethod(
+        "fieldworkActionInstructionInternalPubSubInbound", MessageChannel.class,
+        com.google.cloud.spring.pubsub.core.PubSubTemplate.class);
+
+    Qualifier externalQualifier = externalMethod.getParameters()[1].getAnnotation(Qualifier.class);
+    Qualifier internalQualifier = internalMethod.getParameters()[1].getAnnotation(Qualifier.class);
+
+    assertThat(externalQualifier).isNotNull();
+    assertThat(externalQualifier.value()).isEqualTo("rmPubSubTemplate");
+    assertThat(internalQualifier).isNull();
+  }
 
   @Test
   void internalHandlerDelegatesToInternalDispatcher() {
