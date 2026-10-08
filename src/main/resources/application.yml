@@ -81,7 +81,7 @@ totalmobile:
   comet:
     clientID: ""
     clientSecret: ""
-    resource: "https://int-comet-onscensus.totalmobile-cloud.com"
+    resource: "https://devonscensus.onmicrosoft.com/int-ons-comet-apigw-app"
     authority: "https://login.microsoftonline.com/71f09fa5-5d22-4c79-b4af-1d8d32b39a70/oauth2/v2.0/token"
   operation:
     case:
