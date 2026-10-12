@@ -175,12 +175,12 @@ app:
     provider: pubsub
     maxRetryCount: 5
     destinations:
-      fieldworkActionInstructionInternal: "event_fieldwork_action-instruction_internal"
+      fieldworkActionInstructionInternal: "event_action-instruction_internal"
       gwTransientError: "GW.Transient.ErrorQ"
       gwPermanentError: "GW.Permanent.ErrorQ"
     pubsub:
       rm-project-id: ${RM_PUBSUB_PROJECT:}
       fieldwork-action-instruction-subscription: event_action-instruction_fwmtg
       fieldwork-action-instruction-internal-subscription: event_action-instruction_fwmtg-internal
-      fieldwork-action-instruction-topic: event_fieldwork_action-instruction
+      fieldwork-action-instruction-topic: event_action-instruction
       message-time-attribute: occurredAt
