@@ -26,7 +26,7 @@ import uk.gov.ons.census.fwmt.common.dto.rm.CancelActionInstruction;
 @ExtendWith(MockitoExtension.class)
 class PubSubFieldworkActionInstructionPublisherTest {
 
-  private static final String TOPIC = "event_fieldwork_action-instruction_internal";
+  private static final String TOPIC = "event_action-instruction_internal";
 
   @Mock
   private PubSubTemplate pubSubTemplate;
