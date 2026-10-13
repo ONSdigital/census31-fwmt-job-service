@@ -96,10 +96,14 @@ public class CometRestClient {
   }
 
   private HttpHeaders makeAuthHeader() throws GatewayException {
-    if ((!isAuthed() || isExpired()) && !cometConfig.clientId.isEmpty() && !cometConfig.clientSecret.isEmpty())
-      auth();
     HttpHeaders httpHeaders = new HttpHeaders();
-    if (isAuthed()) {
+    if (!cometConfig.useTmMock) {
+      if (cometConfig.clientId.isBlank() || cometConfig.clientSecret.isBlank()) {
+        throw new GatewayException(GatewayException.Fault.SYSTEM_ERROR, "Totalmobile OAuth credentials are missing");
+      }
+      if (!isAuthed() || isExpired()) {
+        auth();
+      }
       httpHeaders.setBearerAuth(auth.getAccessToken());
     }
     return httpHeaders;
@@ -150,13 +154,7 @@ public class CometRestClient {
 
   public Case getCase(String caseId) throws GatewayException {
     String basePathway = cometUrl + caseId;
-    if ((!isAuthed() || isExpired()) && !cometConfig.clientId.isEmpty() && !cometConfig.clientSecret.isEmpty())
-      auth();
-    HttpHeaders httpHeaders = new HttpHeaders();
-    if (isAuthed())
-      httpHeaders.setBearerAuth(auth.getAccessToken());
-
-    HttpEntity<?> body = new HttpEntity<>(httpHeaders);
+    HttpEntity<?> body = new HttpEntity<>(makeAuthHeader());
     ResponseEntity<Case> request = restTemplate.exchange(basePathway, HttpMethod.GET, body, Case.class);
 
     return request.getBody();
