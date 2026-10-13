@@ -29,7 +29,7 @@ public class CometConfig {
       @Value("${totalmobile.comet.clientSecret}") String clientSecret,
       @Value("${totalmobile.comet.resource}") String resource,
       @Value("${totalmobile.comet.authority}") String authority,
-      @Value("${totalmobile.useTmMock:false}") boolean useTmMock) {
+      @Value("${totalmobile.useTmMock:true}") boolean useTmMock) {
     this.userName = userName;
     this.password = password;
     this.baseUrl = baseUrl;
