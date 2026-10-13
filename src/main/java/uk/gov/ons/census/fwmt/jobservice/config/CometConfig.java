@@ -17,6 +17,7 @@ public class CometConfig {
   // Azure Directory OAUTH 2.0 AUTHORIZATION ENDPOINT
   public final String resource;
   public final String authority;
+  public final boolean useTmMock;
 
   public CometConfig(
       @Value("${totalmobile.username}") String userName,
@@ -27,7 +28,8 @@ public class CometConfig {
       @Value("${totalmobile.comet.clientID}") String clientId,
       @Value("${totalmobile.comet.clientSecret}") String clientSecret,
       @Value("${totalmobile.comet.resource}") String resource,
-      @Value("${totalmobile.comet.authority}") String authority) {
+      @Value("${totalmobile.comet.authority}") String authority,
+      @Value("${totalmobile.useTmMock:false}") boolean useTmMock) {
     this.userName = userName;
     this.password = password;
     this.baseUrl = baseUrl;
@@ -37,5 +39,6 @@ public class CometConfig {
     this.clientSecret = clientSecret;
     this.resource = resource;
     this.authority = authority;
+    this.useTmMock = useTmMock;
   }
 }
