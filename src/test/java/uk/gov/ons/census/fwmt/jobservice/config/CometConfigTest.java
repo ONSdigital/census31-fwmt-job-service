@@ -23,15 +23,15 @@ class CometConfigTest {
           "totalmobile.comet.authority=authority");
 
   @Test
-  void shouldDefaultToRealTotalmobile() {
-    contextRunner.run(context -> assertThat(context.getBean(CometConfig.class).useTmMock).isFalse());
+  void shouldDefaultToTmMock() {
+    contextRunner.run(context -> assertThat(context.getBean(CometConfig.class).useTmMock).isTrue());
   }
 
   @Test
-  void shouldUseMockWhenKubernetesEnvironmentVariableIsTrue() {
-    contextRunner.withPropertyValues("totalmobile.useTmMock=false")
+  void shouldUseRealTotalmobileWhenKubernetesEnvironmentVariableIsFalse() {
+    contextRunner.withPropertyValues("totalmobile.useTmMock=true")
       .withInitializer(context -> context.getEnvironment().getPropertySources().addFirst(
-            new SystemEnvironmentPropertySource("pod-env", Map.of("TOTALMOBILE_USETMMOCK", "true"))))
-        .run(context -> assertThat(context.getBean(CometConfig.class).useTmMock).isTrue());
+            new SystemEnvironmentPropertySource("pod-env", Map.of("TOTALMOBILE_USETMMOCK", "false"))))
+        .run(context -> assertThat(context.getBean(CometConfig.class).useTmMock).isFalse());
   }
 }
