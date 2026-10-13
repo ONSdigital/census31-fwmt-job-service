@@ -1,6 +1,7 @@
 package uk.gov.ons.census.fwmt.jobservice.http;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -14,10 +15,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.ons.census.fwmt.common.data.nc.CaseDetailsDTO;
+import uk.gov.ons.census.fwmt.common.data.tm.Case;
 import uk.gov.ons.census.fwmt.common.error.GatewayException;
 import uk.gov.ons.census.fwmt.common.events.component.GatewayEventManager;
 import uk.gov.ons.census.fwmt.jobservice.config.CometConfig;
@@ -62,6 +65,30 @@ class RestClientUrlNormalisationTest {
     verify(restTemplate).exchange(pathCaptor.capture(), eq(HttpMethod.PUT), any(HttpEntity.class), eq(Void.class));
     assertEquals("http://fwmtgatewaytmmock:80/cases/case-123", pathCaptor.getValue());
   }
+
+    @Test
+    void shouldSkipCometAuthenticationForMockEvenWithCredentials() throws GatewayException {
+        CometConfig cometConfig = new CometConfig(
+                "user", "password", "http://fwmtgatewaytmmock:80", "swagger/index.html", "cases/",
+                "client-id", "client-secret", "resource", "authority", true);
+        when(restTemplate.exchange(anyString(), eq(HttpMethod.PUT), any(HttpEntity.class), eq(Void.class)))
+                .thenReturn(ResponseEntity.ok().build());
+        when(restTemplate.exchange(anyString(), eq(HttpMethod.GET), any(HttpEntity.class), eq(Case.class)))
+                .thenReturn(ResponseEntity.ok(new Case()));
+
+        CometRestClient cometRestClient =
+                new CometRestClient(cometConfig, gatewayEventManager, restTemplate, new CometPerfRequestInterceptor());
+
+        cometRestClient.sendCreate(null, "case-123");
+        cometRestClient.getCase("case-123");
+
+        ArgumentCaptor<HttpEntity> bodyCaptor = ArgumentCaptor.forClass(HttpEntity.class);
+        verify(restTemplate).exchange(anyString(), eq(HttpMethod.PUT), bodyCaptor.capture(), eq(Void.class));
+        verify(restTemplate).exchange(anyString(), eq(HttpMethod.GET), bodyCaptor.capture(), eq(Case.class));
+        for (HttpEntity<?> body : bodyCaptor.getAllValues()) {
+            assertNull(body.getHeaders().getFirst(HttpHeaders.AUTHORIZATION));
+        }
+    }
 
   @Test
   void shouldBuildRmLookupUrlWhenBaseUrlHasNoTrailingSlash() throws GatewayException {
